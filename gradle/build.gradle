@@ -1,0 +1,67 @@
+group 'nl.consag.testautomation'
+version '2017.03'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'project-report'
+
+sourceCompatibility = 1.8
+
+sourceSets {
+ main {
+  java {
+   srcDir "src/main/java"  //default
+  }
+  resources {
+   srcDir "src/main/resources"  //default
+  }
+ }
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+dependencies {
+   // https://mvnrepository.com/artifact/commons-codec/commons-codec
+ compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+
+   // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
+ compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+
+ // https://mvnrepository.com/artifact/commons-io/commons-io
+ compile group: 'commons-io', name: 'commons-io', version: '2.5'
+
+   // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+ compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
+
+   // https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox-app
+ compile group: 'org.apache.pdfbox', name: 'pdfbox-app', version: '1.8.13'
+
+   // https://mvnrepository.com/artifact/org.apache.poi/poi
+ compile group: 'org.apache.poi', name: 'poi', version: '3.16'
+
+   // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+ compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.16'
+
+   // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas
+ compile group: 'org.apache.poi', name: 'poi-ooxml-schemas', version: '3.16'
+
+   // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+ compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.4.0'
+
+   // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+ compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+   // https://mvnrepository.com/artifact/org.json/json
+   compile group: 'org.json', name: 'json', version: '20160810'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+  compile files('lib/Siebel.jar','lib/SiebelJI_enu.jar')
+}
+
+

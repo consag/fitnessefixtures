@@ -1,0 +1,1290 @@
+<definitions
+
+     targetNamespace="http://www.informatica.com/wsh"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+     xmlns:impl="http://www.informatica.com/wsh"
+     xmlns:apachesoap="http://xml.apache.org/xml-soap"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+     xmlns:intf="http://www.informatica.com/wsh"
+    >
+    <types>
+        <schema targetNamespace="http://www.informatica.com/wsh" xmlns="http://www.w3.org/2001/XMLSchema">
+            <complexType name="VoidRequest"/>
+            <complexType name="VoidResponse"/>
+            <complexType name="SessionHeader">
+                <sequence>
+                    <element name="SessionId" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <element name="Context" type="impl:SessionHeader"/>
+            <complexType name="FaultDetails">
+                <sequence>
+                    <element name="ErrorCode" type="xsd:string"/>
+                    <element name="ExtendedDetails" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <element name="WSHFaultDetails" type="impl:FaultDetails"/>
+            <complexType name="LoginRequest">
+                <sequence>
+                    <element name="RepositoryDomainName" nillable="true" type="xsd:string"/>
+                    <element name="RepositoryName" type="xsd:string"/>
+                    <element name="UserName" type="xsd:string"/>
+                    <element name="Password" type="xsd:string"/>
+                    <element name="UserNameSpace" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <element name="Login" type="impl:LoginRequest"/>
+            <element name="LoginReturn" type="xsd:string"/>
+            <element name="Logout" type="impl:VoidRequest"/>
+            <element name="LogoutReturn" type="impl:VoidResponse"/>
+            <complexType name="TypeStartWorkflowExResponse">
+                <sequence>
+                    <element name="RunId" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <complexType name="TaskTopLevelParent">
+                <sequence>
+                    <element name="FolderId" type="xsd:int"/>
+                    <element name="FolderName" type="xsd:string"/>
+                    <element name="WorkflowId" type="xsd:int"/>
+                    <element name="WorkflowName" type="xsd:string"/>
+                    <element name="TaskInstanceId" type="xsd:int"/>
+                    <element name="TaskInstanceName" type="xsd:string"/>
+                    <element name="TopLevelParentId" type="xsd:int"/>
+                    <element name="TopLevelParentName" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="Parameter">
+                <sequence>
+                    <element name="Scope" nillable="true" type="xsd:string"/>
+                    <element name="Name" nillable="true" type="xsd:string"/>
+                    <element name="Value" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="InitializeDIServerConnectionRequest">
+                <sequence>
+                    <element name="LoginHandle" nillable="true" type="xsd:string"/>
+                    <element name="DIServerName" type="xsd:string"/>
+                    <element name="DIServerDomain" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <element name="InitializeDIServerConnection" type="impl:InitializeDIServerConnectionRequest"/>
+            <element name="InitializeDIServerConnectionReturn" type="impl:VoidResponse"/>
+            <element name="DeinitializeDIServerConnection" type="impl:VoidRequest"/>
+            <element name="DeinitializeDIServerConnectionReturn" type="impl:VoidResponse"/>
+            <complexType name="DIServiceInfo">
+                <sequence>
+                    <element name="DomainName" type="xsd:string"/>
+                    <element name="ServiceName" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="StartWorkflowLogFetchRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" type="xsd:string"/>
+                    <element name="WorkflowName" type="xsd:string"/>
+                    <element name="WorkflowRunId" nillable="true" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <element name="StartWorkflowLogFetch" type="impl:StartWorkflowLogFetchRequest"/>
+            <element name="StartWorkflowLogFetchReturn" type="xsd:int"/>
+            <complexType name="StartSessionLogFetchRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" type="xsd:string"/>
+                    <element name="WorkflowName" type="xsd:string"/>
+                    <element name="TaskInstancePath" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <element name="StartSessionLogFetch" type="impl:StartSessionLogFetchRequest"/>
+            <element name="StartSessionLogFetchReturn" type="xsd:int"/>
+            <complexType name="GetNextLogSegmentRequest">
+                <sequence>
+                    <element name="LogHandle" type="xsd:int"/>
+                    <element name="TimeOut" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <complexType name="LogSegment">
+                <sequence>
+                    <element name="FileSize" type="xsd:int"/>
+                    <element name="Buffer" nillable="true" type="xsd:string"/>
+                    <element name="EndOfLog" type="xsd:boolean"/>
+                    <element name="CodePage" type="xsd:int"/>
+                    <element name="BufferSize" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <element name="GetNextLogSegment" type="impl:GetNextLogSegmentRequest"/>
+            <element name="GetNextLogSegmentReturn" type="impl:LogSegment"/>
+            <simpleType name="EPerformanceCounterType">
+                <restriction base="xsd:token">
+                    <enumeration value="INTEGER"/>
+                    <enumeration value="STRING"/>
+                </restriction>
+            </simpleType>
+            <complexType name="PerformanceCounter">
+                <sequence>
+                    <element name="CounterName" nillable="true" type="xsd:string"/>
+                    <element name="CounterValue" type="xsd:int"/>
+                    <element name="WidgetName" nillable="true" type="xsd:string"/>
+                    <element name="CounterStringValue" nillable="true" type="xsd:string"/>
+                    <element name="CounterType" type="impl:EPerformanceCounterType"/>
+                </sequence>
+            </complexType>
+            <simpleType name="EDIServerMonitorMode">
+                <restriction base="xsd:token">
+                    <enumeration value="ALL"/>
+                    <enumeration value="RUNNING"/>
+                    <enumeration value="SCHEDULED"/>
+                </restriction>
+            </simpleType>
+            <complexType name="MonitorDIServerRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="MonitorMode" type="impl:EDIServerMonitorMode"/>
+                </sequence>
+            </complexType>
+            <complexType name="GetWorkflowLogRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowRunId" nillable="true" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="Timeout" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <simpleType name="EDIServerMode">
+                <restriction base="xsd:token">
+                    <enumeration value="ASCII"/>
+                    <enumeration value="UNICODE"/>
+                </restriction>
+            </simpleType>
+            <complexType name="DIServerDate">
+                <sequence>
+                    <element name="Date" type="xsd:int"/>
+                    <element name="NanoSeconds" type="xsd:int"/>
+                    <element name="Seconds" type="xsd:int"/>
+                    <element name="Minutes" type="xsd:int"/>
+                    <element name="Hours" type="xsd:int"/>
+                    <element name="Month" type="xsd:int"/>
+                    <element name="Year" type="xsd:int"/>
+                    <element name="UTCTime" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <complexType name="DIServerProperties">
+                <sequence>
+                    <element name="DIServerName" nillable="true" type="xsd:string"/>
+                    <element name="Repositoryname" nillable="true" type="xsd:string"/>
+                    <element name="CanInfaServerDebugMapping" type="xsd:boolean"/>
+                    <element name="DIServerMode" nillable="true" type="impl:EDIServerMode"/>
+                    <element name="DIServerVersion" nillable="true" type="xsd:string"/>
+                    <element name="CurrentTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="StartupTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="ProductName" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <simpleType name="ETaskRunMode">
+                <restriction base="xsd:token">
+                    <enumeration value="NORMAL"/>
+                    <enumeration value="RECOVERY"/>
+                </restriction>
+            </simpleType>
+            <complexType name="TaskRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowRunId" nillable="true" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="ParameterFileName" nillable="true" type="xsd:string"/>
+                    <element name="Parameters" nillable="true" type="impl:ParameterArray"/>
+                    <element name="RequestMode" nillable="true" type="impl:ETaskRunMode"/>
+                    <element name="TaskInstancePath" nillable="true" type="xsd:string"/>
+                    <element name="IsAbort" type="xsd:boolean"/>
+                </sequence>
+            </complexType>
+            <complexType name="TypeGetTaskDetailsExRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="false" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="false" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="false" type="xsd:string"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="TaskInstancePath" nillable="false" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="GetSessionStatisticsRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="TaskInstancePath" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <simpleType name="EDIServerRunStatus">
+                <restriction base="xsd:token">
+                    <enumeration value="INITIALIZING"/>
+                    <enumeration value="RUNNING"/>
+                    <enumeration value="SHUTTING_DOWN"/>
+                    <enumeration value="STOPPING"/>
+                    <enumeration value="ABORTING"/>
+                </restriction>
+            </simpleType>
+            <complexType name="GetSessionPerformanceDataRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="TaskInstancePath" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="Log">
+                <sequence>
+                    <element name="FileSize" type="xsd:int"/>
+                    <element name="Buffer" nillable="true" type="xsd:string"/>
+                    <element name="CodePage" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <complexType name="PingDIServerRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="TimeOut" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <complexType name="GetSessionLogRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="TaskInstancePath" nillable="true" type="xsd:string"/>
+                    <element name="Timeout" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <simpleType name="ETaskRunStatus">
+                <restriction base="xsd:token">
+                    <enumeration value="SUCCEEDED"/>
+                    <enumeration value="DISABLED"/>
+                    <enumeration value="FAILED"/>
+                    <enumeration value="STOPPED"/>
+                    <enumeration value="ABORTED"/>
+                    <enumeration value="RUNNING"/>
+                    <enumeration value="SUSPENDING"/>
+                    <enumeration value="SUSPENDED"/>
+                    <enumeration value="STOPPING"/>
+                    <enumeration value="ABORTING"/>
+                    <enumeration value="WAITING"/>
+                    <enumeration value="UNKNOWN"/>
+                    <enumeration value="TERMINATED"/>
+                </restriction>
+            </simpleType>
+            <complexType name="SessionPerformanceData">
+                <sequence>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="InstanceName" nillable="true" type="xsd:string"/>
+                    <element name="TaskRunStatus" nillable="true" type="impl:ETaskRunStatus"/>
+                    <element name="WorkflowRunId" type="xsd:int"/>
+                    <element name="WorkletRunId" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" type="xsd:string"/>
+                    <element name="PerformanceCounter" minOccurs="0" maxOccurs="unbounded" type="impl:PerformanceCounter"/>
+                </sequence>
+            </complexType>
+            <complexType name="TableStatistics">
+                <sequence>
+                    <element name="WidgetName" nillable="true" type="xsd:string"/>
+                    <element name="WidgetType" nillable="true" type="xsd:string"/>
+                    <element name="WidgetInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="LastErrorCode" type="xsd:int"/>
+                    <element name="LastErrorMessage" nillable="true" type="xsd:string"/>
+                    <element name="StartTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="EndTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="NumAppliedRows" type="xsd:int"/>
+                    <element name="NumAffectedRows" type="xsd:int"/>
+                    <element name="NumRejectedRows" type="xsd:int"/>
+                    <element name="Throughput" type="xsd:int"/>
+                    <element name="PartitionName" nillable="true" type="xsd:string"/>
+                    <element name="GroupName" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <simpleType name="EWorkflowRunStatus">
+                <restriction base="xsd:token">
+                    <enumeration value="SUCCEEDED"/>
+                    <enumeration value="FAILED"/>
+                    <enumeration value="STOPPED"/>
+                    <enumeration value="ABORTED"/>
+                    <enumeration value="RUNNING"/>
+                    <enumeration value="SUSPENDING"/>
+                    <enumeration value="SUSPENDED"/>
+                    <enumeration value="STOPPING"/>
+                    <enumeration value="ABORTING"/>
+                    <enumeration value="WAITING"/>
+                    <enumeration value="SCHEDULED"/>
+                    <enumeration value="UNSCHEDULED"/>
+                    <enumeration value="UNKNOWN"/>
+                    <enumeration value="TERMINATED"/>
+                </restriction>
+            </simpleType>
+            <simpleType name="EWorkflowRunType">
+                <restriction base="xsd:token">
+                    <enumeration value="SCHEDULE"/>
+                    <enumeration value="USER_REQUEST"/>
+                    <enumeration value="DEBUG_SESSION"/>
+                    <enumeration value="SERVER_INIT"/>
+                </restriction>
+            </simpleType>
+            <complexType name="Attribute">
+                <sequence>
+                    <element name="Name" type="xsd:string"/>
+                    <element name="Value" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="Key">
+                <sequence>
+                    <element name="Key" type="xsd:string"/>
+                    <element name="mustUse" type="xsd:boolean"/>
+                </sequence>
+            </complexType>
+            <complexType name="WorkflowDetails">
+                <sequence>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowRunId" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowRunStatus" nillable="true" type="impl:EWorkflowRunStatus"/>
+                    <element name="WorkflowRunType" nillable="true" type="impl:EWorkflowRunType"/>
+                    <element name="RunErrorCode" type="xsd:int"/>
+                    <element name="RunErrorMessage" nillable="true" type="xsd:string"/>
+                    <element name="StartTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="EndTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="Attribute" minOccurs="0" maxOccurs="unbounded" type="impl:Attribute"/>
+                    <element name="UserName" nillable="true" type="xsd:string"/>
+                    <element name="LogFileName" nillable="true" type="xsd:string"/>
+                    <element name="LogFileCodePage" type="xsd:int"/>
+                    <element name="OSUser" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <simpleType name="ETaskType">
+                <restriction base="xsd:token">
+                    <enumeration value="COMMAND_TASK"/>
+                    <enumeration value="DECISION_TASK"/>
+                    <enumeration value="EVENTWAIT_TASK"/>
+                    <enumeration value="EVENTRAISE_TASK"/>
+                    <enumeration value="STARTWORKFLOW_TASK"/>
+                    <enumeration value="ABORTWORKFLOW_TASK"/>
+                    <enumeration value="STOPWORKFLOW_TASK"/>
+                    <enumeration value="EMAIL_TASK"/>
+                    <enumeration value="TIMER_TASK"/>
+                    <enumeration value="ASSIGNMENT_TASK"/>
+                    <enumeration value="SESSION_TASK"/>
+                    <enumeration value="WORKLET_TASK"/>
+                </restriction>
+            </simpleType>
+            <complexType name="TaskDetails">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowRunId" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="TaskRunStatus" nillable="true" type="impl:ETaskRunStatus"/>
+                    <element name="TaskType" nillable="true" type="impl:ETaskType"/>
+                    <element name="RunErrorCode" type="xsd:int"/>
+                    <element name="RunErrorMessage" nillable="true" type="xsd:string"/>
+                    <element name="StartTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="EndTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="WorkletInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="Attribute" minOccurs="0" maxOccurs="unbounded" type="impl:Attribute"/>
+                    <element name="ChildRunId" type="xsd:int"/>
+                    <element name="InstanceName" nillable="true" type="xsd:string"/>
+                    <element name="IsSessionTask" type="xsd:boolean"/>
+                    <element name="WorkletRunId" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <complexType name="LinkDetails">
+                <sequence>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="WorkletInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="FromTaskInstanceDetails" nillable="true" type="impl:TaskDetails"/>
+                    <element name="ToTaskInstanceDetails" nillable="true" type="impl:TaskDetails"/>
+                    <element name="WorkflowRunId" type="xsd:int"/>
+                    <element name="WorkletRunId" type="xsd:int"/>
+                </sequence>
+            </complexType>
+            <complexType name="DIServerDetails">
+                <sequence>
+                    <element name="DIServerStatus" nillable="true" type="impl:EDIServerRunStatus"/>
+                    <element name="CurrentTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="StartupTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="ReferenceTime" nillable="true" type="impl:DIServerDate"/>
+                    <element name="WorkflowDetails" minOccurs="0" maxOccurs="unbounded" type="impl:WorkflowDetails"/>
+                    <element name="LinkDetails" minOccurs="0" maxOccurs="unbounded" type="impl:LinkDetails"/>
+                    <element name="TaskDetails" minOccurs="0" maxOccurs="unbounded" type="impl:TaskDetails"/>
+                </sequence>
+            </complexType>
+            <complexType name="ParameterArray">
+                <sequence>
+                    <element name="Parameters" minOccurs="0" maxOccurs="unbounded" type="impl:Parameter"/>
+                </sequence>
+            </complexType>
+            <complexType name="SessionStatistics">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowRunId" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="InstanceName" nillable="true" type="xsd:string"/>
+                    <element name="MappingName" nillable="true" type="xsd:string"/>
+                    <element name="TaskRunStatus" nillable="true" type="impl:ETaskRunStatus"/>
+                    <element name="WorkletRunId" type="xsd:int"/>
+                    <element name="LogFileCodePage" type="xsd:int"/>
+                    <element name="NumSrcSuccessRows" type="xsd:int"/>
+                    <element name="NumTgtSuccessRows" type="xsd:int"/>
+                    <element name="NumSrcFailedRows" type="xsd:int"/>
+                    <element name="NumTgtFailedRows" type="xsd:int"/>
+                    <element name="NumTransErrors" type="xsd:int"/>
+                    <element name="NumTables" type="xsd:int"/>
+                    <element name="LogFileName" nillable="true" type="xsd:string"/>
+                    <element name="FirstErrorCode" type="xsd:int"/>
+                    <element name="FirstErrorMessage" nillable="true" type="xsd:string"/>
+                    <element name="TableStatistics" minOccurs="0" maxOccurs="unbounded" type="impl:TableStatistics"/>
+                </sequence>
+            </complexType>
+            <simpleType name="EPingState">
+                <restriction base="xsd:token">
+                    <enumeration value="ALIVE"/>
+                    <enumeration value="FAIL"/>
+                </restriction>
+            </simpleType>
+            <complexType name="WorkflowRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="true" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="true" type="xsd:string"/>
+                    <element name="WorkflowRunId" nillable="true" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="Reason" nillable="true" type="xsd:string"/>
+                    <element name="Attribute" minOccurs="0" maxOccurs="unbounded" type="impl:Attribute"/>
+                    <element name="Key" minOccurs="0" maxOccurs="unbounded" type="impl:Key"/>
+                    <element name="ParameterFileName" nillable="true" type="xsd:string"/>
+                    <element name="Parameters" nillable="true" type="impl:ParameterArray"/>
+                    <element name="RequestMode" nillable="true" type="impl:ETaskRunMode"/>
+                    <element name="TaskInstancePath" nillable="true" type="xsd:string"/>
+                    <element name="IsAbort" type="xsd:boolean"/>
+                    <element name="OSUser" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="TypeStartWorkflowExRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="false" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="false" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="false" type="xsd:string"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                    <element name="Reason" nillable="true" type="xsd:string"/>
+                    <element name="Attribute" minOccurs="0" maxOccurs="unbounded" type="impl:Attribute"/>
+                    <element name="Key" minOccurs="0" maxOccurs="unbounded" type="impl:Key"/>
+                    <element name="ParameterFileName" nillable="true" type="xsd:string"/>
+                    <element name="Parameters" nillable="true" type="impl:ParameterArray"/>
+                    <element name="RequestMode" nillable="true" type="impl:ETaskRunMode"/>
+                    <element name="TaskInstancePath" nillable="true" type="xsd:string"/>
+                    <element name="OSUser" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="TypeGetWorkflowDetailsExRequest">
+                <sequence>
+                    <element name="DIServiceInfo" nillable="false" type="impl:DIServiceInfo"/>
+                    <element name="FolderName" nillable="false" type="xsd:string"/>
+                    <element name="WorkflowName" nillable="false" type="xsd:string"/>
+                    <element name="WorkflowRunId" nillable="true" type="xsd:int"/>
+                    <element name="WorkflowRunInstanceName" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <element name="PingDIServer" type="impl:PingDIServerRequest"/>
+            <element name="PingDIServerReturn" type="impl:EPingState"/>
+            <element name="GetDIServerProperties" nillable="true" type="impl:DIServiceInfo"/>
+            <element name="GetDIServerPropertiesReturn" type="impl:DIServerProperties"/>
+            <element name="StartWorkflow" type="impl:WorkflowRequest"/>
+            <element name="StartWorkflowReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="StartWorkflowEx" type="impl:TypeStartWorkflowExRequest"/>
+            <element name="StartWorkflowExReturn" nillable="true" type="impl:TypeStartWorkflowExResponse"/>
+            <element name="StartWorkflowFromTask" type="impl:WorkflowRequest"/>
+            <element name="StartWorkflowFromTaskReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="StopWorkflow" type="impl:WorkflowRequest"/>
+            <element name="StopWorkflowReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="ScheduleWorkflow" type="impl:WorkflowRequest"/>
+            <element name="ScheduleWorkflowReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="UnscheduleWorkflow" type="impl:WorkflowRequest"/>
+            <element name="UnscheduleWorkflowReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="WaitTillWorkflowComplete" type="impl:WorkflowRequest"/>
+            <element name="WaitTillWorkflowCompleteReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="ResumeWorkflow" type="impl:WorkflowRequest"/>
+            <element name="ResumeWorkflowReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="StartTask" type="impl:TaskRequest"/>
+            <element name="StartTaskReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="StopTask" type="impl:TaskRequest"/>
+            <element name="StopTaskReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="WaitTillTaskComplete" type="impl:TaskRequest"/>
+            <element name="WaitTillTaskCompleteReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="RecoverWorkflow" type="impl:WorkflowRequest"/>
+            <element name="RecoverWorkflowReturn" nillable="true" type="impl:VoidResponse"/>
+            <element name="MonitorDIServer" type="impl:MonitorDIServerRequest"/>
+            <element name="MonitorDIServerReturn" type="impl:DIServerDetails"/>
+            <element name="GetWorkflowDetails" type="impl:WorkflowRequest"/>
+            <element name="GetWorkflowDetailsReturn" type="impl:WorkflowDetails"/>
+            <element name="GetWorkflowDetailsEx" type="impl:TypeGetWorkflowDetailsExRequest"/>
+            <element name="GetWorkflowDetailsExReturn" type="impl:DIServerDetails"/>
+            <element name="GetTaskDetails" type="impl:TaskRequest"/>
+            <element name="GetTaskDetailsReturn" type="impl:TaskDetails"/>
+            <element name="GetTaskDetailsEx" type="impl:TypeGetTaskDetailsExRequest"/>
+            <element name="GetTaskDetailsExReturn" type="impl:DIServerDetails"/>
+            <element name="GetSessionStatistics" type="impl:GetSessionStatisticsRequest"/>
+            <element name="GetSessionStatisticsReturn" type="impl:SessionStatistics"/>
+            <element name="GetSessionPerformanceData" type="impl:GetSessionPerformanceDataRequest"/>
+            <element name="GetSessionPerformanceDataReturn" type="impl:SessionPerformanceData"/>
+            <element name="GetSessionLog" type="impl:GetSessionLogRequest"/>
+            <element name="GetSessionLogReturn" type="impl:Log"/>
+            <element name="GetWorkflowLog" type="impl:GetWorkflowLogRequest"/>
+            <element name="GetWorkflowLogReturn" type="impl:Log"/>
+        </schema>
+    </types>
+    <message name="LoginRequest">
+        <part name="param" element="impl:Login"/>
+    </message>
+    <message name="LoginResponse">
+        <part name="param" element="impl:LoginReturn"/>
+    </message>
+    <message name="Fault">
+        <part name="WSHFaultDetails" element="impl:WSHFaultDetails"/>
+    </message>
+    <message name="LogoutRequest">
+        <part name="param" element="impl:Logout"/>
+    </message>
+    <message name="LogoutResponse">
+        <part name="param" element="impl:LogoutReturn"/>
+    </message>
+    <message name="InitializeDIServerConnectionRequest">
+        <part name="param" element="impl:InitializeDIServerConnection"/>
+    </message>
+    <message name="InitializeDIServerConnectionResponse">
+        <part name="param" element="impl:InitializeDIServerConnectionReturn"/>
+    </message>
+    <message name="DeinitializeDIServerConnectionRequest">
+        <part name="param" element="impl:DeinitializeDIServerConnection"/>
+    </message>
+    <message name="DeinitializeDIServerConnectionResponse">
+        <part name="param" element="impl:DeinitializeDIServerConnectionReturn"/>
+    </message>
+    <message name="StartWorkflowLogFetchRequest">
+        <part name="param" element="impl:StartWorkflowLogFetch"/>
+    </message>
+    <message name="StartWorkflowLogFetchResponse">
+        <part name="param" element="impl:StartWorkflowLogFetchReturn"/>
+    </message>
+    <message name="StartSessionLogFetchRequest">
+        <part name="param" element="impl:StartSessionLogFetch"/>
+    </message>
+    <message name="StartSessionLogFetchResponse">
+        <part name="param" element="impl:StartSessionLogFetchReturn"/>
+    </message>
+    <message name="GetNextLogSegmentRequest">
+        <part name="param" element="impl:GetNextLogSegment"/>
+    </message>
+    <message name="GetNextLogSegmentResponse">
+        <part name="param" element="impl:GetNextLogSegmentReturn"/>
+    </message>
+    <message name="pingDIServerRequest">
+        <part name="PingDIServer" element="impl:PingDIServer"/>
+    </message>
+    <message name="pingDIServerResponse">
+        <part name="PingDIServerReturn" element="impl:PingDIServerReturn"/>
+    </message>
+    <message name="getDIServerPropertiesRequest">
+        <part name="GetDIServerProperties" element="impl:GetDIServerProperties"/>
+    </message>
+    <message name="getDIServerPropertiesResponse">
+        <part name="GetDIServerPropertiesReturn" element="impl:GetDIServerPropertiesReturn"/>
+    </message>
+    <message name="startWorkflowRequest">
+        <part name="StartWorkflow" element="impl:StartWorkflow"/>
+    </message>
+    <message name="startWorkflowResponse">
+        <part name="StartWorkflowReturn" element="impl:StartWorkflowReturn"/>
+    </message>
+    <message name="startWorkflowExRequest">
+        <part name="StartWorkflowEx" element="impl:StartWorkflowEx"/>
+    </message>
+    <message name="startWorkflowExResponse">
+        <part name="StartWorkflowExReturn" element="impl:StartWorkflowExReturn"/>
+    </message>
+    <message name="startWorkflowFromTaskRequest">
+        <part name="StartWorkflowFromTask" element="impl:StartWorkflowFromTask"/>
+    </message>
+    <message name="startWorkflowFromTaskResponse">
+        <part name="StartWorkflowFromTaskReturn" element="impl:StartWorkflowFromTaskReturn"/>
+    </message>
+    <message name="stopWorkflowRequest">
+        <part name="StopWorkflow" element="impl:StopWorkflow"/>
+    </message>
+    <message name="stopWorkflowResponse">
+        <part name="StopWorkflowReturn" element="impl:StopWorkflowReturn"/>
+    </message>
+    <message name="scheduleWorkflowRequest">
+        <part name="ScheduleWorkflow" element="impl:ScheduleWorkflow"/>
+    </message>
+    <message name="scheduleWorkflowResponse">
+        <part name="ScheduleWorkflowReturn" element="impl:ScheduleWorkflowReturn"/>
+    </message>
+    <message name="unscheduleWorkflowRequest">
+        <part name="UnscheduleWorkflow" element="impl:UnscheduleWorkflow"/>
+    </message>
+    <message name="unscheduleWorkflowResponse">
+        <part name="UnscheduleWorkflowReturn" element="impl:UnscheduleWorkflowReturn"/>
+    </message>
+    <message name="waitTillWorkflowCompleteRequest">
+        <part name="WaitTillWorkflowComplete" element="impl:WaitTillWorkflowComplete"/>
+    </message>
+    <message name="waitTillWorkflowCompleteResponse">
+        <part name="WaitTillWorkflowCompleteReturn" element="impl:WaitTillWorkflowCompleteReturn"/>
+    </message>
+    <message name="resumeWorkflowRequest">
+        <part name="ResumeWorkflow" element="impl:ResumeWorkflow"/>
+    </message>
+    <message name="resumeWorkflowResponse">
+        <part name="ResumeWorkflowReturn" element="impl:ResumeWorkflowReturn"/>
+    </message>
+    <message name="startTaskRequest">
+        <part name="StartTask" element="impl:StartTask"/>
+    </message>
+    <message name="startTaskResponse">
+        <part name="StartTaskReturn" element="impl:StartTaskReturn"/>
+    </message>
+    <message name="stopTaskRequest">
+        <part name="StopTask" element="impl:StopTask"/>
+    </message>
+    <message name="stopTaskResponse">
+        <part name="StopTaskReturn" element="impl:StopTaskReturn"/>
+    </message>
+    <message name="waitTillTaskCompleteRequest">
+        <part name="WaitTillTaskComplete" element="impl:WaitTillTaskComplete"/>
+    </message>
+    <message name="waitTillTaskCompleteResponse">
+        <part name="WaitTillTaskCompleteReturn" element="impl:WaitTillTaskCompleteReturn"/>
+    </message>
+    <message name="recoverWorkflowRequest">
+        <part name="RecoverWorkflow" element="impl:RecoverWorkflow"/>
+    </message>
+    <message name="recoverWorkflowResponse">
+        <part name="RecoverWorkflowReturn" element="impl:RecoverWorkflowReturn"/>
+    </message>
+    <message name="monitorDIServerRequest">
+        <part name="MonitorDIServer" element="impl:MonitorDIServer"/>
+    </message>
+    <message name="monitorDIServerResponse">
+        <part name="MonitorDIServerReturn" element="impl:MonitorDIServerReturn"/>
+    </message>
+    <message name="getWorkflowDetailsRequest">
+        <part name="GetWorkflowDetails" element="impl:GetWorkflowDetails"/>
+    </message>
+    <message name="getWorkflowDetailsResponse">
+        <part name="GetWorkflowDetailsReturn" element="impl:GetWorkflowDetailsReturn"/>
+    </message>
+    <message name="getWorkflowDetailsExRequest">
+        <part name="GetWorkflowDetailsEx" element="impl:GetWorkflowDetailsEx"/>
+    </message>
+    <message name="getWorkflowDetailsExResponse">
+        <part name="GetWorkflowDetailsExReturn" element="impl:GetWorkflowDetailsExReturn"/>
+    </message>
+    <message name="getTaskDetailsRequest">
+        <part name="GetTaskDetails" element="impl:GetTaskDetails"/>
+    </message>
+    <message name="getTaskDetailsResponse">
+        <part name="GetTaskDetailsReturn" element="impl:GetTaskDetailsReturn"/>
+    </message>
+    <message name="getTaskDetailsExRequest">
+        <part name="GetTaskDetailsEx" element="impl:GetTaskDetailsEx"/>
+    </message>
+    <message name="getTaskDetailsExResponse">
+        <part name="GetTaskDetailsExReturn" element="impl:GetTaskDetailsExReturn"/>
+    </message>
+    <message name="getSessionStatisticsRequest">
+        <part name="GetSessionStatistics" element="impl:GetSessionStatistics"/>
+    </message>
+    <message name="getSessionStatisticsResponse">
+        <part name="GetSessionStatisticsReturn" element="impl:GetSessionStatisticsReturn"/>
+    </message>
+    <message name="getSessionPerformanceDataRequest">
+        <part name="GetSessionPerformanceData" element="impl:GetSessionPerformanceData"/>
+    </message>
+    <message name="getSessionPerformanceDataResponse">
+        <part name="GetSessionPerformanceDataReturn" element="impl:GetSessionPerformanceDataReturn"/>
+    </message>
+    <message name="getWorkflowLogRequest">
+        <part name="GetWorkflowLog" element="impl:GetWorkflowLog"/>
+    </message>
+    <message name="getWorkflowLogResponse">
+        <part name="GetWorkflowLogReturn" element="impl:GetWorkflowLogReturn"/>
+    </message>
+    <message name="getSessionLogRequest">
+        <part name="GetSessionLog" element="impl:GetSessionLog"/>
+    </message>
+    <message name="getSessionLogResponse">
+        <part name="GetSessoinLogReturn" element="impl:GetSessionLogReturn"/>
+    </message>
+    <message name="ContextHeader">
+        <part name="Context" element="impl:Context"/>
+    </message>
+    <portType name="DataIntegrationInterface">
+        <operation name="login">
+            <input name="LoginRequest" message="impl:LoginRequest"/>
+            <output name="LoginResponse" message="impl:LoginResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="logout">
+            <input name="LogoutRequest" message="impl:LogoutRequest"/>
+            <output name="LogoutResponse" message="impl:LogoutResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="initializeDIServerConnection">
+            <input name="InitializeDIServerConnectionRequest" message="impl:InitializeDIServerConnectionRequest"/>
+            <output name="InitializeDIServerConnectionResponse" message="impl:InitializeDIServerConnectionResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="deinitializeDIServerConnection">
+            <input name="DeinitializeDIServerConnectionRequest" message="impl:DeinitializeDIServerConnectionRequest"/>
+            <output name="DeinitializeDIServerConnectionResponse" message="impl:DeinitializeDIServerConnectionResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="startWorkflowLogFetch">
+            <input name="StartWorkflowLogFetchRequest" message="impl:StartWorkflowLogFetchRequest"/>
+            <output name="StartWorkflowLogFetchResponse" message="impl:StartWorkflowLogFetchResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="startSessionLogFetch">
+            <input name="StartSessionLogFetchRequest" message="impl:StartSessionLogFetchRequest"/>
+            <output name="StartSessionLogFetchResponse" message="impl:StartSessionLogFetchResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getNextLogSegment">
+            <input name="GetNextLogSegmentRequest" message="impl:GetNextLogSegmentRequest"/>
+            <output name="GetNextLogSegmentResponse" message="impl:GetNextLogSegmentResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="pingDIServer" parameterOrder="PingDIServer">
+            <input name="pingDIServerRequest" message="impl:pingDIServerRequest"/>
+            <output name="pingDIServerResponse" message="impl:pingDIServerResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getDIServerProperties" parameterOrder="GetDIServerProperties">
+            <input name="getDIServerPropertiesRequest" message="impl:getDIServerPropertiesRequest"/>
+            <output name="getDIServerPropertiesResponse" message="impl:getDIServerPropertiesResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="startWorkflow" parameterOrder="StartWorkflow">
+            <input name="startWorkflowRequest" message="impl:startWorkflowRequest"/>
+            <output name="startWorkflowResponse" message="impl:startWorkflowResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="startWorkflowEx" parameterOrder="StartWorkflowEx">
+            <input name="startWorkflowExRequest" message="impl:startWorkflowExRequest"/>
+            <output name="startWorkflowExResponse" message="impl:startWorkflowExResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="startWorkflowFromTask" parameterOrder="StartWorkflowFromTask">
+            <input name="startWorkflowFromTaskRequest" message="impl:startWorkflowFromTaskRequest"/>
+            <output name="startWorkflowFromTaskResponse" message="impl:startWorkflowFromTaskResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="stopWorkflow" parameterOrder="StopWorkflow">
+            <input name="stopWorkflowRequest" message="impl:stopWorkflowRequest"/>
+            <output name="stopWorkflowResponse" message="impl:stopWorkflowResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="scheduleWorkflow" parameterOrder="ScheduleWorkflow">
+            <input name="scheduleWorkflowRequest" message="impl:scheduleWorkflowRequest"/>
+            <output name="scheduleWorkflowResponse" message="impl:scheduleWorkflowResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="unscheduleWorkflow" parameterOrder="UnscheduleWorkflow">
+            <input name="unscheduleWorkflowRequest" message="impl:unscheduleWorkflowRequest"/>
+            <output name="unscheduleWorkflowResponse" message="impl:unscheduleWorkflowResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="waitTillWorkflowComplete" parameterOrder="WaitTillWorkflowComplete">
+            <input name="waitTillWorkflowCompleteRequest" message="impl:waitTillWorkflowCompleteRequest"/>
+            <output name="waitTillWorkflowCompleteResponse" message="impl:waitTillWorkflowCompleteResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="resumeWorkflow" parameterOrder="ResumeWorkflow">
+            <input name="resumeWorkflowRequest" message="impl:resumeWorkflowRequest"/>
+            <output name="resumeWorkflowResponse" message="impl:resumeWorkflowResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="startTask" parameterOrder="StartTask">
+            <input name="startTaskRequest" message="impl:startTaskRequest"/>
+            <output name="startTaskResponse" message="impl:startTaskResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="stopTask" parameterOrder="StopTask">
+            <input name="stopTaskRequest" message="impl:stopTaskRequest"/>
+            <output name="stopTaskResponse" message="impl:stopTaskResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="waitTillTaskComplete" parameterOrder="WaitTillTaskComplete">
+            <input name="waitTillTaskCompleteRequest" message="impl:waitTillTaskCompleteRequest"/>
+            <output name="waitTillTaskCompleteResponse" message="impl:waitTillTaskCompleteResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="recoverWorkflow" parameterOrder="RecoverWorkflow">
+            <input name="recoverWorkflowRequest" message="impl:recoverWorkflowRequest"/>
+            <output name="recoverWorkflowResponse" message="impl:recoverWorkflowResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="monitorDIServer" parameterOrder="MonitorDIServer">
+            <input name="monitorDIServerRequest" message="impl:monitorDIServerRequest"/>
+            <output name="monitorDIServerResponse" message="impl:monitorDIServerResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getWorkflowDetails" parameterOrder="GetWorkflowDetails">
+            <input name="getWorkflowDetailsRequest" message="impl:getWorkflowDetailsRequest"/>
+            <output name="getWorkflowDetailsResponse" message="impl:getWorkflowDetailsResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getWorkflowDetailsEx" parameterOrder="GetWorkflowDetailsEx">
+            <input name="getWorkflowDetailsExRequest" message="impl:getWorkflowDetailsExRequest"/>
+            <output name="getWorkflowDetailsExResponse" message="impl:getWorkflowDetailsExResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getTaskDetails" parameterOrder="GetTaskDetails">
+            <input name="getTaskDetailsRequest" message="impl:getTaskDetailsRequest"/>
+            <output name="getTaskDetailsResponse" message="impl:getTaskDetailsResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getTaskDetailsEx" parameterOrder="GetTaskDetailsEx">
+            <input name="getTaskDetailsExRequest" message="impl:getTaskDetailsExRequest"/>
+            <output name="getTaskDetailsExResponse" message="impl:getTaskDetailsExResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getSessionStatistics" parameterOrder="GetSessionStatistics">
+            <input name="getSessionStatisticsRequest" message="impl:getSessionStatisticsRequest"/>
+            <output name="getSessionStatisticsResponse" message="impl:getSessionStatisticsResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getSessionPerformanceData" parameterOrder="GetSessionPerformanceData">
+            <input name="getSessionPerformanceDataRequest" message="impl:getSessionPerformanceDataRequest"/>
+            <output name="getSessionPerformanceDataResponse" message="impl:getSessionPerformanceDataResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getWorkflowLog" parameterOrder="GetWorkflowLog">
+            <input name="getWorkflowLogRequest" message="impl:getWorkflowLogRequest"/>
+            <output name="getWorkflowLogResponse" message="impl:getWorkflowLogResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+        <operation name="getSessionLog" parameterOrder="GetSessionLog">
+            <input name="getSessionLogRequest" message="impl:getSessionLogRequest"/>
+            <output name="getSessionLogResponse" message="impl:getSessionLogResponse"/>
+            <fault name="Fault" message="impl:Fault"/>
+        </operation>
+    </portType>
+    <binding name="DataIntegrationServiceSoapBinding" type="impl:DataIntegrationInterface">
+        <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="login">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="LoginRequest">
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="LoginResponse">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="logout">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="LogoutRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="LogoutResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="initializeDIServerConnection">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="InitializeDIServerConnectionRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="InitializeDIServerConnectionResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="deinitializeDIServerConnection">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="DeinitializeDIServerConnectionRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="DeinitializeDIServerConnectionResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="startWorkflowLogFetch">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="StartWorkflowLogFetchRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="StartWorkflowLogFetchResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="startSessionLogFetch">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="StartSessionLogFetchRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="StartSessionLogFetchResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getNextLogSegment">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="GetNextLogSegmentRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="GetNextLogSegmentResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="pingDIServer">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="pingDIServerRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="pingDIServerResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getDIServerProperties">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getDIServerPropertiesRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getDIServerPropertiesResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="startWorkflow">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="startWorkflowRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="startWorkflowResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="startWorkflowEx">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="startWorkflowExRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="startWorkflowExResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="startWorkflowFromTask">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="startWorkflowFromTaskRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="startWorkflowFromTaskResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="stopWorkflow">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="stopWorkflowRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="stopWorkflowResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="scheduleWorkflow">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="scheduleWorkflowRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="scheduleWorkflowResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="unscheduleWorkflow">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="unscheduleWorkflowRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="unscheduleWorkflowResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="waitTillWorkflowComplete">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="waitTillWorkflowCompleteRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="waitTillWorkflowCompleteResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="resumeWorkflow">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="resumeWorkflowRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output>
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="startTask">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="startTaskRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="startTaskResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="stopTask">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="stopTaskRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="stopTaskResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="waitTillTaskComplete">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="waitTillTaskCompleteRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="waitTillTaskCompleteResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="recoverWorkflow">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="recoverWorkflowRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="recoverWorkflowResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="monitorDIServer">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="monitorDIServerRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="monitorDIServerResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getWorkflowDetails">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getWorkflowDetailsRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getWorkflowDetailsResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getWorkflowDetailsEx">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getWorkflowDetailsExRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getWorkflowDetailsExResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getTaskDetails">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getTaskDetailsRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getTaskDetailsResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getTaskDetailsEx">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getTaskDetailsExRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getTaskDetailsExResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getSessionStatistics">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getSessionStatisticsRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getSessionStatisticsResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getSessionPerformanceData">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getSessionPerformanceDataRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getSessionPerformanceDataResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getWorkflowLog">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getWorkflowLogRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getWorkflowLogResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getSessionLog">
+            <wsdlsoap:operation soapAction=""/>
+            <input name="getSessionLogRequest">
+                <wsdlsoap:header message="impl:ContextHeader" part="Context" use="literal"/>
+                <wsdlsoap:body use="literal"/>
+            </input>
+            <output name="getSessionLogResponse">
+                <wsdlsoap:body use="literal"/>
+            </output>
+            <fault name="Fault">
+                <wsdlsoap:fault name="Fault" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="DataIntegrationService">
+        <port name="DataIntegration" binding="impl:DataIntegrationServiceSoapBinding">
+            <wsdlsoap:address location="http://someserver.somewhere.nl:7333/wsh/services/BatchServices/DataIntegration"/>
+        </port>
+    </service>
+</definitions>

@@ -1,0 +1,13 @@
+#-
+#- copy procFitNesse as fitnesse under init.d
+sudo cp -p procFitNesse /etc/init.d/fitnesse
+
+#- root will run this
+sudo chown root /etc/init.d/fitnesse
+
+# Make the service script executable
+sudo chmod 750 /etc/init.d/fitnesse
+
+# Associate the fitnesse service with the appropriate run levels
+#and set it to auto-start using the following command.
+sudo chkconfig --add fitnesse

@@ -1,0 +1,21 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<oracle-webservice-clients xmlns:ns2="http://java.sun.com/xml/ns/javaee">
+   <webservice-client>
+      <service-qname localpart="MetadataService"
+                     namespaceURI="http://www.informatica.com/wsh"/>
+      <port-info>
+         <wsdl-port localpart="Metadata"
+                    namespaceURI="http://www.informatica.com/wsh"/>
+         <runtime/>
+         <operations>
+            <operation name="login"/>
+            <operation name="logout"/>
+            <operation name="getAllFolders"/>
+            <operation name="getAllWorkflows"/>
+            <operation name="getAllTaskInstances"/>
+            <operation name="getAllDIServers"/>
+            <operation name="getAllRepositories"/>
+         </operations>
+      </port-info>
+   </webservice-client>
+</oracle-webservice-clients>

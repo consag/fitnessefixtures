@@ -1,0 +1,22 @@
+#!/bin/sh
+# chkconfig: 345 90 25
+# description: FitNesse auto start-stop script.
+#
+# Set FIT_OWNER to the user id of the owner of the FitNesse software
+ 
+FIT_OWNER=Ik1
+ 
+case "\$1" in
+    'start')
+        # Start FitNesse
+	su - \$FIT_OWNER -c "/Users/Ik1/startFitNesse.sh >> /Users/Ik1/fitnesse_startstop.log 2>&1"
+        touch /var/lock/subsys/fitnesse
+        ;;
+    'stop')
+        # Stop FitNesse
+	su - \$FIT_OWNER -c "/Users/Ik1/stopFitNesse.sh >> /Users/Ik1/fitnesse_startstop.log 2>&1"
+        rm -f /var/lock/subsys/fitnesse
+        ;;
+esac
+EOF
+

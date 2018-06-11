@@ -1,0 +1,44 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<oracle-webservice-clients xmlns:ns2="http://java.sun.com/xml/ns/javaee">
+   <webservice-client>
+      <service-qname localpart="DataIntegrationService"
+                     namespaceURI="http://www.informatica.com/wsh"/>
+      <port-info>
+         <wsdl-port localpart="DataIntegration"
+                    namespaceURI="http://www.informatica.com/wsh"/>
+         <runtime/>
+         <operations>
+            <operation name="login"/>
+            <operation name="logout"/>
+            <operation name="initializeDIServerConnection"/>
+            <operation name="deinitializeDIServerConnection"/>
+            <operation name="startWorkflowLogFetch"/>
+            <operation name="startSessionLogFetch"/>
+            <operation name="getNextLogSegment"/>
+            <operation name="pingDIServer"/>
+            <operation name="getDIServerProperties"/>
+            <operation name="startWorkflow"/>
+            <operation name="startWorkflowEx"/>
+            <operation name="startWorkflowFromTask"/>
+            <operation name="stopWorkflow"/>
+            <operation name="scheduleWorkflow"/>
+            <operation name="unscheduleWorkflow"/>
+            <operation name="waitTillWorkflowComplete"/>
+            <operation name="resumeWorkflow"/>
+            <operation name="startTask"/>
+            <operation name="stopTask"/>
+            <operation name="waitTillTaskComplete"/>
+            <operation name="recoverWorkflow"/>
+            <operation name="monitorDIServer"/>
+            <operation name="getWorkflowDetails"/>
+            <operation name="getWorkflowDetailsEx"/>
+            <operation name="getTaskDetails"/>
+            <operation name="getTaskDetailsEx"/>
+            <operation name="getSessionStatistics"/>
+            <operation name="getSessionPerformanceData"/>
+            <operation name="getWorkflowLog"/>
+            <operation name="getSessionLog"/>
+         </operations>
+      </port-info>
+   </webservice-client>
+</oracle-webservice-clients>
