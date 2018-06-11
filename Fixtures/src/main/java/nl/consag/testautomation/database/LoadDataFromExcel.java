@@ -23,11 +23,7 @@ import nl.consag.testautomation.supporting.GetParameters;
 
 public class LoadDataFromExcel {
 
-<<<<<<< HEAD:Fixtures/src/nl/consag/testautomation/database/LoadDataFromExcel.java
-    private static String version = "20180226.1";
-=======
     private static String version = "20180608.0";
->>>>>>> develop:Fixtures/src/main/java/nl/consag/testautomation/database/LoadDataFromExcel.java
     private int logLevel = 3;
 
     private String className = "LoadDataFromExcel";
@@ -329,15 +325,9 @@ public class LoadDataFromExcel {
                     myArea="ExecutingBatch";
                     logMessage = "Batch added. Executing batch...";
                     log(myName, Constants.DEBUG, myArea, logMessage);
-<<<<<<< HEAD:Fixtures/src/nl/consag/testautomation/database/LoadDataFromExcel.java
-                    preparedStatement.executeBatch();
-                    myArea="ClearingBatch";
-                    logMessage = "Batch executed. Clearing batch...";
-=======
                     int nrRec =preparedStatement.executeUpdate();
                     myArea="ClearingBatch";
                     logMessage = "Batch executed for >" + Integer.toString(nrRec) +"< records. Clearing batch...";
->>>>>>> develop:Fixtures/src/main/java/nl/consag/testautomation/database/LoadDataFromExcel.java
                     log(myName, Constants.DEBUG, myArea, logMessage);
                     preparedStatement.clearBatch();
                     logMessage = "Batch cleared."; // Close preparedStatement...";
@@ -758,15 +748,9 @@ public class LoadDataFromExcel {
         while (ex != null) {
             i++;
             log(myName, Constants.ERROR, myArea, "SQL Exception >" + Integer.toString(i) +"<.");
-<<<<<<< HEAD:Fixtures/src/nl/consag/testautomation/database/LoadDataFromExcel.java
-            log(myName, Constants.ERROR, myArea, "Message ......: " + e.getMessage());
-            log(myName, Constants.ERROR, myArea, "SQLSTATE .....: " + e.getSQLState());
-            log(myName, Constants.ERROR, myArea, "Error Code ...: " + e.getErrorCode());
-=======
             log(myName, Constants.ERROR, myArea, "Message ......: " + ex.getMessage());
             log(myName, Constants.ERROR, myArea, "SQLSTATE .....: " + ex.getSQLState());
             log(myName, Constants.ERROR, myArea, "Error Code ...: " + ex.getErrorCode());
->>>>>>> develop:Fixtures/src/main/java/nl/consag/testautomation/database/LoadDataFromExcel.java
             ex = ex.getNextException();
         }
         

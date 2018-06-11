@@ -29,11 +29,7 @@ import nl.consag.testautomation.supporting.Constants;
 
 public class ConsagFitNesseFixtures {
     private static final String className="ConsagFitNesseFixtures";
-<<<<<<< HEAD:Fixtures/src/nl/consag/testautomation/ConsagFitNesseFixtures.java
-    private static final String version = "20180226.0";
-=======
     private static final String version = "20180608.0";
->>>>>>> develop:Fixtures/src/main/java/nl/consag/testautomation/ConsagFitNesseFixtures.java
     private static int logLevel = 3;
     private static int logEntries = 0;
     private static boolean noClassFilter =true;
