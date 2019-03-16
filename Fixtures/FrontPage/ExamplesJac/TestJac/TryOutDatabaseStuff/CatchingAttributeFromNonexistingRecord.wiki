@@ -1,0 +1,60 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+!|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+!define variable {myDelSqn}
+!define variable {myLoadDts}
+!define variable {myRowId}
+
+''' Siebel '''
+
+!style_meta[Verify that the record does NOT exist in Siebel anymore.]
+
+#1 Verify that the given ROW_ID does not exist in Siebel
+|get query result                                                                               |
+|database name|query                                                              |get column ? |get log filename ?|
+|SIEBEL       |!-SELECT ROW_ID FROM S_POSTN WHERE ROW_ID = '1' with ur-!|!-$myRowId=-!||
+|SIEBEL       |!-SELECT ROW_ID FROM S_POSTN WHERE ROW_ID = '123456789012345' with ur-!|!-$myRowId=-!||
+|SIEBEL       |!-SELECT ROW_ID FROM S_POSTN WHERE ROW_ID = '0-5220' with ur-!|!-$myRowId=-!||
+|SIEBEL       |!-SELECT ROW_ID FROM S_OPTY_XM WHERE ROW_ID = '1' with ur-!|!-$myRowId=-!||
+|SIEBEL       |!-SELECT ROW_ID FROM S_OPTY_XM WHERE ROW_ID = '123456789012345' with ur-!|!-$myRowId=-!||
+|SIEBEL       |!-SELECT ROW_ID FROM S_OPTY_XM WHERE ROW_ID = '1-1MDL003' with ur-!|!-$myRowId=-!||
+|SIEBEL       |!-SELECT ROW_ID FROM S_OPTY_XM WHERE ROW_ID = '1-1MDL006' with ur-!|!-$myRowId=-!||
+
+''' added by Willem '''
+
+!style_meta[Verify that the record does exist in siebel.]
+
+#1 Verify the attributes for the given ROW_ID Siebel
+|table:select query                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|database name|SIEBEL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+|sql statement|!-SELECT  ROW_ID, CREATED, CREATED_BY, LAST_UPD, LAST_UPD_BY, BL_PROD_ID, BL_RT_AMT, BU_ID, CG_SVP_ALLOC_LVL, CMPNS_CURCY_CD, COMPENSATABLE_FLG, CONFLICT_ID, CP_PLAN_LVL_NUM, CRDT_AUTH_AMT, DB_LAST_UPD, DB_LAST_UPD_SRC, DESC_TEXT, END_DT, INTEGRATION_ID, IN_IC_RETRORUN_FLG, MODIFICATION_NUM, NAME, OU_ID, OWNER_ALLOC_PCT, PAR_POSTN_ID, PAR_ROW_ID, PGROUP_ID, POSTN_TYPE_CD, PR_EMP_ID, PR_OU_EXT_ID, PR_POSTN_ADDR_ID, PR_POSTN_ID, PR_PROD_ID, PR_PROD_LN_ID, PR_TERR_ID, START_DT, X_END_DT, X_RWA_SRC_IND, X_SOURCE, X_USER_GROUP FROM SIEBEL.S_POSTN  WHERE ROW_ID = '123456789012345' with ur-!                                                                                |
+|column name  |ROW_ID         |CREATED                  |CREATED_BY|LAST_UPD                 |LAST_UPD_BY|BL_PROD_ID|BL_RT_AMT|BU_ID      |CG_SVP_ALLOC_LVL|CMPNS_CURCY_CD|COMPENSATABLE_FLG|CONFLICT_ID|CP_PLAN_LVL_NUM|CRDT_AUTH_AMT|DB_LAST_UPD|DB_LAST_UPD_SRC|DESC_TEXT                                         |END_DT                   |INTEGRATION_ID|IN_IC_RETRORUN_FLG|MODIFICATION_NUM|NAME                        |OU_ID      |OWNER_ALLOC_PCT|PAR_POSTN_ID|PAR_ROW_ID     |PGROUP_ID|POSTN_TYPE_CD|PR_EMP_ID          |PR_OU_EXT_ID|PR_POSTN_ADDR_ID|PR_POSTN_ID|PR_PROD_ID|PR_PROD_LN_ID|PR_TERR_ID|START_DT                 |X_END_DT                 |X_RWA_SRC_IND|X_SOURCE|X_USER_GROUP|
+|column value |!-123456789012345-!|!-2006-07-17 20:30:03.0-!|!-0-1-!   |!-2006-07-21 19:49:19.0-!|!-0-1-!    |!--!      |!--!     |!-1-1U-44-!|!--!            |!--!          |!-N-!            |!-0-!      |!--!           |!--!         |!--!       |!--!           |!-BLS_SIEBEL RAADPLEGEN_SIEBEL INSIDER_3273_3285-!|!-2006-07-21 00:00:00.0-!|!--!          |!-N-!             |!-1-!           |!-100000292430004809193285-!|!-1-1U-44-!|!--!           |!--!        |!-1-128M6-764-!|!--!     |!--!         |!-No Match Row Id-!|!--!        |!--!            |!--!       |!--!      |!--!         |!--!      |!-2006-07-17 00:00:00.0-!|!-2006-07-21 19:48:03.0-!|!--!         |!-RWA-! |!-AB-!      |
+ 
+
+!style_meta[Verify that the record does exist in siebel.]
+
+#1 Verify the attributes for the given ROW_ID Siebel
+|table:select query                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|database name|SIEBEL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+|sql statement|!-SELECT  ROW_ID, CREATED, CREATED_BY, LAST_UPD, LAST_UPD_BY, BL_PROD_ID, BL_RT_AMT, BU_ID, CG_SVP_ALLOC_LVL, CMPNS_CURCY_CD, COMPENSATABLE_FLG, CONFLICT_ID, CP_PLAN_LVL_NUM, CRDT_AUTH_AMT, DB_LAST_UPD, DB_LAST_UPD_SRC, DESC_TEXT, END_DT, INTEGRATION_ID, IN_IC_RETRORUN_FLG, MODIFICATION_NUM, NAME, OU_ID, OWNER_ALLOC_PCT, PAR_POSTN_ID, PAR_ROW_ID, PGROUP_ID, POSTN_TYPE_CD, PR_EMP_ID, PR_OU_EXT_ID, PR_POSTN_ADDR_ID, PR_POSTN_ID, PR_PROD_ID, PR_PROD_LN_ID, PR_TERR_ID, START_DT, X_END_DT, X_RWA_SRC_IND, X_SOURCE, X_USER_GROUP FROM SIEBEL.S_POSTN  WHERE ROW_ID = '0-5220' with ur-!                                                                                |
+|column name  |ROW_ID         |CREATED                  |CREATED_BY|LAST_UPD                 |LAST_UPD_BY|BL_PROD_ID|BL_RT_AMT|BU_ID      |CG_SVP_ALLOC_LVL|CMPNS_CURCY_CD|COMPENSATABLE_FLG|CONFLICT_ID|CP_PLAN_LVL_NUM|CRDT_AUTH_AMT|DB_LAST_UPD|DB_LAST_UPD_SRC|DESC_TEXT                                         |END_DT                   |INTEGRATION_ID|IN_IC_RETRORUN_FLG|MODIFICATION_NUM|NAME                        |OU_ID      |OWNER_ALLOC_PCT|PAR_POSTN_ID|PAR_ROW_ID     |PGROUP_ID|POSTN_TYPE_CD|PR_EMP_ID          |PR_OU_EXT_ID|PR_POSTN_ADDR_ID|PR_POSTN_ID|PR_PROD_ID|PR_PROD_LN_ID|PR_TERR_ID|START_DT                 |X_END_DT                 |X_RWA_SRC_IND|X_SOURCE|X_USER_GROUP|
+|column value |!-0-5220-!|!-2006-07-17 20:30:03.0-!||!-2006-07-21 19:49:19.0-!|!-0-1-!    |!--!      |!--!     |!-1-1U-44-!|!--!            |!--!          |!-N-!            |!-0-!      |!--!           |!--!         |!--!       |!--!           |!-BLS_SIEBEL RAADPLEGEN_SIEBEL INSIDER_3273_3285-!|!-2006-07-21 00:00:00.0-!|!--!          |!-N-!             |!-1-!           |!-100000292430004809193285-!|!-1-1U-44-!|!--!           |!--!        |!-1-128M6-764-!|!--!     |!--!         |!-No Match Row Id-!|!--!        |!--!            |!--!       |!--!      |!--!         |!--!      |!-2006-07-17 00:00:00.0-!|!-2006-07-21 19:48:03.0-!|!--!         |!-RWA-! |!-AB-!      |
+ 

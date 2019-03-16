@@ -1,0 +1,28 @@
+---
+Test
+---
+!contents
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.DBFixture   |
+
+!1 Example to Check Data with special characters like @
+This was an issue in the data check in fitnesse as fitnesse is a wiki, i.e. 'clever' software. 'clever' software always make our lives miserable.
+----
+
+!3 Check how many records the table contains 
+|count query|
+|databaseName|tableName|countRecords?|
+|EB2|TST_FIXTURE|1|
+
+!3 Check if data is correct
+|table:select query|
+|database name|EB2|
+|sql statement|SELECT name, description FROM tst_fixture WHERE name IN ('example1')|
+|column name  |NAME|DESCRIPTION|
+|column value |example1|!-no_one@nowhere.com-!|
+

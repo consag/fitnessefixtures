@@ -1,0 +1,150 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+|import                     |
+|generic.fixtures.Global    |
+|generic.fixtures.PWCFixture|
+|generic.fixtures.DBFixture |
+
+----
+!define variable {myDelSqn}
+!define variable {myLoadDts}
+!define variable {my__ROW_ID}
+!define variable {my__SR_NUM}
+!define variable {my__INTEGRATION_ID}
+!define variable {my__X_SOURCE}
+!define variable {my__SR_SUBTYPE_CD}
+!define variable {my__SR_TYPE_CD}
+!define variable {my__SR_AREA}
+!define variable {my__SR_SUB_AREA}
+!define variable {my__X_USER_STATUS_CD}
+!define variable {my__X_CANCEL_REASON}
+!define variable {my__X_READ_ONLY_FLG}
+!define variable {my__X_ROLE_CD}
+!define variable {my__SR_TITLE}
+!define variable {my__DESC_TEXT}
+!define variable {my__COMM_METHOD_CD}
+!define variable {my__X_FULFILLMENT_BY}
+!define variable {my__CREATED}
+!define variable {my__ACT_OPEN_DT}
+!define variable {my__EXP_CLOSE_DT}
+!define variable {my__ACT_CLOSE_DT}
+!define variable {my__RESOLUTION_CD}
+!define variable {my__X_COMPNSTN_AMOUNT}
+!define variable {my__X_RESPONSE}
+!define variable {my__X_CALL_ADDR}
+!define variable {my__X_CALL_ADDRNUM}
+!define variable {my__X_CALL_ADDRNUM_SFX}
+!define variable {my__X_CALL_CITY}
+!define variable {my__X_CALL_PH_NUM}
+!define variable {my__X_CALL_ZIPCODE}
+!define variable {my__X_DOC_TYPE_CD}
+!define variable {my__X_FILE_NUM}
+!define variable {my__X_FULFILLMENT_CD}
+!define variable {my__X_FUNCTION_ID}
+!define variable {my__X_INTEGRATION_ID}
+!define variable {my__X_MEMB_APPR_FLG}
+!define variable {my__X_PAYM_TRANS_TYPE}
+!define variable {my__X_SEL_END_DT}
+!define variable {my__X_SEL_START_DT}
+!define variable {my__X_SOURCE_2}
+!define variable {my__X_SR_NOTE}
+!define variable {my__X_TRANSACT_CITY}
+!define variable {my__PERSON_UID}
+!define variable {my__NAME}
+----
+
+
+
+''' Siebel '''
+
+|get query result                                                                                                                                                                                                       |
+|database name|query                                                                                                                                                                |get column ?    |get log filename ?|
+|SIEBEL       |SELECT max (mt.ROW_ID) FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WITH ur|!-$my__ROW_ID=-!|                  |
+
+|get query result                                                                                                                                                                                                                                                            |
+|database name|query                                                                                                                                                                                                          |get column ?                |get log filename?|
+|7030SIEBEL   |!-SELECT mt.ROW_ID FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!            |!-$my__ROW_ID=-!            |                 |
+|7030SIEBEL   |!-SELECT mt.SR_NUM FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!            |!-$my__SR_NUM=-!            |                 |
+|7030SIEBEL   |!-SELECT mt.INTEGRATION_ID FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!    |!-$my__INTEGRATION_ID=-!    |                 |
+|7030SIEBEL   |!-SELECT mt.X_SOURCE FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!          |!-$my__X_SOURCE=-!          |                 |
+|7030SIEBEL   |!-SELECT mt.SR_SUBTYPE_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!     |!-$my__SR_SUBTYPE_CD=-!     |                 |
+|7030SIEBEL   |!-SELECT mt.SR_TYPE_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!        |!-$my__SR_TYPE_CD=-!        |                 |
+|7030SIEBEL   |!-SELECT mt.SR_AREA FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!           |!-$my__SR_AREA=-!           |                 |
+|7030SIEBEL   |!-SELECT mt.SR_SUB_AREA FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!       |!-$my__SR_SUB_AREA=-!       |                 |
+|7030SIEBEL   |!-SELECT mt.X_USER_STATUS_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!  |!-$my__X_USER_STATUS_CD=-!  |                 |
+|7030SIEBEL   |!-SELECT mt.X_CANCEL_REASON FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!   |!-$my__X_CANCEL_REASON=-!   |                 |
+|7030SIEBEL   |!-SELECT mt.X_READ_ONLY_FLG FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!   |!-$my__X_READ_ONLY_FLG=-!   |                 |
+|7030SIEBEL   |!-SELECT mt.X_ROLE_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!         |!-$my__X_ROLE_CD=-!         |                 |
+|7030SIEBEL   |!-SELECT mt.SR_TITLE FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!          |!-$my__SR_TITLE=-!          |                 |
+|7030SIEBEL   |!-SELECT mt.DESC_TEXT FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!         |!-$my__DESC_TEXT=-!         |                 |
+|7030SIEBEL   |!-SELECT mt.COMM_METHOD_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!    |!-$my__COMM_METHOD_CD=-!    |                 |
+|7030SIEBEL   |!-SELECT mt.X_FULFILLMENT_BY FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!  |!-$my__X_FULFILLMENT_BY=-!  |                 |
+|7030SIEBEL   |!-SELECT mt.CREATED FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!           |!-$my__CREATED=-!           |                 |
+|7030SIEBEL   |!-SELECT mt.ACT_OPEN_DT FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!       |!-$my__ACT_OPEN_DT=-!       |                 |
+|7030SIEBEL   |!-SELECT mt.EXP_CLOSE_DT FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!      |!-$my__EXP_CLOSE_DT=-!      |                 |
+|7030SIEBEL   |!-SELECT mt.ACT_CLOSE_DT FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!      |!-$my__ACT_CLOSE_DT=-!      |                 |
+|7030SIEBEL   |!-SELECT mt.RESOLUTION_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!     |!-$my__RESOLUTION_CD=-!     |                 |
+|7030SIEBEL   |!-SELECT mt.X_COMPNSTN_AMOUNT FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-! |!-$my__X_COMPNSTN_AMOUNT=-! |                 |
+|7030SIEBEL   |!-SELECT mt.X_RESPONSE FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!        |!-$my__X_RESPONSE=-!        |                 |
+|7030SIEBEL   |!-SELECT mt.X_CALL_ADDR FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!       |!-$my__X_CALL_ADDR=-!       |                 |
+|7030SIEBEL   |!-SELECT mt.X_CALL_ADDRNUM FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!    |!-$my__X_CALL_ADDRNUM=-!    |                 |
+|7030SIEBEL   |!-SELECT mt.X_CALL_ADDRNUM_SFX FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!|!-$my__X_CALL_ADDRNUM_SFX=-!|                 |
+|7030SIEBEL   |!-SELECT mt.X_CALL_CITY FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!       |!-$my__X_CALL_CITY=-!       |                 |
+|7030SIEBEL   |!-SELECT mt.X_CALL_PH_NUM FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!     |!-$my__X_CALL_PH_NUM=-!     |                 |
+|7030SIEBEL   |!-SELECT mt.X_CALL_ZIPCODE FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!    |!-$my__X_CALL_ZIPCODE=-!    |                 |
+|7030SIEBEL   |!-SELECT mt.X_DOC_TYPE_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!     |!-$my__X_DOC_TYPE_CD=-!     |                 |
+|7030SIEBEL   |!-SELECT mt.X_FILE_NUM FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!        |!-$my__X_FILE_NUM=-!        |                 |
+|7030SIEBEL   |!-SELECT mt.X_FULFILLMENT_CD FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!  |!-$my__X_FULFILLMENT_CD=-!  |                 |
+|7030SIEBEL   |!-SELECT mt.X_FUNCTION_ID FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!     |!-$my__X_FUNCTION_ID=-!     |                 |
+|7030SIEBEL   |!-SELECT mt.X_INTEGRATION_ID FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!  |!-$my__X_INTEGRATION_ID=-!  |                 |
+|7030SIEBEL   |!-SELECT mt.X_MEMB_APPR_FLG FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!   |!-$my__X_MEMB_APPR_FLG=-!   |                 |
+|7030SIEBEL   |!-SELECT mt.X_PAYM_TRANS_TYPE FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-! |!-$my__X_PAYM_TRANS_TYPE=-! |                 |
+|7030SIEBEL   |!-SELECT mt.X_SEL_END_DT FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!      |!-$my__X_SEL_END_DT=-!      |                 |
+|7030SIEBEL   |!-SELECT mt.X_SEL_START_DT FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!    |!-$my__X_SEL_START_DT=-!    |                 |
+|7030SIEBEL   |!-SELECT mt.X_SOURCE_2 FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!        |!-$my__X_SOURCE_2=-!        |                 |
+|7030SIEBEL   |!-SELECT mt.X_SR_NOTE FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!         |!-$my__X_SR_NOTE=-!         |                 |
+|7030SIEBEL   |!-SELECT mt.X_TRANSACT_CITY FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!   |!-$my__X_TRANSACT_CITY=-!   |                 |
+|7030SIEBEL   |!-SELECT jn1.PERSON_UID FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!       |!-$my__PERSON_UID=-!        |                 |
+|7030SIEBEL   |!-SELECT jn2.NAME FROM S_SRV_REQ mt LEFT OUTER JOIN S_CONTACT jn1 ON mt.OWNER_EMP_ID = jn1.ROW_ID LEFT OUTER JOIN S_ORG_EXT jn2 ON mt.BU_ID = jn2.ROW_ID WHERE mt.ROW_ID = '$my__ROW_ID' with ur-!             |!-$my__NAME=-!              |                 |
+
+ 
+ 
+''' EB2 ''' 
+ 
+!style_meta[Verify that the record does exist in EB2.]
+
+|table:select query|reproduce_nullpointer_eb|yyyy-MM-dd HH:mm:ss.SSSS|
+|database name     |7030EB2                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+|sql statement     |!-SELECT  INTEGRATION_ID, SR_NUM, X_SBL_INTEGRATION_ID, X_SOURCE, SUBTYPE_CD, TYPE_CD, AREA, SUB_AREA, X_USER_STATUS_CD, X_REASON_CD, X_READ_ONLY_FLG, X_ROLE_CD, X_SR_TITLE, X_DESC_TEXT, X_COMM_METHOD_CD, X_FULFILLMENT_BY, CREATED_ON_DT, X_ACT_OPEN_DT, EXP_CLOSE_DT, CLOSE_DT, RESOLUTION_CD, X_COMPNSTN_AMOUNT, X_RESPONSE, X_CALL_ADDR, X_CALL_ADDRNUM, X_CALL_ADDRNUM_SFX, X_CALL_CITY, X_CALL_PH_NUM, X_CALL_ZIPCODE, X_DOC_TYPE_CD, X_FILE_NUM, X_FULFILLMENT_CD, X_FUNCTION_ID, X_INTEGRATION_ID, X_MEMB_APPR_FLG, X_PAYM_TRANS_TYPE, X_SEL_END_DT, X_SEL_START_DT, X_SOURCE_2, X_SR_NOTE, X_TRANSACT_CITY, X_EMPL_RWA_ID, X_PR_VIS_ORG_BANK_CODE, DATASOURCE_NUM_ID, DELETE_FLG FROM W_SRVREQ_DS WHERE integration_id = '$my__ROW_ID'-!                                                                                                                                                                                                                                                                          |
+|nr cols ok        |INTEGRATION_ID          |SR_NUM         |X_SBL_INTEGRATION_ID   |X_SOURCE         |SUBTYPE_CD            |TYPE_CD            |AREA            |SUB_AREA            |X_USER_STATUS_CD         |X_REASON_CD             |X_READ_ONLY_FLG         |X_ROLE_CD         |X_SR_TITLE       |X_DESC_TEXT       |X_COMM_METHOD_CD       |X_FULFILLMENT_BY         |CREATED_ON_DT   |X_ACT_OPEN_DT       |EXP_CLOSE_DT         |CLOSE_DT             |RESOLUTION_CD         |X_COMPNSTN_AMOUNT         |X_RESPONSE         |X_CALL_ADDR         |X_CALL_ADDRNUM         |X_CALL_ADDRNUM_SFX         |X_CALL_CITY         |X_CALL_PH_NUM         |X_CALL_ZIPCODE         |X_DOC_TYPE_CD         |X_FILE_NUM         |X_FULFILLMENT_CD         |X_FUNCTION_ID         |X_INTEGRATION_ID         |X_MEMB_APPR_FLG         |X_PAYM_TRANS_TYPE         |X_SEL_END_DT         |X_SEL_START_DT         |X_SOURCE_2         |X_SR_NOTE         |X_TRANSACT_CITY         |X_EMPL_RWA_ID      |X_PR_VIS_ORG_BANK_CODE|DATASOURCE_NUM_ID|DELETE_FLG|
+|40                |!-$my__ROW_ID-!         |!-$my__SR_NUM-!|!-$my__INTEGRATION_ID-!|!-$my__X_SOURCE-!|!-$my__SR_SUBTYPE_CD-!|!-$my__SR_TYPE_CD-!|!-$my__SR_AREA-!|!-$my__SR_SUB_AREA-!|!-$my__X_USER_STATUS_CD-!|!-$my__X_CANCEL_REASON-!|!-$my__X_READ_ONLY_FLG-!|!-$my__X_ROLE_CD-!|!-$my__SR_TITLE-!|!-$my__DESC_TEXT-!|!-$my__COMM_METHOD_CD-!|!-$my__X_FULFILLMENT_BY-!|!-$my__CREATED-!|!-$my__ACT_OPEN_DT-!|!-$my__EXP_CLOSE_DT-!|!-$my__ACT_CLOSE_DT-!|!-$my__RESOLUTION_CD-!|!-$my__X_COMPNSTN_AMOUNT-!|!-$my__X_RESPONSE-!|!-$my__X_CALL_ADDR-!|!-$my__X_CALL_ADDRNUM-!|!-$my__X_CALL_ADDRNUM_SFX-!|!-$my__X_CALL_CITY-!|!-$my__X_CALL_PH_NUM-!|!-$my__X_CALL_ZIPCODE-!|!-$my__X_DOC_TYPE_CD-!|!-$my__X_FILE_NUM-!|!-$my__X_FULFILLMENT_CD-!|!-$my__X_FUNCTION_ID-!|!-$my__X_INTEGRATION_ID-!|!-$my__X_MEMB_APPR_FLG-!|!-$my__X_PAYM_TRANS_TYPE-!|!-$my__X_SEL_END_DT-!|!-$my__X_SEL_START_DT-!|!-$my__X_SOURCE_2-!|!-$my__X_SR_NOTE-!|!-$my__X_TRANSACT_CITY-!|!-$my__PERSON_UID-!|!-$my__NAME-!         |!-1-!            |!-N-!     |
+ 
+ 
+''' DWDH  ''' 
+ 
+!style_meta[Verify that the record and handshake data exists in DWH-D.]
+
+#3 ophalen delivery_sqn en load_dts
+|get query result                                                                                                                                                                         |
+|database name|query                                                                                                                                   |get column ?   |get log filename ?|
+|7030DWHD_IN  |!-SELECT max (delivery_sqn) FROM mrv_data_delivery WHERE interface_code = 'W_SRVREQ_DS' and rec_src = 'Siebel/EB2' and scheme = 'PUSH'-!|!-$myDelSqn=-! |                  |
+|7030DWHD_IN  |!-SELECT load_dts FROM mrv_data_delivery_detail WHERE delivery_sqn = $myDelSqn-!                                                        |!-$myLoadDts=-!|                  |
+|7030DWHD_IN  |!-SELECT load_dts FROM STI_W_SRVREQ_DS WHERE integration_id = '$my__ROW_ID' and delivery_sqn = $myDelSqn-!                              |!-$myLoadDts=-!|                  |
+
+#4 Check if the data is correct in the STUB
+|table:select query|reproduce_nullpointer_dwhd|yyyy-MM-dd HH:mm:ss|
+|database name     |7030DWHD_IN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|sql statement     |!-select  INTEGRATION_ID, SR_NUM, X_SBL_INTEGRATION_ID, X_SOURCE, SUBTYPE_CD, TYPE_CD, AREA, SUB_AREA, X_USER_STATUS_CD, X_REASON_CD, X_READ_ONLY_FLG, X_ROLE_CD, X_SR_TITLE, X_DESC_TEXT, X_COMM_METHOD_CD, X_FULFILLMENT_BY, CREATED_ON_DT, X_ACT_OPEN_DT, EXP_CLOSE_DT, CLOSE_DT, RESOLUTION_CD, X_COMPNSTN_AMOUNT, X_RESPONSE, X_CALL_ADDR, X_CALL_ADDRNUM, X_CALL_ADDRNUM_SFX, X_CALL_CITY, X_CALL_PH_NUM, X_CALL_ZIPCODE, X_DOC_TYPE_CD, X_FILE_NUM, X_FULFILLMENT_CD, X_FUNCTION_ID, X_INTEGRATION_ID, X_MEMB_APPR_FLG, X_PAYM_TRANS_TYPE, X_SEL_END_DT, X_SEL_START_DT, X_SOURCE_2, X_SR_NOTE, X_TRANSACT_CITY, X_EMPL_RWA_ID, X_PR_VIS_ORG_BANK_CODE, DELIVERY_SQN, DATASOURCE_NUM_ID, DELETE_FLG FROM STI_W_SRVREQ_DS WHERE integration_id = '$my__ROW_ID' and delivery_sqn = $myDelSqn-!                                                                                                                                                                                                                                               |
+|nr cols ok        |INTEGRATION_ID            |SR_NUM             |X_SBL_INTEGRATION_ID   |X_SOURCE         |SUBTYPE_CD            |TYPE_CD            |AREA            |SUB_AREA            |X_USER_STATUS_CD         |X_REASON_CD             |X_READ_ONLY_FLG         |X_ROLE_CD         |X_SR_TITLE       |X_DESC_TEXT       |X_COMM_METHOD_CD       |X_FULFILLMENT_BY         |CREATED_ON_DT   |X_ACT_OPEN_DT       |EXP_CLOSE_DT         |CLOSE_DT             |RESOLUTION_CD         |X_COMPNSTN_AMOUNT         |X_RESPONSE         |X_CALL_ADDR         |X_CALL_ADDRNUM         |X_CALL_ADDRNUM_SFX         |X_CALL_CITY         |X_CALL_PH_NUM         |X_CALL_ZIPCODE         |X_DOC_TYPE_CD         |X_FILE_NUM         |X_FULFILLMENT_CD         |X_FUNCTION_ID         |X_INTEGRATION_ID         |X_MEMB_APPR_FLG         |X_PAYM_TRANS_TYPE         |X_SEL_END_DT         |X_SEL_START_DT         |X_SOURCE_2         |X_SR_NOTE         |X_TRANSACT_CITY         |X_EMPL_RWA_ID      |X_PR_VIS_ORG_BANK_CODE|DELIVERY_SQN |DATASOURCE_NUM_ID|DELETE_FLG|
+|41                |!-$my__ROW_ID-!           |!-$my__SR_NUM-!    |!-$my__INTEGRATION_ID-!|!-$my__X_SOURCE-!|!-$my__SR_SUBTYPE_CD-!|!-$my__SR_TYPE_CD-!|!-$my__SR_AREA-!|!-$my__SR_SUB_AREA-!|!-$my__X_USER_STATUS_CD-!|!-$my__X_CANCEL_REASON-!|!-$my__X_READ_ONLY_FLG-!|!-$my__X_ROLE_CD-!|!-$my__SR_TITLE-!|!-$my__DESC_TEXT-!|!-$my__COMM_METHOD_CD-!|!-$my__X_FULFILLMENT_BY-!|!-$my__CREATED-!|!-$my__ACT_OPEN_DT-!|!-$my__EXP_CLOSE_DT-!|!-$my__ACT_CLOSE_DT-!|!-$my__RESOLUTION_CD-!|!-$my__X_COMPNSTN_AMOUNT-!|!-$my__X_RESPONSE-!|!-$my__X_CALL_ADDR-!|!-$my__X_CALL_ADDRNUM-!|!-$my__X_CALL_ADDRNUM_SFX-!|!-$my__X_CALL_CITY-!|!-$my__X_CALL_PH_NUM-!|!-$my__X_CALL_ZIPCODE-!|!-$my__X_DOC_TYPE_CD-!|!-$my__X_FILE_NUM-!|!-$my__X_FULFILLMENT_CD-!|!-$my__X_FUNCTION_ID-!|!-$my__X_INTEGRATION_ID-!|!-$my__X_MEMB_APPR_FLG-!|!-$my__X_PAYM_TRANS_TYPE-!|!-$my__X_SEL_END_DT-!|!-$my__X_SEL_START_DT-!|!-$my__X_SOURCE_2-!|!-$my__X_SR_NOTE-!|!-$my__X_TRANSACT_CITY-!|!-$my__PERSON_UID-!|!-$my__NAME-!         |!-$myDelSqn-!|!-1-!            |!-N-!     |

@@ -23,29 +23,26 @@ import nl.consag.testautomation.supporting.Logging;
 import nl.consag.testautomation.linux.CheckFile;
 
 public class BasicQuery {
-    private static String version ="20161111.0";
-
 	private String className = "BasicQuery";
-	private String logFileName = Constants.NOT_INITIALIZED;
-	private String context = Constants.DEFAULT;
-	private String startDate = Constants.NOT_INITIALIZED;
+    private static String version ="20180619.1";
 
-	private String driver;
-	private String url;
-	private String userId;
-	private String password;
-	private String databaseName;
+    private String logFileName = Constants.NOT_INITIALIZED;
+    private String context = Constants.DEFAULT;
+    private String startDate = Constants.NOT_INITIALIZED;
+    private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
+
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+
+    private String databaseName;
 	private String query;
-	private String databaseType;
-	private String databaseConnDef;
 	private int rowUnequalValues=0;
 	private int rowEqualValues=0;
 	private int NO_FITNESSE_ROWS_TO_SKIP = 3;
         private int nrRecordsFound=0;
 
-        private int logLevel =3;
-        private int logEntries =0;
-        
 	private int numberOfTableColumns;
 	private String concatenatedColumnNames; // variables used to create select query
 
@@ -320,10 +317,17 @@ public class BasicQuery {
 	       ResultSet resultset = null;
 			  
 	       try {
-			    // Load the JDBC driver or oracle.jdbc.driver.OracleDriver or sun.jdbc.odbc.JdbcOdbcDriver
+               myArea="readParameterFile";
+               readParameterFile();
+               log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName +"<.");
+               connectionProperties.setLogFileName(logFileName);
+               connectionProperties.setLogLevel(getIntLogLevel());
+               connection = connectionProperties.getUserConnection();
+
+               // Load the JDBC driver or oracle.jdbc.driver.OracleDriver or sun.jdbc.odbc.JdbcOdbcDriver
 //			    Class.forName(driver);
 		  // Create a connection to the database
-		    connection = DriverManager.getConnection(url, userId, password);
+//		    connection = DriverManager.getConnection(url, userId, password);
 		    // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
 		    statement = connection.createStatement();
 		    // sql query of string type to read database
@@ -381,43 +385,39 @@ public class BasicQuery {
 			returnTable.add(row);
 	  } 
 
-	private void readParameterFile(){	 
-        String myName="readParameterFile";
-        String myArea="reading parameters";
+	private void readParameterFile(){
+        String myName = "readParameterFile";
+        String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
 
-        databaseType = GetParameters.GetDatabaseType(getDatabaseName());
-        databaseConnDef = GetParameters.GetDatabaseConnectionDefinition(getDatabaseName());
-        driver = GetParameters.GetDatabaseDriver(databaseType);
-        url = GetParameters.GetDatabaseURL(databaseConnDef);
-        userId = GetParameters.GetDatabaseUserName(getDatabaseName());
-        password = GetParameters.GetDatabaseUserPWD(getDatabaseName());
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        connectionProperties.refreshConnectionProperties(databaseName);
 
-        logMessage="databaseType >" + databaseType +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage="connection >" + databaseConnDef +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage="driver >" + driver +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage="url >" + url +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage="userId >" + userId +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
 	}
 
-	private void log(String name, String level, String location, String logText) {
-            if(Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
-	           return;
-            }
-            logEntries++;
-            if(logEntries ==1) {
-            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
-            }
+    private void log(String name, String level, String area, String logMessage) {
+        if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
+            return;
+        }
 
-        Logging.LogEntry(logFileName, name, level, location, logText);	
-	   }
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+        }
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
+    }
 
-    /**
-     * @return log file name, including .log extension
-     */
     public String getLogFilename() {
-		return logFileName + ".log";
-       }
+        if(logUrl.startsWith("http"))
+            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        else
+            return logUrl+logFileName + ".log";
+    }
 
     /**
      * @param level
@@ -617,7 +617,7 @@ public class BasicQuery {
         setResult(code);
         setResultMessage(msg);
     }
-    private void setQuery(String sqlStatement) {
+    public void setQuery(String sqlStatement) {
         query=sqlStatement;
     }
 

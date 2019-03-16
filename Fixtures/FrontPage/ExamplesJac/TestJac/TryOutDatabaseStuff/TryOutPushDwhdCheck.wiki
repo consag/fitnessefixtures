@@ -1,0 +1,129 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+
+|import                    |
+|generic.fixtures.Global   |
+|generic.fixtures.DBFixture|
+
+!3 PARTY_ORG_DS test
+!4 Check on number of runs
+
+!define variable {nrRunsOrg}
+!define variable {myFirstBatchIdOrg}
+!define variable {myLastBatchIdOrg}
+!define variable {mySpecificBatchIdOrg}
+
+|script                |Check Dwhd Push         |EB2|DWHD_IN         |RB CRM Distribution|
+|with interface        |WC_ASSET_G                                                       |
+|set from date         |2013-06-30 08:00:00.000000                                       |
+|set to date           |2013-07-30 16:15:00.123456                                       |
+|check                 |latest                  |6  |runs with status|in (1,4)    |OK    |
+|$nrRunsOrg=           |number of runs found                                             |
+|get query result                                                                        |
+|$myLatestBatchIdOrg=  |get latest batchid                                               |
+|$mySpecificBatchIdOrg=|get latest batchid      |-1                                      |
+|ensure                |latest run has batchid  |$myLatestBatchIdOrg                     |
+|ensure                |specific run has batchid|$mySpecificBatchIdOrg                   |
+
+!3 Get first, latest and specific values for Org
+!define variable {myFirstDelSqnOrg}
+!define variable {myLastDelSqnOrg}
+!define variable {mySpecificDelSqnOrg}
+
+|script               |Check Dwhd Push         |EB2       |DWHD_IN           |RB CRM Distribution                                 |
+|check                |latest                  |6         |runs for interface|WC_ASSET_G|with status|in (1,4)|and last|3.4|days|OK|
+|$nrRuns=             |number of runs found                                                                                       |
+|ensure               |number of runs found    |3                                                                                 |
+|get query result                                                                                                                 |
+|$myFirstDelSqnOrg=   |get first run                                                                                              |
+|$myLastDelSqnOrg=    |get last run                                                                                               |
+|$mySpecificDelSqnOrg=|get last run            |-1                                                                                |
+|ensure               |latest run for interface|WC_ASSET_G|has batchId       |22799217                                            |
+
+!3 Check DWHD Landing zone
+!4 Check W_PARTY_ORG_DS delivery and delivery details
+
+|Script           |Check Dwhd Push                           |EB2        |DWHD_IN       |
+|with interface   |WC_ASSET_G                                                           |
+|with delivery_sqn|$myLastDelSqnOrg                                                     |
+|ensure           |delivery has correct interface code       |WC_ASSET_G                |
+|ensure           |delivery has correct source sequence      |                          |
+|ensure           |delivery has correct record source        |Siebel/EB2                |
+|ensure           |delivery has correct direction            |I                         |
+|ensure           |delivery has correct scheme               |PUSH                      |
+|ensure           |delivery has correct timestamp            |2013-07-30 16:49:02       |
+|ensure           |delivery has correct dwhd table name      |STI_WC_ASSET_G            |
+|ensure           |delivery detail has correct batch id      |$myLastBatchIdOrg         |
+|show             |result                                                               |
+|ensure           |delivery detail has correct instance id   |                          |
+|ensure           |delivery detail has correct load timestamp|2013-07-30 16:49:11.025551|
+|ensure           |delivery detail has status start          |OK                        |
+|show             |result                                                               |
+|reject           |delivery detail has status error          |OK                        |
+|ensure           |delivery detail has status completed      |OK                        |
+|show             |query                                                                |
+|show             |result                                                               |
+
+!3 PARTY_PER_DS test
+!4 Check on number of runs, latest and specific run
+Variable for Ppd - Party Per ds
+!define variable {myFirstBatchIdPer}
+!define variable {myLastBatchIdPer}
+!define variable {mySpecificBatchIdPer}
+!define variable {myFirstDelSqnPer}
+!define variable {myLastDelSqnPer}
+!define variable {mySpecificDelSqnPer}
+
+|script                |Check Dwhd Push         |EB2|DWHD_IN         |RB CRM Distribution|
+|with interface        |WC_ASSET_G                                                       |
+|set from date         |2013-04-30 08:00:00.000000                                       |
+|set to date           |2013-05-10 16:15:00.123456                                       |
+|check                 |latest                  |6  |runs with status|in (1,4)    |OK    |
+|$nrRuns=              |number of runs found                                             |
+|get query result                                                                        |
+|$myLastBatchIdPer=    |get latest batchid                                               |
+|$mySpecificBatchIdPer=|get latest batchid      |-1                                      |
+|ensure                |latest run has batchid  |$myLastBatchIdPer                       |
+|ensure                |specific run has batchid|$mySpecificBatchIdPer                   |
+
+!3 Get first, latest and specific values for Person
+
+|script               |Check Dwhd Push         |EB2       |DWHD_IN           |RB CRM Distribution                                 |
+|check                |latest                  |6         |runs for interface|WC_ASSET_G|with status|in (1,4)|and last|3.4|days|OK|
+|$nrRuns=             |number of runs found                                                                                       |
+|ensure               |number of runs found    |3                                                                                 |
+|get query result                                                                                                                 |
+|$myFirstDelSqnPer=   |get first run                                                                                              |
+|$myLastDelSqnPer=    |get last run                                                                                               |
+|$mySpecificDelSqnPer=|get last run            |-1                                                                                |
+|ensure               |latest run for interface|WC_ASSET_G|has batchId       |22799217                                            |
+
+
+!4 Check W_PARTY_PER_DS delivery and delivery details
+
+|Script           |Check Dwhd Push                           |EB2        |DWHD_IN       |
+|with interface   |WC_ASSET_G                                                           |
+|with delivery_sqn|$myLastDelSqnPer                                                     |
+|ensure           |delivery has correct interface code       |WC_ASSET_G                |
+|ensure           |delivery has correct source sequence      |                          |
+|ensure           |delivery has correct record source        |Siebel/EB2                |
+|ensure           |delivery has correct direction            |I                         |
+|ensure           |delivery has correct scheme               |PUSH                      |
+|ensure           |delivery has correct timestamp            |2013-05-15 16:49:02       |
+|ensure           |delivery has correct dwhd table name      |STI_WC_ASSET_G            |
+|ensure           |delivery detail has correct batch id      |$myLastBatchIdPer         |
+|show             |result                                                               |
+|ensure           |delivery detail has correct instance id   |                          |
+|ensure           |delivery detail has correct load timestamp|2013-05-15 16:49:11.025551|
+|ensure           |delivery detail has status start          |OK                        |
+|show             |result                                                               |
+|reject           |delivery detail has status error          |OK                        |
+|ensure           |delivery detail has status completed      |OK                        |
+|show             |query                                                                |
+|show             |result                                                               |

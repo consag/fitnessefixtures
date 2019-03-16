@@ -1,0 +1,18 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.LinuxFixture|
+
+!define variable {cntTest1}
+!define variable {cntCsv}
+
+|script    |file operation|EB2                   |test_countfixture           |
+|check     |lines in file |test1.txt             |in directory|base eb2     |4|
+|check     |lines in file |an_oldway_delivery.csv|in directory|incoming dwhd|3|
+|$cntTest1=|lines in file |test1.txt             |in directory|base eb2       |
+|$cntCsv=  |lines in file |an_oldway_delivery.csv|in directory|incoming dwhd  |

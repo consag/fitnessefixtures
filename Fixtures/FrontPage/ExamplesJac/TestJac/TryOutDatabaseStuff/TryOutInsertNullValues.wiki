@@ -1,0 +1,59 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+|import                      |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+
+
+!define dbName {SIEBDQ}
+
+!2 Insert empty strings and NULL
+!3 Oracle
+|table:delete query                                       |
+|database name   |${dbName}                                 |
+|table name      |FIXTURE_TEST                            |
+|records with    |col1 is null or col2 like 'fixturetest%'|
+|Ignore 0 Records|Yes                                     |
+
+!4 Be aware that two single quotes will be interpreted as if you wanted to insert one single quote. Check log for the insert stmt generated.
+Arguments to ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.InsertQuery:
+1 - context. Will be used as part of log file name. Highly recommended as it makes finding your log file easier when errors are encountered.
+2 - datetime format. Reserved for future use. Always use DEFAULT
+3 - output log file name. Whether or not at the end of the table output a row should be added indicating the log file name. Default is Showlogname=No.
+
+|table: insert query                        |insert_null_text|DEFAULT|Showlogname=Yes|
+|database name|${dbName}                      |
+|table name   |fixture_test|IGNORE_0_RECORDS|
+|column names |col1        |col2            |
+|r1           |NULL        |fixturetest1    |
+|r2           |            |fxituretest2    |
+|r3           |!-#NULL#-!  |fixturetest3    |
+|r4           |!-''-!      |fixturetest4    |
+|r5           |#NULL#      |#NULL#    |
+|r6           |col1val     |fixturetest6|
+
+
+|table: select query|tryout_insert_null_selectnull                        |
+|database name      |${dbName}                                                     |
+|sql statement      |SELECT count(*) nr_recs FROM fixture_test where col1 is null|
+|nr_cols_ok         |nr_recs                                                     |
+|1                  |4                                                           |
+
+|table: select query|tryout_insert_null_selectempty                                          |
+|database name      |${dbName}                                                                        |
+|sql statement      |!-SELECT '*' || col1 || '*' col1 FROM fixture_test where col2 ='fixturetest4'-!|
+|nr_cols_ok         |col1                                                                           |
+|1                  |!-*'*-!                                                                        |

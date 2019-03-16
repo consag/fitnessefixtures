@@ -1,0 +1,8 @@
+---
+Suite
+---
+!1 Test suite Proof of Concept for Informatica TDM
+!define STAGINGDB {STG03}
+!define TARGETDB {DBAI}
+
+!contents -R2 -g -p -f -h

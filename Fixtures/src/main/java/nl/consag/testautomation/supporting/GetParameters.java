@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class GetParameters {
     
-    private static String version = "20170909.0";
+    private static String version = "20180808.0";
 
   private static String curFields[];
   private static String delimiter = Constants.INPUT_FILE_DELIMITER;
@@ -227,7 +227,7 @@ public class GetParameters {
     }
     return result;
   }
-  
+
   //Fixtures may use application specific settings
     public static String getPropertyVal(String propFile, String appName, String className, String prop) {
         String result=Constants.NOT_FOUND;
@@ -261,11 +261,11 @@ public class GetParameters {
         try {
         File file = new File(propFile);
         FileInputStream fileInput = new FileInputStream(file);
-        Properties schedProp = new Properties();
-        schedProp.load(fileInput);
+        Properties properties = new Properties();
+        properties.load(fileInput);
         fileInput.close();
         
-        val = schedProp.getProperty(prop, Constants.NOT_FOUND);
+        val = properties.getProperty(prop, Constants.NOT_FOUND);
         setError(Constants.OK, Constants.NOERRORS);
             
         } catch (FileNotFoundException e) {

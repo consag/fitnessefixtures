@@ -26,13 +26,15 @@ import java.util.zip.ZipEntry;
 import ml.options.Options;
 
 import nl.consag.testautomation.supporting.Constants;
+import nl.consag.testautomation.supporting.Encrypt;
 
 public class ConsagFitNesseFixtures {
     private static final String className="ConsagFitNesseFixtures";
-    private static final String version = "20180608.0";
+    private static final String version = "20181015.0";
     private static int logLevel = 3;
     private static int logEntries = 0;
     private static boolean noClassFilter =true;
+    private static String keystoreFile =Constants.NOT_PROVIDED;
 
     /**
      * @param args
@@ -49,6 +51,8 @@ public class ConsagFitNesseFixtures {
             .addOption("noclassfilter")
             .addOption("loglevel", Options.Separator.BLANK)
             .addOption("fixtureversion", Options.Separator.BLANK)
+                .addOption("encrypt", Options.Separator.BLANK)
+        .addOption("keystorefile", Options.Separator.BLANK)
             ;
         
         if(!opt.check(false, false)) {
@@ -76,6 +80,12 @@ public class ConsagFitNesseFixtures {
         if(opt.getSet().isSet("listfixtures") || opt.getSet().isSet("fixturelist")) {
             outFixtureList();
         }
+        if(opt.getSet().isSet("keystorefile")) {
+            keystoreFile =opt.getSet().getOption("keystorefile").getResultValue(0);
+        }
+        if(opt.getSet().isSet("encrypt")) {
+            encryptString(opt.getSet().getOption("encrypt").getResultValue(0));
+        }
         if(opt.getSet().isSet("fixtureversion")) {
             String fixtureName= opt.getSet().getOption("fixtureversion").getResultValue(0);
             if(Constants.ALL.equalsIgnoreCase(fixtureName)) {
@@ -87,6 +97,14 @@ public class ConsagFitNesseFixtures {
 
     }
 
+    public static String encryptString(String plainTextString) {
+        if(Constants.NOT_PROVIDED.equals(keystoreFile)) {
+            return Encrypt.encrypt(plainTextString);
+        } else {
+            return Encrypt.encrypt(keystoreFile, plainTextString);
+        }
+
+    }
     public static String getVersion() {
         return version;
     }
@@ -172,6 +190,7 @@ public class ConsagFitNesseFixtures {
         outMsg("-listfixtures|-fixturelist - A list of available Consag FitNesse fixtures");
         outMsg("-fixtureversion <fixturename>|" +Constants.ALL +" - Shows the version of a specified fixture (or all)");
         outMsg("-noclassfilter - When processing the class list, do not filter on >" + Constants.DEFAULT_CLASS_PREFIX +"<.");
+        outMsg("-encrypt <plaintextpassword> - Encrypts password for use in connection.properties");
     }
 
     private static String getFixtureVersion(String fixtureName) {
@@ -193,6 +212,10 @@ public class ConsagFitNesseFixtures {
             rc= "Cannot access fixture class >" +fixtureName +"<. Error =>" +e.toString() + "<.";
         } catch (InvocationTargetException e) {
             rc= "Could not invoke 'getVersion' method of fixture class >" +fixtureName +"<. Error =>" +e.toString() + "<.";
+        } catch (NullPointerException e) {
+            rc= "Could not determine version for >" +fixtureName +"<. A null pointer exception occurred.";
+        }  catch (NoClassDefFoundError e) {
+            rc= "Could not determine version for >" + fixtureName +"<. A class not found error occurred. Error >" + e.toString() +"<.";
         }
         return rc;
         

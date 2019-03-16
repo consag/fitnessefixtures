@@ -1,0 +1,55 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/lib/ConsagFitNesseFixtures.jar
+!path ./config
+!path ./config/keys
+
+!define myVar {1}
+!define myVar2 {2}
+
+
+!|get query result                                                                           |
+|database name|query                                          |get column ?|get log filename?|
+|EB2          |SELECT '22-05-2013' , 'ABC' FROM dual WHERE 1=1|$myVar=     |                 |
+|EB2          |SELECT '22-05-2013' , 'ABC' FROM dual WHERE 1=1|$myVar=     |                 |
+
+!|get query result                                                                           |
+|database name|query                                          |get column ?|get log filename?|
+|DBAV          |SELECT '22-05-2013' , 'ABC' FROM sysibm.sysdummy1 WHERE 1=1|$myVar=     |                 |
+|DBAV          |SELECT '22-05-2013' , 'ABC' FROM sysibm.sysdummy1 WHERE 1=1|$myVar=     |                 |
+
+!|get query result                                                          |
+|database name|query                                           |get column ?|
+|EB2          |SELECT '$myVar' as x , 'ABC' FROM dual WHERE 1=1|$myVar=     |
+
+|get query result                                              |
+|database name|query             |get column ?|get log filename?|
+|EB2          |SELECT 1 FROM dual|1           |                 |
+|EB2          |SELECT 7 FROM dual|7           |                 |
+
+|get query result                                              |
+|database name|query             |get column ?|get log filename?|
+|PWC_DI          |SELECT 1 FROM dual|1           |                 |
+|PWC_DI          |SELECT 7 FROM dual|7           |                 |
+
+
+!|table: select query                                                   |
+|database name  |EB2                                                    |
+|select query   |SELECT dummy, '$myVar' as var from dual where dummy='X'|
+|nr of cols okay|dummy                    |var                          |
+|2              |X                        |22-05-2013                   |
+
+!2 Voorbeeld 2
+!define variable {myProcWid}
+
+!|get query result                                            |
+|database name|query                             |get column ?|
+|EB2          |SELECT etl_proc_wid FROM w_param_g|$myProcWid= |
+
+!|table: select query                                                                          |
+|database name  |DWHD_IN                                                                       |
+|select query   |SELECT batch_id from mrv_data_delivery_detail mddd where batch_id='$myProcWid'|
+|nr of cols okay|batch_id                                                                      |
+|1              |$myProcWid                                                                    |

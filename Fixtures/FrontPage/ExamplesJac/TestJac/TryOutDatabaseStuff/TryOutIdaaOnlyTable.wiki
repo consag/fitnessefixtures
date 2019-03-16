@@ -1,0 +1,13 @@
+---
+Suite
+Suites: IDAA
+---
+!1 Test suite IDAA Only tables: Creating, Truncating, Dropping
+
+
+!define demotab {S_BU_CPY}
+!define dbconnection {SIEBDA}
+!define database {SIEBIDQ}
+!define accelerator {IDAABX02}
+
+!contents -R2 -g -p -f -h

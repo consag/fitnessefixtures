@@ -1,0 +1,13 @@
+---
+Test
+---
+!3 Tear Down info into file
+
+!define var_filename {tryout-teardown.txt}
+
+!define currentTime {!today -t}
+
+|table:create file|Teardowntest                                                |
+|file name        |${var_filename}|base fitnesse|!-Delimiter=;|-!|Force=Yes|
+|INFO             |col2                                                    |
+|${info}           |${currentTime}                                                    |

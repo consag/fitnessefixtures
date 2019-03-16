@@ -1,0 +1,54 @@
+!define location {files}
+!define excelFile {!-testdata/fitnesse-loadexcel-specificcolumns.xlsx-!}
+!define excelSheet {Sheet1}
+
+
+!3 Load only specific columns from the Excel
+
+The Excel sheet has more columns than you want to load. Some columns do not exist in the target table, or they do, but you wnat to leave them empty as the Excel sheet does not contain the right data for them.
+
+As always, the Excel sheet MUST have the correct database table columns as first line.
+
+!define dbconnection {SIEBDQ}
+!define tablename {FITNESSETEST_SPECCOLUMNS_DB2}
+
+The test table creation statement:
+
+create table ${tablename}
+(recid numeric(15)
+,textcol varchar(10)
+,datecol timestamp(6)
+,numcol numeric(15)
+)
+in database siebidq
+;
+
+Optional in the test table below: application, commit size, log level, get error message, get log filename
+Mandatory in the test table below: database name, table_name, input file, worksheet name, result
+
+For the purpose of this test page, we need to provide the fields [only excel columns] OR [except excel columns]
+
+!| load data from excel|load_${tablename}                                                                                                                                         |
+|application           |commit size|log level|database name  |table name  |input file              |worksheet name|only excel columns|result?|get error message?|get log filename?|
+|Fixturetest           |2000       |DEBUG    |${dbconnection}|${tablename}|${location} ${excelFile}|${excelSheet} |recid             |OK     |                  |                 |
+
+!|get single value|check result ${PAGE_NAME}                                       |
+|database name    |query                            |get column?|get error message?|
+|${dbconnection}  |SELECT count(*) FROM ${tablename}|18         |                  |
+
+
+!define dbconnection {SIEBDA}
+!define tablename {FITNESSETEST_SPECCOLUMNS_AOT}
+Use the following statement to create the table in IDAA
+
+create table ${tablename}
+(recid numeric(15)
+,textcol varchar(10)
+,datecol timestamp(6)
+,numcol numeric(15)
+)
+in database siebidq
+in accelerator idaabx02
+;
+
+!lastmodified

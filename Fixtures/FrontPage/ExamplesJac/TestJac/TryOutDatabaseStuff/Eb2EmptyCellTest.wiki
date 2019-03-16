@@ -1,0 +1,95 @@
+!contents -R2 -g -p -f -h
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+
+!|import                      |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+ 
+!define variable {myDelSqn}
+!define variable {myLoadDts}
+!define variable {myRowId}
+!define variable {myCreated}
+!define variable {myATTRIB_28}
+!define variable {myATTRIB_29}
+!define variable {myInsolvCd}
+!define variable {myLastUpd}
+
+Projectname: ''' Fatca / Insolvency NP '''
+# Testcase created by Marielle
+# d.d. 19-07-2013 updated 06-09-2013
+# Regression test keten onafhankelijk 
+
+#1 ophalen max row_id
+|get query result                                                               |
+|database name|query                                               |get column ?|
+|SIEBEL       |SELECT max (row_id) FROM siebel.S_CONTACT_XM with ur|$myRowId=   |
+
+#2 ophalen CREATED,ATTRIB_28,ATTRIB_29,X_CON_INSOLV_CD,X_DEL_COUNTRY_CD,LAST_UPD 
+|get query result                                                                                             |
+|database name|query                                                                            |get column ? |
+|SIEBEL       |SELECT CREATED FROM siebel.S_CONTACT_XM where row_id = '$myRowId' with ur        |$myCreated=  |
+|SIEBEL       |SELECT ATTRIB_28 FROM siebel.S_CONTACT_XM where row_id = '$myRowId' with ur      |$myATTRIB_28=|
+|SIEBEL       |SELECT ATTRIB_29 FROM siebel.S_CONTACT_XM where row_id = '$myRowId' with ur      |$myATTRIB_29=|
+|SIEBEL       |SELECT X_CON_INSOLV_CD FROM siebel.S_CONTACT_XM where row_id = '$myRowId' with ur|$myInsolvCd= |
+|SIEBEL       |SELECT LAST_UPD FROM siebel.S_CONTACT_XM where row_id = '$myRowId' with ur       |$myLastUpd=  |
+
+!2 Date/Time checks
+
+!3 Specify a format, eg yyyyMMddHHmmssSSS, i.e. including milliseconds
+|table:select query|context_eb2_format            |yyyyMMddHHmmssSSS|
+|database name     |EB2                                                                                                                                        |
+|sql statement     |select INTEGRATION_ID, CREATED,ATTRIB_28,ATTRIB_29,X_CON_INSOLV_CD,DATASOURCE_NUM_ID FROM WC_CONTACT_XM_G where INTEGRATION_ID  ='$myRowId'|
+|column name       |INTEGRATION_ID         |CREATED            |ATTRIB_28            |ATTRIB_29            |X_CON_INSOLV_CD         |DATASOURCE_NUM_ID         |
+|6                 |$myRowId               |$myCreated         |$myATTRIB_28         |$myATTRIB_29         |$myInsolvCd             |1                         |
+
+!3 Use the default date format of the fixture 
+|table:select query|context_eb2_default            |DEFAULT                                                                                                            |
+|database name     |EB2                                                                                                                                        |
+|sql statement     |select INTEGRATION_ID, CREATED,ATTRIB_28,ATTRIB_29,X_CON_INSOLV_CD,DATASOURCE_NUM_ID FROM WC_CONTACT_XM_G where INTEGRATION_ID  ='$myRowId'|
+|column name       |INTEGRATION_ID         |CREATED            |ATTRIB_28            |ATTRIB_29            |X_CON_INSOLV_CD         |DATASOURCE_NUM_ID         |
+|6                 |$myRowId               |$myCreated         |$myATTRIB_28         |$myATTRIB_29         |$myInsolvCd             |1                         |
+
+!3 Backwards compatible usage without any date format 
+|table:select query|context_eb2                                                                                                                                |
+|database name     |EB2                                                                                                                                        |
+|sql statement     |select INTEGRATION_ID, CREATED,ATTRIB_28,ATTRIB_29,X_CON_INSOLV_CD,DATASOURCE_NUM_ID FROM WC_CONTACT_XM_G where INTEGRATION_ID  ='$myRowId'|
+|column name       |INTEGRATION_ID         |CREATED            |ATTRIB_28            |ATTRIB_29            |X_CON_INSOLV_CD         |DATASOURCE_NUM_ID         |
+|6                 |$myRowId               |$myCreated         |$myATTRIB_28         |$myATTRIB_29         |$myInsolvCd             |1                         |
+
+!3 Backwards compatible usage without any date format and without any context
+|table:select query                                                                                                                                       |
+|database name|EB2                                                                                                                                        |
+|sql statement|select INTEGRATION_ID, CREATED,ATTRIB_28,ATTRIB_29,X_CON_INSOLV_CD,DATASOURCE_NUM_ID FROM WC_CONTACT_XM_G where INTEGRATION_ID  ='$myRowId'|
+|column name  |INTEGRATION_ID         |CREATED            |ATTRIB_28            |ATTRIB_29            |X_CON_INSOLV_CD         |DATASOURCE_NUM_ID         |
+|6            |$myRowId               |$myCreated         |$myATTRIB_28         |$myATTRIB_29         |$myInsolvCd             |1                         |
+
+
+#4 ophalen maxdelivery sqn
+!|get query result                                                                                                                                                                      |
+|database name|query                                                                                                                                                       |get column ?|
+|DWHD_IN      |select max(delivery_sqn) from mrv_data_delivery where interface_code = 'WC_CONTACT_XM_G' and rec_src = 'Siebel/EB2' and scheme = 'PUSH'                     |$myDelSqn=  |
+|DWHD_IN      |SELECT to_char(ACT_DTS,'dd-mm-yy hh24:mi:ss') FROM mrv_data_delivery WHERE interface_code = 'WC_CONTACT_XM_G' and rec_src = 'Siebel/EB2' and scheme = 'PUSH'|$myLoadDts= |
+
+#5 check data landing zone of stub
+|table:select query                                                                                                                                                                                                                                                                                         |
+|database name|DWHD_IN                                                                                                                                                                                                                                                                                      |
+|sql statement|select INTEGRATION_ID, to_char(CREATED,'dd-mm-yy hh24:mi:ss'),ATTRIB_28,ATTRIB_29,X_CON_INSOLV_CD,to_char(LAST_UPD ,'dd-mm-yy hh24:mi:ss'),DATASOURCE_NUM_ID ,to_char(load_dts,'dd-mm-yy hh24:mi:ss') FROM STI_WC_CONTACT_XM_G where INTEGRATION_ID  ='$myRowId' and delivery_sqn = $myDelSqn|
+|column name  |INTEGRATION_ID                       |CREATED                          |ATTRIB_28                         |ATTRIB_29                         |X_CON_INSOLV_CD                      |LAST_UPD                        |DATASOURCE_NUM_ID                      |Load_dts                        |
+|6            |$myRowId                             |$myCreated                       |$myATTRIB_28                      |$myATTRIB_29                      |$myInsolvCd                          |$myLastUpd                      |1                                      |$myLoadDts                      |
+
+''' Einde rapport Insolvency NP '''  
+
+!3 DKV Empty cell test
+
+|table: select query|dkv_select_query_issue                                                                                                                                                                                                                                                                                                                                                                     |
+|database name      |DKVNG_PN                                                                                                                                                                                                                                                                                                                                                                                   |
+|sql statement      |!-SELECT deliveryID,DocID,' ' as DistributionMethod,StatusDistribution,StatusAddress,StatusReasonDistr,StatusReasonAddress,Bankcode,cast(InsertDateTime as date) from DocumentEnrich union all SELECT deliveryID,DocID,DistributionMethod,StatusDistribution,StatusAddress,StatusReasonDistr,StatusReasonAddress,Bankcode,cast(InsertDateTime as date) from DocumentEnrich order by DocID-!|
+|number ok          |!-DeliveryID-!                      |!-DocID-!                      |!-DistributionMethod-!                      |!-StatusDistribution-!                     |!-StatusAddress-!                     |!-StatusReasonDistr-!                                          |!-StatusReasonAddress-!                     |!-Bankcode-!                     |!-InsertDateTime-!                     |
+|9                  |15642                               |811                            |!- -!                                            |2                                          |1                                     |!-No customer(s) found for ArrangementNr-!                     |!-Not Requested-!                           |                                 |2013-11-14                             |
+

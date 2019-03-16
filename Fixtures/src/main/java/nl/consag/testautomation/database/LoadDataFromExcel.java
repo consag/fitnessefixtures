@@ -23,33 +23,27 @@ import nl.consag.testautomation.supporting.GetParameters;
 
 public class LoadDataFromExcel {
 
-    private static String version = "20180608.0";
-    private int logLevel = 3;
-
     private String className = "LoadDataFromExcel";
-    private String logFileName = Constants.NOT_INITIALIZED;
-    private String logUrl=Constants.LOG_DIR;
-    private String resultFormat =Constants.DEFAULT_RESULT_FORMAT;
+    private static String version = "20180621.1";
 
+    private String resultFormat =Constants.DEFAULT_RESULT_FORMAT;
+    private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
+    private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
+
     private boolean firstTime = true;
 
-    private String driver;
-    private String url;
-    private String userId;
-    private String password;
+    ConnectionProperties connectionProperties = new ConnectionProperties();
 
-    private String tableOwner = Constants.NOT_INITIALIZED;
-    private String tableOwnerPassword = Constants.NOT_INITIALIZED;
-    private String tableName;
     private String databaseName;
+    private String tableName;
+
     private String inputFile;
     private int numberOfColumns;
     private String concatenatedDatabaseColumnNames; // variables used to create insert query
     private String concatenatedBindVariables; // variables used to create insert query
-    private String databaseType;
-    private String databaseConnDef;
     private int commitSize =Constants.DEFAULT_COMMIT_SIZE_INSERT;
     private int arraySize =Constants.DEFAULT_ARRAY_SIZE_UPDATE;
 
@@ -186,6 +180,10 @@ public class LoadDataFromExcel {
 
         myArea = "read Parameter";
         readParameterFile();
+        log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName +"<.");
+        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogLevel(getIntLogLevel());
+
         myArea = "read Excel";
         rc = readExcelFile();
         if (tableExcelFile.size() == 0 || !Constants.OK.equals(rc)) {
@@ -206,9 +204,11 @@ public class LoadDataFromExcel {
 
         try {
             myArea = "SQL Execution";
-            logMessage = "Connecting to >" + databaseConnDef + "< using userID >" + tableOwner + "<.";
+            logMessage = "Connecting to >" + connectionProperties.getActualDatabase() + "< using user >"
+                    + connectionProperties.getDatabaseTableOwner() + "<.";
             log(myName, Constants.DEBUG, myArea, logMessage);
-            connection = DriverManager.getConnection(url, tableOwner, tableOwnerPassword);
+            connection = connectionProperties.getUserConnection();
+//            connection = DriverManager.getConnection(url, tableOwner, tableOwnerPassword);
             connection.setAutoCommit(false); //commit transaction manually*
             insertTableSQL =
                 "INSERT INTO " + tableName + " (" + concatenatedDatabaseColumnNames + ")  VALUES (" +
@@ -289,12 +289,14 @@ public class LoadDataFromExcel {
                                 myArea="binding";
                                 log(myName, Constants.VERBOSE, myArea, "length >" + attribute.getText().length() +"<. getText =>" +attribute.getText() +"<.");
                                 log(myName, Constants.VERBOSE, myArea, "Trimmed length >" + attribute.getText().trim().length() +"<. getText Trimmed =>" +attribute.getText().trim() +"<.");
-                                if (Constants.DATABASETYPE_DB2.equals(getDatabaseType())) {
+                                if (Constants.DATABASETYPE_DB2.equals(connectionProperties.getDatabaseType())) {
                                     // JDBC Driver Db2 does not yet support setNString
-                                    log(myName, Constants.VERBOSE, myArea, "Database type is >" + getDatabaseType() +"<. Using setString.");
+                                    log(myName, Constants.VERBOSE, myArea, "Database type is >"
+                                            + connectionProperties.getDatabaseType() +"<. Using setString.");
                                     preparedStatement.setString(bindVariableNo, attribute.getText().trim());
                                 } else {
-                                    log(myName, Constants.VERBOSE, myArea, "Database type is >" + getDatabaseType() +"<. Using setNString.");
+                                    log(myName, Constants.VERBOSE, myArea, "Database type is >"
+                                            + connectionProperties.getDatabaseType() +"<. Using setNString.");
                                     preparedStatement.setNString(bindVariableNo, attribute.getText().trim());
                                 }
                             break;
@@ -436,66 +438,17 @@ public class LoadDataFromExcel {
     }
 
     private void readParameterFile() {
-        //Function to read the parameters in a parameter file
         String myName = "readParameterFile";
-        String myArea = "reading";
-        String logMessage = Constants.NO;
-        String result =Constants.NOT_FOUND;
+        String myArea = "reading parameters";
+        String logMessage = Constants.NOT_INITIALIZED;
 
-        databaseType = GetParameters.GetDatabaseType(databaseName);
-        logMessage = "Database type >" + databaseType +"<.";
-        log(myName, Constants.INFO, myArea, logMessage);
-
-        databaseConnDef = GetParameters.GetDatabaseConnectionDefinition(databaseName);
-        logMessage = "Database connection definition: " + databaseConnDef;
-        log(myName, Constants.INFO, myArea, logMessage);
-
-        driver = GetParameters.GetDatabaseDriver(databaseType);
-        logMessage = "driver: " + driver;
-        log(myName, Constants.INFO, myArea, logMessage);
-        url = GetParameters.GetDatabaseURL(databaseConnDef);
-
-        tableOwner = GetParameters.GetDatabaseTableOwnerName(databaseName);
-        logMessage = "Table Owner UserID >" + tableOwner + "<.";
-        log(myName, Constants.INFO, myArea, logMessage);
-
-        tableOwnerPassword = GetParameters.GetDatabaseTableOwnerPWD(databaseName);
-        logMessage = "Password for user >" + tableOwner + "< retrieved.";
-        log(myName, Constants.INFO, myArea, logMessage);
-
-        userId = GetParameters.GetDatabaseUserName(databaseName);
-        logMessage = "User UserID >" + userId + "<.";
-        log(myName, Constants.INFO, myArea, logMessage);
-        password = GetParameters.GetDatabaseUserPWD(databaseName);
-        logMessage = "Password for user >" + userId + "< retrieved.";
-        log(myName, Constants.INFO, myArea, logMessage);
-
-        logUrl = GetParameters.GetLogUrl();
-        logMessage = "logURL >" + logUrl +"<.";   log(myName, Constants.DEBUG, myArea, logMessage);
-
-        result =GetParameters.getPropertyVal(Constants.FIXTURE_PROPERTIES, Constants.PARAM_RESULT_FORMAT);
-        if(Constants.NOT_FOUND.equals(result)) {
-            setResultFormat(Constants.DEFAULT_RESULT_FORMAT);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        if(connectionProperties.refreshConnectionProperties(databaseName)) {
+            log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
+        } else {
+            log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
         }
-        else {
-            setResultFormat(result);
-        }
-        log(myName, Constants.DEBUG, myArea, "resultFormat >" + getResultFormat() +"<.");
 
-        //Commit size
-        result =GetParameters.getPropertyVal(Constants.FIXTURE_PROPERTIES, getAppName(), this.className, Constants.PARAM_COMMIT_SIZE_INSERT);
-        if(Constants.NOT_FOUND.equals(result)) {
-            setCommitSize(Constants.DEFAULT_COMMIT_SIZE_INSERT);
-        }
-        else {
-            setCommitSize(Integer.parseInt(result));
-        }
-        log(myName, Constants.DEBUG, myArea, "Commit size >" + Integer.toString(getCommitSize()) +"<.");
-
-    }
-    
-    public String getDatabaseType() {
-        return databaseType;
     }
 
     private String readExcelFile() {

@@ -1,0 +1,19 @@
+---
+Suites: BijzonderBeheer
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/fixtures/bin
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+
+!|import   |
+|database  |
+|supporting|
+
+|get single value                                                                                                                |
+|database name|table name|query                                                                                                           |get column ?|
+|TLW|BATCHID     |select MAX(BATCHID) from RBG_SAM_COLL_BATCH_FILES|7                       |

@@ -1,0 +1,46 @@
+!*< pathsettings
+
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/fitnesse-standalone.jar
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+*!
+
+#!define TEST_SYSTEM {slim} 
+#!path ../fitnesse/fitnesse-standalone.jar
+#!path ../fitnesse/java_workspace/fixtures
+#!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+#!path ../fitnesse/ibm/db2jcc.jar 
+#!path ../fitnesse/netezza/nzjdbc.jar                                                                                                      
+#!path ../fitnesse/ms/sqljdbc4.jar
+#!path ../fitnesse/hpnonstop/t4sqlmx.jar                                              
+#!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+
+--------
+'''Scenario: '''
+
+GIVEN 
+WHEN 
+THEN 
+
+--------
+
+
+|Run Exec Plan                                                               |
+|Env         |exec Plan Name                |run mode|start Plan successfull?|
+|EB2|RB CRM User|Full    |Success                |
+
+|Run Exec Plan                                      |
+|Env         |exec Plan Name                |Result?|
+|EB2|RB CRM User|Success|
+

@@ -1,0 +1,47 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+
+!2 Fixture example: Check fixture properties
+Use this fixture to verify the connection the fixtures make to databases.
+|script           |Check fixture properties |
+|for database name|DWHD_IN                  |
+|ensure           |login user   |user_sti   |
+|show             |login user               |
+|ensure           |db connection|SRV0OPWL401|
+|show             |db connection            |
+|for database name|SIEBEL                   |
+|show             |db connection            |
+|show             |login user               |
+
+
+!2 Compare table data
+!3 In this example a No is expected as the source table has many records where the target only had 1, at least on 29-July-2015.
+|Compare Table Data|product_failure                                                                                                                                                 |
+|verbose logging   |date format|source databaseName|Source Table|Source Filter                    |target database name|Target Table     |Target Filter|same data?|get log filename?|
+|No                |yyyyMMdd   |SIEBEL             |S_PROD_INT  |last_upd > FITCONVERTDT(20130823)|DWHD_IN             |STI_WC_PROD_INT_G|LATEST       |No        |                 |
+
+
+!2 Compare table data
+!3 In this example, on 29-July-2015, the result was ERROR. 
+The error was: column (not excluded);Column >BATCH_ID< could not be found in source table
+|Compare Table Data|industry_error                                                                                                                                 |
+|date format       |source databaseName|Source Table|Source Filter|target database name|Target Table   |Target Filter|same data?|get log filename?|get differences?|
+|yyyyMMdd          |SIEBEL             |S_INDUST    |             |DWHD_IN             |STI_WC_INDUST_G|LATEST       |ERROR     |                 |                |
+
+!2 Compare table data
+!3 In this example, on 14-Sep-2015, the result was Yes (Same data)
+The example takes the S_DUAL from Siebel. S_DUAL has the following columns
+
+ROW_ID, CONFLICT_ID,CREATED,CREATED_BY,DB_LAST_UPD,DB_LAST_UPD_SRC,DCKING_NUM,LAST_UPD,LAST_UPD_BY,MODIFICATION_NUM,X 
+
+The target table, Oracle's dual, only has 1 column (named X). So the query generates some additional columns and values that match the content of the S_DUAL table in Siebel.
+
+The source database is a DB2 z/OS database.
+The target database is an Oracle database.
+
+|Compare Table Data|dual_test                                                                                                                                                                  |
+|verbose logging   |date format|source databaseName|Source Table|Source Filter|target database name|Target Table                                    |Target Filter|same data?|get log filename?|
+|No                |yyyyMMdd   |SIEBEL             |IDQ_DUAL    |             |DWHD_IN             |(SELECT 'X-X' as ROW_ID, 'X' as X from DUAL) sti|             |Yes       |                 |

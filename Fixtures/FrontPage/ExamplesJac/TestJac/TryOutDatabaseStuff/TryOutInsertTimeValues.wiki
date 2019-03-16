@@ -1,0 +1,65 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+!|import                      |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+
+!2 Insert date/time and timestamp values (Oracle only)
+|table: select query|tryout_insert_timestamps_oracle                                                                                         |
+|database name      |DWHD_IN                                                                                                                 |
+|sql statement      |SELECT table_name, column_name, data_type FROM all_tab_columns a where table_name ='FIXTURE_TIMETEST' order by column_id|
+|column names       |table_name                                |column_name                            |data_type                            |
+|column values      |FIXTURE_TIMETEST                          |COL1                                   |VARCHAR2                             |
+|column values      |FIXTURE_TIMETEST                          |DATETIME                               |DATE                                 |
+|column values      |FIXTURE_TIMETEST                          |DATETIMESTAMP6                         |TIMESTAMP(6)                         |
+|column values      |FIXTURE_TIMETEST                          |DATETIMESTAMP9                         |TIMESTAMP(9)                         |
+
+
+|table:delete query                                       |
+|database name   |DWHD_IN                                 |
+|table name      |FIXTURE_TIMETEST                        |
+|records with    |col1 is null or col1 like 'fixturetest%'|
+|Ignore 0 Records|Yes                                     |
+
+
+!3 Insert new version 25-May-2014
+Arguments
+1 - Opttional. Context. Used to generate a better log file. Strongly recommended to allow debugging
+2 - Optional. For future use of user defined time formats as in ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.SelectQuery. For now, always provide DEFAULT
+3 - Optional. Showlogname. Whether or not an additional line should be added with a link to the fixture's log file. Default is Showlogname=No.
+Note:
+The arguments are to be provided by position. So if you want the log file name to be displayed, it must be the 3rd argument, and you need to specify values for the first 2.
+
+|table: insert query|tryout_inserttime_oracle|DEFAULT                                       |Showlogname=Yes                                                                                                             |
+|database name      |DWHD_IN                                                                                                                                                                                             |
+|table name         |fixture_timetest        |IGNORE_0_RECORDS                                                                                                                                                           |
+|column names       |col1                    |datetime                                      |datetimestamp6                                              |datetimestamp9                                                 |
+|r1                 |fixturetest1            |TO_DATE('20120405 193859','YYYYMMDD HH24MISS')|TO_DATE('20120405 193859','YYYYMMDD HH24MISS')              |TO_DATE('20120405 193859','YYYYMMDD HH24MISS')                 |
+|r2                 |fixturetest2            |TO_DATE('20120405 193859','YYYYMMDD HH24MISS')|TO_TIMESTAMP('20120405 193859020202','YYYYMMDD HH24MISSFF') |TO_DATE('20120405 193859','YYYYMMDD HH24MISS')                 |
+|r3                 |fixturetest3            |TO_DATE('20120405 193859','YYYYMMDD HH24MISS')|TO_TIMESTAMP('20120405 193859030303','YYYYMMDD HH24MISSFF6')|TO_TIMESTAMP('20120405 193859123456789','YYYYMMDD HH24MISSFF9')|
+
+
+|table: select query|tryout_insert_timestamps_oracle                                                                                         |
+|database name      |DWHD_IN                                                                                                                 |
+|sql statement      |SELECT col1, datetime, datetimestamp6, datetimestamp9 FROM fixture_timetest where col1 like 'fixturetest%' order by col1|
+|nr_cols_ok         |col1                |datetime                   |datetimestamp6                    |datetimestamp9                      |
+|4                  |fixturetest1        |2012-04-05 19:38:59        |2012-04-05 19:38:59               |2012-04-05 19:38:59                 |
+|4                  |fixturetest2        |2012-04-05 19:38:59        |2012-04-05 19:38:59.020202        |2012-04-05 19:38:59                 |
+|4                  |fixturetest3        |2012-04-05 19:38:59        |2012-04-05 19:38:59.030303        |2012-04-05 19:38:59.123456789       |
+
+
+!lastmodified
+!today (dd-MM-yyyy HH:mm:ss.SSS)

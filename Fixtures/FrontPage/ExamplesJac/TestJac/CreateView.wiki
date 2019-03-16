@@ -1,0 +1,13 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+
+|create view|
+|Env|tableName|viewMode|view created?|
+|DBAR|S_ORG_EXT|Full|OK|
+
+
+
+

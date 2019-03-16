@@ -1,0 +1,21 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path /u01/app/ibm/db2c/db2inst/sqllib/java/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+
+!lastmodified
+
+!define my_parameter {100}
+!define my_value_small {1}
+!define my_value_equal {100}

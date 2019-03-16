@@ -1,0 +1,10 @@
+---
+Suites: scheduler
+Test
+---
+
+!3 Show scheduler jobs and next trigger
+
+|Query:scheduler info|show_${schedulename}|
+|Group               |Jobname                  |Next Fire Time|Previous Fire Time|Final Fire Time|
+|                    |${schedulename}|              |||

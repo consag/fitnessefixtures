@@ -16,19 +16,19 @@ import java.text.SimpleDateFormat;
 public class BasicUpdate {
 
     private String className = "BasicUpdate";
+    private static String version = "20180823.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
 
-    private String driver;
-    private String url;
-    private String userId;
-    private String password;
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+
     private String databaseName;
-    private String databaseType;
-    private String databaseConnDef;
 
     private String tableName;
     private String ignore0Records = Constants.NO;
@@ -37,6 +37,8 @@ public class BasicUpdate {
     private String filterValue = Constants.NOT_PROVIDED;
     private String modifyColumn = Constants.NOT_PROVIDED;
     private String modifyValue = Constants.NOT_PROVIDED;
+    private List<String> modifyColumnNameList = new ArrayList<String>();
+    private List<String> modifyColumnValueList = new ArrayList<String>();
     private String numberOfRecordsUpdated = Constants.NONE;
 
     private String errorMessage = Constants.NOERRORS;
@@ -69,7 +71,6 @@ public class BasicUpdate {
      */
     public boolean result(String expected) {
 
-        readParameterFile();
         submitUpdateStatement();
 
         if (getErrorLevel().equals(expected))
@@ -120,17 +121,28 @@ public class BasicUpdate {
         Statement statement = null;
         int nrRecords = 0;
         String updateString = Constants.NOT_INITIALIZED;
+        String setClause =" SET ";
         
         try {
-            connection = DriverManager.getConnection(url, userId, password);
+            myArea="readParameterFile";
+            readParameterFile();
+            log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName +"<.");
+            connectionProperties.setLogFileName(logFileName);
+            connectionProperties.setLogLevel(getIntLogLevel());
+            connection = connectionProperties.getUserConnection();
+
             // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
             statement = connection.createStatement();
             // sql query of string type to submit update SQL statement into database.
+            setClause =getSetValList();
             updateString =
-                "UPDATE " + tableName + " SET " + getModifyColumn() + "=" + getModifyValue() + "  WHERE " +
+                    /*"UPDATE " + tableName + " SET " + getModifyColumn() + "=" + getModifyValue() + "  WHERE " +
                 getFilterColumn() + " IN (" + getFilterValue() +")";
+*/
+                    "UPDATE " + tableName + setClause + " WHERE " +
+                            getFilterColumn() + " IN (" + getFilterValue() +")";
 
-            logMessage = "SQL: " + updateString;
+            logMessage = "SQL > " + updateString +"<.";
             log(myName, Constants.INFO, myArea, logMessage);
             nrRecords =statement.executeUpdate(updateString);
             setNumberOfRecordsUpdated(nrRecords);
@@ -162,43 +174,68 @@ public class BasicUpdate {
         return getErrorLevel();
     }
 
+    private String getSetValList(){
+        String result =" SET ";
+        String myName = "getSetValList";
+        String myArea = "run";
+
+        if (modifyColumnValueList.size() != modifyColumnNameList.size()){
+            return "#Columns does not match #value";
+        }
+        for(int i=0; i < modifyColumnNameList.size() ; i++) {
+            if(i!=0) {
+                result +=", ";
+            }
+            result += modifyColumnNameList.get(i) +"=" + modifyColumnValueList.get(i);
+            log(myName, Constants.VERBOSE, myArea, "set claus so far >" +result +"<.");
+        }
+        log(myName, Constants.DEBUG, myArea, "Final generated set clause >"+ result +"<.");
+
+        return result;
+    }
+
     private void readParameterFile() {
         String myName = "readParameterFile";
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
 
-        databaseType = GetParameters.GetDatabaseType(databaseName);
-        databaseConnDef = GetParameters.GetDatabaseConnectionDefinition(databaseName);
-        driver = GetParameters.GetDatabaseDriver(databaseType);
-        url = GetParameters.GetDatabaseURL(databaseConnDef);
-        userId = GetParameters.GetDatabaseUserName(databaseName);
-        password = GetParameters.GetDatabaseUserPWD(databaseName);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        if(connectionProperties.refreshConnectionProperties(databaseName)) {
+            log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
+        } else {
+            log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
+        }
 
-        logMessage = "databaseType >" + databaseType + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "connection >" + databaseConnDef + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "driver >" + driver + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "url >" + url + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "userId >" + userId + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
     }
 
-    private void log(String name, String level, String location, String logText) {
+    private void log(String name, String level, String area, String logMessage) {
         if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
             return;
         }
 
-        Logging.LogEntry(getLogFilename(), name, level, location, logText);
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+        }
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
-
     /**
-     * @return the log file name
+     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
      */
     public String getLogFilename() {
-        return logFileName + ".log";
+        if(logUrl.startsWith("http"))
+            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        else
+            return logUrl+logFileName + ".log";
+    }
+
+    public static String getVersion() {
+        return version;
     }
 
     /**
@@ -376,6 +413,19 @@ public class BasicUpdate {
 
         logMessage="Column to modify on has been set to >" + this.modifyColumn + "<.";
         log(myName, Constants.VERBOSE,myArea,logMessage);
+
+        addToModifyColumnNameList(colName);
+    }
+
+    private void addToModifyColumnNameList(String colName) {
+        String myName = "addToModifyColumnNameList";
+        String myArea ="run";
+        String logMessage=Constants.NOT_INITIALIZED;
+
+        this.modifyColumnNameList.add(colName);
+        logMessage="Column has been added to modifyList >" + this.modifyColumnNameList.toString() + "<.";
+        log(myName, Constants.VERBOSE,myArea,logMessage);
+
     }
 
     /**
@@ -395,6 +445,18 @@ public class BasicUpdate {
         this.modifyValue = colValue;
 
         logMessage="Value to modify column to has been set to >" + this.modifyValue + "<.";
+        log(myName, Constants.VERBOSE,myArea,logMessage);
+
+        addToModityColumnValueList(colValue);
+    }
+
+    private void addToModityColumnValueList(String value) {
+        String myName ="addToModityColumnValueList";
+        String myArea ="run";
+        String logMessage=Constants.NOT_INITIALIZED;
+        this.modifyColumnValueList.add(value);
+
+        logMessage="Column has been added to valueList >" + this.modifyColumnValueList.toString() + "<.";
         log(myName, Constants.VERBOSE,myArea,logMessage);
     }
 

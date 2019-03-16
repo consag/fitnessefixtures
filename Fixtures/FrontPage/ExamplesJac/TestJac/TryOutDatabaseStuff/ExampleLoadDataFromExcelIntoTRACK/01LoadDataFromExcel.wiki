@@ -1,0 +1,24 @@
+---
+Suites: TRACK
+Test
+---
+!3 Load data from Excel into Track
+
+!define tablename {tblMigrate}
+
+|Truncate table |truncate_${tablename}       |
+|database name  |table name  |truncate table?|
+|${dbconnection}|${tablename}|OK             |
+
+!4 Load from Excel
+
+Your Excel must exist in ${location}
+In ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleLoadDataFromExcelIntoTRACK.FitNesse click on Tools --> Files. Then click on your folder ${location}
+If the file already exists, delete it before uploading it again.
+You don't have to close Excel before uploading. Just save the file, go to the ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleLoadDataFromExcelIntoTRACK.FitNesse file list, delete the old one, select the changed file, upload it.
+Keep the browser window open. Use another window/tab to run your tests from.
+
+|load data from excel|load_${tablename}                                                              |
+|database name       |table name  |input file              |worksheet name|result?|get error message?|
+|${dbconnection}     |${tablename}|${location} ${excelFile}|${excelSheet} |OK     |                  |
+

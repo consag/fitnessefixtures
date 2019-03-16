@@ -1,15 +1,15 @@
 # fitnessefixtures
-The FitNesse Fixtures in this repository are created as part of an overall solution for automating the test cycle.
+The FitNesse Fixtures are created as part of an overall solution for automating the test cycle.
 
-## Moved to sourceforge
-Updates are available on sourceforge: https://sourceforge.net/projects/fitnessefixtures/
+## Linux installation ReadMe
+The readme for Linux can be found in the directory 'linuxscripts', here on github: https://github.com/consag/fitnessefixtures/tree/master/linuxscripts
+
+
+## Download
+You can download the jar with all compiled fixtures from the release tab.
 
 ## Fixture documentation
 Check the properties files, [Properties files on gist](https://gist.github.com/jacbeekers), here on github with examples for the fixture.properties, application.properties and other important properties files.
-
-[Start Workflow example](https://gist.github.com/jacbeekers/2dd0c97d2b3f98457a1223af83341a09)
-
-[Stop Workflow example](https://gist.github.com/jacbeekers/f26644b32de471b843f57ba14fe7af59)
 
 ## FitNesse Configuration
 Fixtures rely on various parameters that need to be set up in properties files. Not all fixtures use all properties files.

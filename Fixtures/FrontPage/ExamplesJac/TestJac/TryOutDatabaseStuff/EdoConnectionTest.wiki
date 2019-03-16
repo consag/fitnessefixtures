@@ -1,0 +1,39 @@
+---
+Suites: EDO
+---
+!contents
+
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+
+
+|import                    |
+|generic.fixtures.Global   |
+|generic.fixtures.DBFixture|
+
+!2 Dev?
+|count query|edodev                                            |
+|databaseName|tableName|count Records?|get log filename?|
+|EDODEV      |custagr |18823         |                 |
+
+!2 Keten1
+|count query|edokt1                                            |
+|databaseName|tableName|count Records?|get log filename?|
+|EDOKT1      |custagr |18823         |                 |
+
+!2 Keten3
+|count query|edokt3                                            |
+|databaseName|tableName|count Records?|get log filename?|
+|EDOKT3      |custagr |18823         |                 |
+
+!2 Keten4
+|count query|edokt4                                            |
+|databaseName|tableName|count Records?|get log filename?|
+|EDOKT4      |custagr |18823         |                 |
+
+!2 Keten5
+|count query|edokt5                                            |
+|databaseName|tableName|count Records?|get log filename?|
+|EDOKT5      |custagr |18823         |                 |
+

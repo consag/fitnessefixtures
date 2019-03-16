@@ -16,47 +16,33 @@ import nl.consag.testautomation.supporting.*;
 import static nl.consag.testautomation.supporting.Constants.propFileErrors;
 
 public class DropTable {
-    private static String version ="20180309.0";
 	private String className = "DropTable";
+    private static String version ="20180620.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
-	private String context = Constants.DEFAULT;
-	private String startDate = Constants.NOT_INITIALIZED;
-    private String notInitialized = Constants.NOT_INITIALIZED;
+    private String context = Constants.DEFAULT;
+    private String startDate = Constants.NOT_INITIALIZED;
+    private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
+
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+
     private String errorMessage = Constants.NO_ERRORS;
-    private int logLevel =3;
-    private int logEntries =0;
-
-    private String databaseDriver;
-
-    private String databaseUrl;
-    private String databaseUserId;
-    private String databasePassword;
-    private String databaseConnection;
     private String query;
-    private String databaseType;
-    private String databaseTableOwner;
-    private String databaseTableOwnerPassword;
-    private String tableOwnerTablePrefix;
-    private String tableOwnerUseTablePrefix; //from connetions.properties
-    private boolean useTablePrefix =true;
-    private String databaseSchema;
-    private boolean useSchema =false;
-    private boolean useTableOwner =true;
-    private String tableComment = Constants.TABLE_COMMENT;
 
     private String databaseName =Constants.NOT_PROVIDED;
     private String actualDatabase = Constants.NOT_FOUND;
     private String tableName =Constants.NOT_PROVIDED;
+    private String tableComment = Constants.TABLE_COMMENT;
 
     private String errorCode =Constants.OK;
     private boolean errorIndicator =false;
 
-
     private boolean ignoreErrorOnDrop =false;
     
 	private int NO_FITNESSE_ROWS_TO_SKIP = 3;
-
 
 	public DropTable() {
 		//Constructors
@@ -77,13 +63,18 @@ public class DropTable {
 
 	    }
 
+    public void ignoreErrorOnDrop(String yesNo) {
+	    ignoreError(yesNo);
+    }
+
     public void ignoreError(String yesNo) {
         if(yesNo.equals(Constants.YES))
             ignoreErrorOnDrop=true;
         else
             ignoreErrorOnDrop=false;
     }
-    private boolean getIgnoreError() {
+
+    public boolean getIgnoreError() {
 	    return this.ignoreErrorOnDrop;
     }
     
@@ -104,33 +95,40 @@ public class DropTable {
         databaseName=inDatabase;
         myArea="check db type";
 
-        setDatabaseConnection(inDatabase);
         readParameterFile();
 
-        if(useTablePrefix) {
-            if (Constants.DEFAULT_PROPVALUE.equals(getTableOwnerTablePrefix())) {
-                setTableOwnerTablePrefix(Constants.TABLE_PREFIX);
-                tableName = getTableOwnerTablePrefix() + inTableName;
-            } else {
-                tableName = getTableOwnerTablePrefix() + inTableName;
-            }
-        } else {
-            tableName =inTableName;
-        }
-        tableName = tableName.toUpperCase();
-
-        if("Oracle".equals(databaseType) || "DB2".equals(databaseType)) {
-            sqlStatement = "drop table " + tableName;
-            log(myName, Constants.DEBUG, myArea,"SQL statement is >" +sqlStatement +"<.");
-            commentStatement ="select comments from user_tab_comments where table_name ='" + tableName +"'";
-            existStatement="select count(*) from user_tables where table_name='" + tableName +"'";
-        } else {
-            logMessage="databaseType >" + databaseType +"< not yet supported";
-            log(myName, Constants.ERROR, myArea, logMessage);
-            errorMessage=logMessage;
+        if(getErrorIndicator()) {
+            setError(Constants.ERRCODE_PROPERTIES,"An error occurred while determining connection properties");
             return false;
         }
-         
+
+        if(connectionProperties.getUseTablePrefix()) {
+            tableName = connectionProperties.getTableOwnerTablePrefix() + inTableName;
+            tableName = tableName.toUpperCase();
+            setTableName(tableName);
+            log(myName, Constants.DEBUG, myArea, "useTablePrefix is >true<. Table name set to >" + getTableName() +"<.");
+        } else {
+            tableName = inTableName.toUpperCase();
+            setTableName(tableName);
+            log(myName, Constants.DEBUG, myArea, "useTablePrefix is >false<. Table name is >" + getTableName() +"<.");
+        }
+
+        switch (connectionProperties.getDatabaseType()) {
+            case Constants.DATABASETYPE_ORACLE:
+            case Constants.DATABASETYPE_DB2:
+                sqlStatement = "drop table " + tableName;
+                log(myName, Constants.DEBUG, myArea,"SQL statement is >" +sqlStatement +"<.");
+                commentStatement ="select comments from user_tab_comments where table_name ='" + tableName +"'";
+                existStatement="select count(*) from user_tables where table_name='" + tableName +"'";
+                break;
+            default:
+                logMessage="databaseType >" + connectionProperties.getDatabaseType() +"< not yet supported";
+                log(myName, Constants.ERROR, myArea, logMessage);
+                setErrorMessage(logMessage);
+                return false;
+                //break;
+        }
+
         /* We limit the drop to tables previously created using the CreateTable fixture
          * The CreateTable fixture uses a specific table comment (Oracle). If the comment is different or does not exist,
          * the DropTable fixture will NOT drop the table
@@ -153,7 +151,7 @@ public class DropTable {
             }
         }
 
-        if("Oracle".equals(databaseType)) {
+        if(Constants.DATABASETYPE_ORACLE.equals(connectionProperties.getDatabaseType())) {
             dbCol.setDatabaseName(databaseName);
             dbCol.setQuery(commentStatement);
             commentFound = dbCol.getColumn();
@@ -170,15 +168,16 @@ public class DropTable {
          
         try {
         myArea="SQL Execution";
-           logMessage = "Connecting to >" + getDatabaseConnection() +"< using userID >" + getDatabaseTableOwner() + "<.";
-           log(myName, "info", myArea, logMessage);
-                connection = DriverManager.getConnection(getDatabaseUrl(), getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
+           logMessage = "Connecting to >" + connectionProperties.getDatabase() +"< using userID >" + connectionProperties.getDatabaseTableOwner() + "<.";
+           log(myName, Constants.INFO, myArea, logMessage);
+           connection = connectionProperties.getOwnerConnection();
+//                connection = DriverManager.getConnection(getDatabaseUrl(), getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
                 statement = connection.createStatement();
                 logMessage="SQL >" + sqlStatement +"<.";
-                log(myName, "info", myArea, logMessage);
+                log(myName, Constants.INFO, myArea, logMessage);
                 sqlResult= statement.executeUpdate(sqlStatement);
             logMessage="SQL returned >" + Integer.toString(sqlResult) + "<.";
-           log(myName, "info", myArea, logMessage);
+           log(myName, Constants.INFO, myArea, logMessage);
 
           statement.close();
           connection.close();      
@@ -187,20 +186,30 @@ public class DropTable {
                 myArea="Exception handling";
                 logMessage = "SQLException at >" + myName + "<. Error =>" + e.toString() +"<.";
                 log(myName, "ERROR", myArea, logMessage);
-                if(e.toString().contains("ORA-00942") && ignoreErrorOnDrop) {
-                    errorMessage=Constants.NO_ERRORS;
+                if((e.toString().contains("ORA-00942")
+                        || /*DB2*/ e.toString().contains("SQLCODE=-204, SQLSTATE=42704"))
+                        && ignoreErrorOnDrop) {
+                    setErrorMessage(Constants.NO_ERRORS);
                     rc=true;
                 } else {
-                errorMessage=logMessage;
+                    setErrorMessage(logMessage);
                  rc =false;
                 }
               }
     
          return rc;
     }
-    
+
+    private void setErrorMessage(String errorMessage) {
+	    this.errorMessage = errorMessage;
+    }
+
     public String tableNameFor (String inTableName) {
-        return getTableOwnerTablePrefix() + inTableName;
+	    if(connectionProperties.getUseTablePrefix()) {
+	        return connectionProperties.getTableOwnerTablePrefix() +"." + inTableName;
+        } else {
+	        return inTableName;
+        }
 
     }
     
@@ -209,15 +218,22 @@ public class DropTable {
         String myArea="init";
         String logMessage=Constants.NOT_INITIALIZED;
 
-        String tableName = getTableOwnerTablePrefix() + inTableName;
-        String nrTablesFound =notInitialized;
+        String tableName;
+        String nrTablesFound =Constants.NOT_INITIALIZED;
         
         myArea="check db type";
         readParameterFile();
-        if(databaseType.equals("Oracle")) {
+        if(connectionProperties.getUseTablePrefix()) {
+            tableName = connectionProperties.getTableOwnerTablePrefix() + inTableName;
+        } else {
+            tableName = inTableName;
+        }
+        
+        if(Constants.DATABASETYPE_ORACLE.equals(connectionProperties.getDatabaseType())) {
             query="SELECT count(*) tblcount FROM user_tables WHERE table_name ='" +tableName +"'";
         } else {
-            logMessage="databaseType >" + databaseType +"< not yet supported";       log(myName, "info", myArea, logMessage);  
+            logMessage="databaseType >" + connectionProperties.getDatabaseType() +"< not yet supported";       
+            log(myName, Constants.INFO, myArea, logMessage);  
             errorMessage=logMessage;
             return false;
         }
@@ -239,57 +255,65 @@ public class DropTable {
         return errorMessage;
     }
 
-    private void log(String name, String level, String location, String logText) {
-           if(Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
-               return;
-           }
-        logEntries++;
-        if(logEntries ==1) {
-            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
+    private void log(String name, String level, String area, String logMessage) {
+        if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
+            return;
         }
-            Logging.LogEntry(logFileName, name, level, location, logText);
-       }
+
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+        }
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
+    }
+
+    public static String getVersion() {
+        return version;
+    }
 
     /**
-    * @return
-    */
+     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
+     */
     public String getLogFilename() {
-            return logFileName + ".log";
+        if(logUrl.startsWith("http"))
+            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        else
+            return logUrl+logFileName + ".log";
     }
-
     /**
-    * @param level
-    */
+     * @param level
+     */
     public void setLogLevel(String level) {
-    String myName ="setLogLevel";
-    String myArea ="determineLevel";
-    
-    logLevel =Constants.logLevel.indexOf(level.toUpperCase());
-    if (logLevel <0) {
-       log(myName, Constants.WARNING, myArea,"Wrong log level >" + level +"< specified. Defaulting to level 3.");
-       logLevel =3;
-    }
-    
-    log(myName,Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
-    }
+        String myName ="setLogLevel";
+        String myArea ="determineLevel";
 
-    /**
-    * @return
-    */
-    public String getLogLevel() {
-    return Constants.logLevel.get(getIntLogLevel());
-    }
-
-    /**
-    * @return
-    */
-    public Integer getIntLogLevel() {
-    return logLevel;
-    }
-
-        public static String getVersion() {
-            return version;
+        logLevel =Constants.logLevel.indexOf(level.toUpperCase());
+        if (logLevel <0) {
+            log(myName, Constants.WARNING, myArea,"Wrong log level >" + level +"< specified. Defaulting to level 3.");
+            logLevel =3;
         }
+
+        log(myName,Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
+    }
+
+    /**
+     * @return
+     */
+    public String getLogLevel() {
+        return Constants.logLevel.get(getIntLogLevel());
+    }
+
+    /**
+     * @return
+     */
+    public Integer getIntLogLevel() {
+        return logLevel;
+    }
 
     private String getProperty(String propertiesFile, String key, boolean mustExist) {
         String myName ="getProperty";
@@ -317,231 +341,18 @@ public class DropTable {
         return this.errorIndicator;
     }
 
-    public void readParameterFile() {
-        // database connection string has to be set by calling party
+    private void readParameterFile() {
         String myName = "readParameterFile";
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
-        String result = Constants.NOT_FOUND;
 
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".database", true);
-        if(getErrorIndicator())
-            return;
-        else setActualDatabase(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".databasetype", true);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseType(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".driver", true);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseDriver(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".url", true);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseUrl(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".username", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseUserId(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".username.password", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabasePassword(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection()+".tableowner", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseTableOwner(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".tableowner.password", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseTableOwnerPassword(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".tableowner.usetableprefix", false);
-        if(!getErrorIndicator())
-            setTableOwnerUseTablePrefix(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".tableowner.tableprefix", false);
-        if(!getErrorIndicator())
-            setTableOwnerTablePrefix(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".schemaname", false);
-        if(!getErrorIndicator())
-            setDatabaseSchema(result);
-
-        log(myName, Constants.INFO, myArea, "databaseType ..........>" + getDatabaseType() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseConnection ....>" + getDatabaseConnection() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseDriver ........>" + getDatabaseDriver() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseUrl ...........>" + getDatabaseUrl() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseUserId ........>" + getDatabaseUserId() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseTableOwner ....>" + getDatabaseTableOwner() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseSchema ........>" + getDatabaseSchema() + "<.");
-        log(myName, Constants.INFO, myArea, "tablePrefix ...........>" + getTableOwnerTablePrefix() + "<.");
-        log(myName, Constants.INFO, myArea, "useTablePrefix ........>" + getTableOwnerUseTablePrefix() +"<.");
-        if(Constants.FALSE.equalsIgnoreCase(getTableOwnerUseTablePrefix())) {
-            setTableOwnerUseTablePrefix(false);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        if(connectionProperties.refreshConnectionProperties(databaseName)) {
+            log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
         } else {
-            setTableOwnerUseTablePrefix(true);
-        }
-        if(useTablePrefix) log(myName, Constants.DEBUG, myArea, "useTablePrefix has been set to >true<");
-        else log(myName, Constants.DEBUG, myArea, "useTablePrefix has been set to >false<");
-
-        if(Constants.DEFAULT_PROPVALUE.equals(getDatabaseSchema())) {
-            setUseSchema(false);
-        } else {
-            setUseSchema(true);
-        }
-        if(useSchema) log(myName, Constants.DEBUG, myArea, "useSchema has been set to >true<.");
-        else log(myName, Constants.DEBUG, myArea, "useSchema has been set to >false<");
-
-        if(Constants.DEFAULT_PROPVALUE.equals(getDatabaseTableOwner())) {
-            setUseTableOwner(false);
-        } else {
-            setUseTableOwner(true);
-        }
-        if(useTableOwner) log(myName, Constants.DEBUG, myArea, "useTableOwner has been set to >true<.");
-        else log(myName, Constants.DEBUG, myArea, "useTableOwner has been set to >false<.");
-
-        if(Constants.DEFAULT_PROPVALUE.equals(getTableOwnerTablePrefix())) {
-            setTableOwnerTablePrefix(Constants.TABLE_PREFIX);
-            log(myName, Constants.INFO, myArea, "Table prefix has been set to >" + getTableOwnerTablePrefix() +"<.");
+            log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
         }
 
-    }
-
-    private void setTableOwnerUseTablePrefix(boolean b) {
-        this.useTablePrefix =b;
-    }
-
-    public String getDatabaseDriver() {
-        return databaseDriver;
-    }
-
-    public void setDatabaseDriver(String databaseDriver) {
-        this.databaseDriver = databaseDriver;
-    }
-
-    public String getDatabaseUrl() {
-        return databaseUrl;
-    }
-
-    public void setDatabaseUrl(String databaseUrl) {
-        this.databaseUrl = databaseUrl;
-    }
-
-    public String getDatabaseUserId() {
-        return databaseUserId;
-    }
-
-    public void setDatabaseUserId(String databaseUserId) {
-        this.databaseUserId = databaseUserId;
-    }
-
-    public String getDatabasePassword() {
-        return databasePassword;
-    }
-
-    public void setDatabasePassword(String databasePassword) {
-        this.databasePassword = databasePassword;
-    }
-
-    public String getDatabaseConnection() {
-        return databaseConnection;
-    }
-
-    public void setDatabaseConnection(String databaseConnection) {
-        this.databaseConnection = databaseConnection;
-    }
-
-    public String getDatabaseType() {
-        return databaseType;
-    }
-
-    public void setDatabaseType(String databaseType) {
-        this.databaseType = databaseType;
-    }
-
-    public String getDatabaseTableOwner() {
-        return databaseTableOwner;
-    }
-
-    public void setDatabaseTableOwner(String databaseTableOwner) {
-        this.databaseTableOwner = databaseTableOwner;
-    }
-
-    private String getDatabaseTableOwnerPassword() {
-        String myName ="getDatabaseTableOwnerPassword";
-        String myLocation ="start";
-        Decrypt decrypt = new Decrypt();
-        String result = Decrypt.decrypt(databaseTableOwnerPassword);
-        if(Constants.OK.equals(decrypt.getErrorCode())) {
-            log(myName, Constants.VERBOSE, myLocation, "Password decryption successful.");
-        }
-        else {
-            setError(result,Constants.ERRCODE_DECRYPT);
-            log(myName, Constants.ERROR, myLocation, "Password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.");
-        }
-        return result;
-
-    }
-
-    public void setDatabaseTableOwnerPassword(String databaseTableOwnerPassword) {
-        this.databaseTableOwnerPassword = databaseTableOwnerPassword;
-    }
-
-    public String getTableOwnerTablePrefix() {
-        return tableOwnerTablePrefix;
-    }
-
-    public void setTableOwnerTablePrefix(String tableOwnerTablePrefix) {
-        this.tableOwnerTablePrefix = tableOwnerTablePrefix;
-    }
-
-    public String getTableOwnerUseTablePrefix() {
-        return tableOwnerUseTablePrefix;
-    }
-
-    public void setTableOwnerUseTablePrefix(String tableOwnerUseTablePrefix) {
-        this.tableOwnerUseTablePrefix = tableOwnerUseTablePrefix;
-    }
-
-    public boolean isUseTablePrefix() {
-        return useTablePrefix;
-    }
-
-    public void setUseTablePrefix(boolean useTablePrefix) {
-        this.useTablePrefix = useTablePrefix;
-    }
-
-    public String getDatabaseSchema() {
-        return databaseSchema;
-    }
-
-    public void setDatabaseSchema(String databaseSchema) {
-        this.databaseSchema = databaseSchema;
-    }
-
-    public boolean isUseSchema() {
-        return useSchema;
-    }
-
-    public void setUseSchema(boolean useSchema) {
-        this.useSchema = useSchema;
-    }
-
-    public boolean isUseTableOwner() {
-        return useTableOwner;
-    }
-
-    public void setUseTableOwner(boolean useTableOwner) {
-        this.useTableOwner = useTableOwner;
     }
 
     public String getTableComment() {

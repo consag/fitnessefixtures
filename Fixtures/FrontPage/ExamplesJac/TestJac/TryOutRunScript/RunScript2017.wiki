@@ -1,0 +1,164 @@
+---
+Test
+---
+!2 An example that uses the 2017 capabilities.
+
+!3 Proposed by Willem
+!4 Slightly changed by Jac.
+!4 Example (Check result code of the script AND verify a specific value)
+|comment                                                                               |
+|script              |execute script            |<script_to_execute>      |<log_prefix>    |
+|note                |<free text>                                                      |
+|set script location |<base_directory> <sub_directory>                                 |
+|set result location |<base_directory> <sub_directory>                                 |
+|set result file name|<property_file>                                                  |
+|add parameter       |<script_parameter 1>                                             |
+|add parameter       |<script_parameter 2>                                             |
+|add parameter       |<script_parameter n>                                             |
+|check               |run script return code|<return_code>                             |
+|check               |get log filename      |                                          |
+|check               |get result value      |<property_file_parameter>|<expected value>|
+
+!4 Description of the requested functionality
+!style_ignore(set file name): a method for indicating a <property_file> where the results can be stored
+!style_ignore(get result): a method for retrieving the value of a requested <parameter> in the <property_file> and verifying this
+!style_ignore(<base_directory>)
+base_directory is a logical name, the actual directory is located in the file !style_darkBlue[fileoperation.properties]. and can only be modified by the administrator. This will prevent that scripts are being executed from a random location.
+
+!style_ignore(<sub_directory>)('''optional''')
+The subdirectory is usual determined by the deployment.
+
+!style_ignore(parameters)
+A parameter can be anything that you use at a Linux commandline. It is only possible to use 1 parameter per line!
+
+!style_ignore(log_prefix)
+The prefix is used for the automatically generated logfile. This will make it easier to find your specific logfile in the fitnesse log_directory.
+
+The full path will be: <basedirectory>/<sub_directory>/<script_to_execute>
+
+----
+!3 Example
+
+Locations need to be defined in config/directory.properties
+
+!define scriptlocation {testscripts}
+!define resultpropertieslocation {resultlocation}
+
+|script              |execute script            |myOwnShellScript.sh  |runscriptexample2017|
+|note                |This is a proposed example                                       |
+|set log level       |DEBUG                                                            |
+|set script location |${scriptlocation} myapp                                          |
+|set result location |${resultpropertieslocation} myapp                                |
+|set result file name|exampleresult.txt                                                |
+|add parameter       |argument1                                                        |
+|add parameter       |argument2                                                        |
+|add parameter       |!-ThisIsArgument3-!                                              |
+|check               |run script return code|0                                         |
+|check               |get log filename      |                                          |
+|check               |get result value      |!-LinesInFile-!      |3                   |
+|check               |get result value      |!-WhichFileExamined-!|None-it's hardcoded |
+|check               |get result value      |!-SomeOtherValue-!   |!-EndsOn=-!         |
+
+!lastmodified
+
+----
+!3 Some negative unit tests
+!style_collapse_rim[All these testcases are intended to fail!]
+
+'''Script does not exist in the given directory''' !style_meta[(see note at the bottom of the page)]
+
+|script              |execute script            |DOESNOTEXIST.sh      |test1_runscriptexample2017|
+|note                |script does not exist in the given directory                           |
+|set log level       |DEBUG                                                                  |
+|set script location |${scriptlocation} myapp                                                |
+|set result location |${resultpropertieslocation} myapp                                      |
+|set result file name|exampleresult.txt                                                      |
+|add parameter       |argument1                                                              |
+|add parameter       |argument2                                                              |
+|add parameter       |!-ThisIsArgument3-!                                                    |
+|check               |run script return code|0                                               |
+|check               |get log filename      |                                                |
+|check               |get result value      |!-LinesInFile-!      |3                         |
+|check               |get result value      |!-WhichFileExamined-!|None-it's hardcoded       |
+|check               |get result value      |!-SomeOtherValue-!   |!-EndsOn=-!               |
+
+'''Script location does not exist''' !style_meta[(see note at the bottom of the page)]
+
+|script              |execute script            |myOwnShellScript.sh  |test2_runscriptexample2017|
+|note                |The script location does not exist                                     |
+|set log level       |DEBUG                                                                  |
+|set script location |${scriptlocation} myapps_non_existing                                  |
+|set result location |${resultpropertieslocation} myapp                                      |
+|set result file name|exampleresult.txt                                                      |
+|add parameter       |argument1                                                              |
+|add parameter       |argument2                                                              |
+|add parameter       |!-ThisIsArgument3-!                                                    |
+|check               |run script return code|0                                               |
+|check               |get log filename      |                                                |
+|check               |get result value      |!-LinesInFile-!      |3                         |
+|check               |get result value      |!-WhichFileExamined-!|None-it's hardcoded       |
+|check               |get result value      |!-SomeOtherValue-!   |!-EndsOn=-!               |
+
+'''Result location does not exist'''
+
+|script              |execute script            |myOwnShellScript.sh  |test3_runscriptexample2017|
+|note                |The result location does not exist                                     |
+|set log level       |DEBUG                                                                  |
+|set script location |${scriptlocation} myapp                                                |
+|set result location |${resultpropertieslocation} myapp_non_existing                         |
+|set result file name|exampleresult.txt                                                      |
+|add parameter       |argument1                                                              |
+|add parameter       |argument2                                                              |
+|add parameter       |!-ThisIsArgument3-!                                                    |
+|check               |run script return code|0                                               |
+|check               |get log filename      |                                                |
+|check               |get result value      |!-LinesInFile-!      |3                         |
+|check               |get result value      |!-WhichFileExamined-!|None-it's hardcoded       |
+|check               |get result value      |!-SomeOtherValue-!   |!-EndsOn=-!               |
+
+'''Wrong result parameters'''
+
+|script              |execute script            |myOwnShellScript.sh    |test4_runscriptexample2017|
+|note                |result parameters                                                        |
+|set log level       |DEBUG                                                                    |
+|set script location |${scriptlocation} myapp                                                  |
+|set result location |${resultpropertieslocation} myapp                                        |
+|set result file name|exampleresult.txt                                                        |
+|add parameter       |argument1                                                                |
+|add parameter       |argument2                                                                |
+|add parameter       |!-ThisIsArgument3-!                                                      |
+|check               |run script return code|0                                                 |
+|check               |get log filename      |                                                  |
+|check               |get result value      |!-Lines In File-!      |3                         |
+|check               |get result value      |!-Which File Examined-!|None-it's =ded            |
+|check               |get result value      |!-Some Other Value-!   |!-EndsOn=-!               |
+
+'''Script does not exist !style_meta[and] abortonerror set to Yes'''
+
+|script              |execute script            |DOESNOTEXIST.sh        |test5_runscriptexample2017|
+|note                |script does not exist and abortonerror set to Yes                        |
+|set abort on error  |Yes                                                                      |
+|set log level       |DEBUG                                                                    |
+|set script location |${scriptlocation} myapp                                                  |
+|set result location |${resultpropertieslocation} myapp                                        |
+|set result file name|exampleresult.txt                                                        |
+|add parameter       |argument1                                                                |
+|add parameter       |argument2                                                                |
+|add parameter       |!-ThisIsArgument3-!                                                      |
+|check               |run script return code|0                                                 |
+|check               |get log filename      |                                                  |
+|check               |get result value      |!-LinesInFile-!        |3                         |
+|check               |get result value      |!-WhichF==ileExamined-!|None-it's =ded            |
+|check               |get result value      |!-SomeOtherValue-!     |!-EndsOn=-!               |
+
+----
+'''contents of the result file'''
+{{{
+LinesInFile=3
+WhichFileExamined=None-it's hardcoded
+SomeOtherValue=EndsOn=
+}}}
+----
+'''!style_ignore(Note)'''
+The three result values are still marked !style_pass(green), because the result file including the expected values already exist from a previous run.
+Setting the abortonerror to !style_code[Yes] will prevent this (see "Script does not exist and abortonerror set to Yes")

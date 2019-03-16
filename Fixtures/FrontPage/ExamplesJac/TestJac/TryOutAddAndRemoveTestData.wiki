@@ -1,0 +1,62 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+
+|import                    |
+|generic.fixtures.Global   |
+|generic.fixtures.DBFixture|
+|generic.fixtures.DACFixture  |
+
+
+|script|Check fixture properties|
+|for database name|DWHD_IN|
+|ensure|login user|user_sti|
+|show|login user|
+|ensure|db connection|SRV0OPWL401|
+|show|db connection|
+|for database name|UPSBL|
+|show|db connection|
+|show|login user|
+
+!2 Find out which columns are mandatory and do not have default values
+!|table:show Mandatory Columns|
+|database name|table name|
+|UPSBL|S_LST_OF_VAL|
+|UPSBL|S_CONTACT|
+|UPSBL|S_CONTACT_XM|
+
+!2 Generate test data
+!3 Add some data to the S_LST_OF_VAL table in Siebel.
+You will get an error if these records already exist.
+
+!|table:Add Test Data|UPSBL|S_LST_OF_VAL|
+|NAME|VAL|ROW_ID|CREATED_BY|LAST_UPD_BY|TYPE|
+|testname1|testvalue1|JBE-DS1-01|0-1|0-1|EB2TestCase|
+|testname2|testvalue2|JBE-DS1-02|0-1|0-1|EB2TestCase|
+
+!3 Add some data to the S_CONTACT_XM table in Siebel.
+!|table:Add Test Data|UPSBL|S_CONTACT_XM|
+|NAME|PAR_ROW_ID|ROW_ID|TYPE|CREATED_BY|LAST_UPD_BY|
+|testname1-1|JBE-DS2-01|JBE-DS2-01M1|EB2TEST|0-1|0-1|
+|testname1-2|JBE-DS2-01|JBE-DS2-01M2|EB2TEST|0-1|0-1|
+|testname2-1|JBE-DS2-02|JBE-DS2-02M1|EB2TEST|0-1|0-1|
+
+
+!2 Remove test data
+!3 Remove the LST_OF_VAL data
+!|table:Remove Test Data|UPSBL|S_LST_OF_VAL|
+|NAME|VAL|ROW_ID|
+|testname1|testvalue1|JBE-DS1-01|
+|testname2|testvalue2|JBE-DS1-02|
+
+!3 Remove the CONTACT_XM data
+!|table:Remove Test Data|UPSBL|S_CONTACT_XM|
+|ROW_ID|
+|JBE-DS2-01M1|
+|JBE-DS2-01M2|
+|JBE-DS2-02M1|

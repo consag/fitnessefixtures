@@ -1,0 +1,53 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+
+|import                    |
+|generic.fixtures.Global   |
+|generic.fixtures.DBFixture|
+
+!2 Simple tests
+!3 Number of records in source and target. Both in same database
+|Check Number of Records                                                                                                                       |
+|databaseName|Source Table|Source Filter|Target Table|Target Filter|source number of records?|target number of records?|same number of records?|
+|EB2         |W_SRVREQ_DS|             |W_SRVREQ_DS|1=1          |                         |                         |Yes                    |
+
+|Compare Table Data                                                                                                                            |
+|databaseName|Source Table|Target Table|same data?|
+|EB2         |W_SRVREQ_D|W_SRVREQ_D|    Yes                    |
+
+!3 Number of records in source and target. Can be in different databases
+In this case check Siebel table s_dual with Oracle table dual in EB2 database
+|Check Number of Records                                                                                                                                                  |
+|Source databaseName|Source Table|Source Filter|Target databaseName|Target Table|Target Filter|source number of records?|target number of records?|same number of records?|
+|SIEBEL             |s_dual      |             |EB2                |dual        |1=1          |                         |                         |Yes                    |
+
+!3 Number of records in source and target. Can be in different databases
+In this case check Siebel table s_dual with Oracle table dual in DWHD database
+|Check Number of Records                                                                                                                                                  |
+|Source databaseName|Source Table|Source Filter|Target databaseName|Target Table|Target Filter|source number of records?|target number of records?|same number of records?|
+|SIEBEL             |s_dual      |             |DWHD_IN            |dual        |1=1          |                         |                         |Yes                    |
+
+!2 Real tests
+!3 Number of records in Siebel modified in a specific date range should be in EB2 staging tables
+You can set the date format so it matches the format you use in your string in the filter
+|Check Number of Records                                                                                                                                                                                    |
+|date format|Source databaseName|Source Table|Source Filter                    |Target databaseName|Target Table  |Target Filter|source number of records?|target number of records?|same number of records?|
+|yyyyMMdd   |SIEBEL             |v_contact   |last_upd > FITCONVERTDT(20130712)|EB2                |W_PARTY_PER_DS|1=1          |                         |                         |Yes                    |
+
+!3 Number of records in Siebel modified in a specific date range should be in DWHD landing zone
+|Check Number of Records                                                                                                                                                                                                                      |
+|date format|Source databaseName|Source Table|Source Filter|Target databaseName|Target Table      |Target Filter                                                  |source number of records?|target number of records?|same number of records?|
+|yyyyMMdd   |SIEBEL             |v_contact   |             |DWHD_IN            |STI_W_PARTY_PER_DS|delivery_sqn=(select max(delivery_sqn) from sti_w_party_per_ds)|                         |                         |Yes                    |
+
+!3 Number of records in EB2 staging tables should be in DWHD landing zone
+|Check Number of Records                                                                                                                                                                                                            |
+|Source databaseName|Source Table  |Source Filter|Target databaseName|Target Table      |Target Filter                                                  |source number of records?|target number of records?|same number of records?|
+|EB2                |w_party_per_ds|             |DWHD_IN            |STI_W_PARTY_PER_DS|delivery_sqn=(select max(delivery_sqn) from sti_w_party_per_ds)|                         |                         |Yes                    |
+
+

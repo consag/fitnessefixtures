@@ -1,0 +1,45 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path /u01/app/ibm/db2c/db2inst/sqllib/java/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+
+!2 Check the execution plan results/progress
+The following tests can be defined to verify the outcome of the execution plan and its tasks.
+
+!3 Get the ETLPROCWid. It must be provided in the fixtures further below
+getEtlProcWid without any arguments provides the CURRENT proc_wid, meaning:
+- If a DAC execution plan is running, it will return the proc_wid of the running dac execution plan
+- If a DAC execution plan is not running, it will return the proc wid of any previous run, whether it was successful or not
+
+!4 Used in the monitor below
+|script|Check Exec Plan        |EB2|RB CRM Distribution|
+|$myProcWidOk=|get etl procwid|
+
+!4 Other possibilities to get an etl proc wid
+|script|Check Exec Plan        |EB2|RB CRM Distribution|
+|$myProcWidCurr=|get etl procwid|CURRENT|
+|$myProcWidLatest=|get etl procwid|LATEST|
+|$myProcWidLatestOk=|get etl procwid|LATEST|with status|'Completed'|
+|set date format|YYYY-MM-DD HH24:MI:SS|
+|$myProcWidTimed=|get etl procwid start time between|2013-07-12 10:00:00|and|2013-07-12 15:00:00|
+
+
+!3 Check the amount of records processed
+For each task you can request the number of records processed.
+
+|script|Check Exec Plan               |EB2                            |RB CRM Distribution|$myProcWidOk|
+|check |total number of executed tasks|512                                                              |
+|check |failed tasks                  |0                                                              |
+|check |successful tasks              |512                                                              |

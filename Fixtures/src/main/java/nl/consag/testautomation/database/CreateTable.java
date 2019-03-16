@@ -24,33 +24,23 @@ import static nl.consag.testautomation.supporting.Constants.propFileErrors;
 
 public class CreateTable {
     private String className = "CreateTable";
-    private static String version ="20180404.1";
-
-    private int logLevel =3;
-    private int logEntries =0;
+    private static String version ="20180619.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
+    private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
 
-    private String databaseDriver;
-    private String databaseUrl;
-    private String databaseUserId;
-    private String databasePassword;
-    private String databaseConnection;
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+
+    private String databaseName =Constants.NOT_PROVIDED;
+
     private String query;
-    private String databaseType;
-    private String databaseTableOwner;
-    private String databaseTableOwnerPassword;
-    private String tableOwnerTablePrefix;
-    private String tableOwnerUseTablePrefix; //from connetions.properties
-    private boolean useTablePrefix =true;
-    private String databaseSchema;
-    private boolean useSchema =false;
-    private boolean useTableOwner =true;
     private String tableComment = Constants.TABLE_COMMENT;
     private String idaaName =Constants.NOT_PROVIDED;
-    private String databaseName =Constants.NOT_PROVIDED;
     private String actualDatabase = Constants.NOT_FOUND;
     private String tableName =Constants.NOT_PROVIDED;
     private boolean errorIndicator =false;
@@ -90,22 +80,20 @@ public class CreateTable {
         sqlStatement="CREATE TABLE " +tableName +"(" +columnList +")";
         //If DB2 and Database name provided, add it
         //If DB2 and Accelerator name is provided, add it
-        if(databaseType.equals("DB2")) {
-            if(getDatabase().equals(Constants.NOT_PROVIDED)) {
-                if(getUseSchema() && ! Constants.DEFAULT_PROPVALUE.equals(getDatabaseSchema())) {
-                    log(myName,Constants.DEBUG, myArea, "UseSchema was set. Added IN DATABASE " + getDatabaseSchema());
-                    sqlStatement += " IN DATABASE " + getDatabaseSchema();
+        if(Constants.DATABASETYPE_DB2.equals(connectionProperties.getDatabaseType())) {
+                if(connectionProperties.getUseSchema() && ! Constants.DEFAULT_PROPVALUE.equals(connectionProperties.getDatabaseSchema())) {
+                    log(myName,Constants.DEBUG, myArea, "UseSchema was set. Added IN DATABASE " + connectionProperties.getDatabaseSchema());
+                    sqlStatement += " IN DATABASE " + connectionProperties.getDatabaseSchema();
                 } else {
                     log(myName, Constants.DEBUG, myArea, "getDatabase not provided and useSchema not set or DatabaseSchema not sset in propfile.");
                 }
             } else {
-                sqlStatement +=" IN DATABASE " + getDatabase();
+                sqlStatement +=" IN DATABASE " + connectionProperties.getDatabase();
                 log(myName, Constants.DEBUG, myArea, "getDatabase provided. Added IN DATABASE.");
             }
-            if(!getAccelerator().equals(Constants.NOT_PROVIDED)) {
-                sqlStatement +=" IN ACCELERATOR " + getAccelerator();
+            if(!connectionProperties.getAccelerator().equals(Constants.NOT_PROVIDED)) {
+                sqlStatement +=" IN ACCELERATOR " + connectionProperties.getAccelerator();
             }
-        }
 
         logMessage="Generated SQL statement is >" + sqlStatement +"<.";
         log(myName,Constants.DEBUG, myArea, logMessage);
@@ -134,7 +122,7 @@ public class CreateTable {
         String rc = Constants.OK;
         String tableName = Constants.TABLE_PREFIX + inTableName;
 
-        setDatabaseConnection(inDatabase);
+        setDatabaseName(inDatabase);
 
             sqlStatement = "create table " + tableName + " as " + inSelectStmt;
             commentStatement = "comment on table " + tableName + " is '" + getTableComment() + "'";
@@ -158,9 +146,12 @@ public class CreateTable {
 //        readParameterFile();
 
         myArea="Check dbtype";
-        if ("Oracle".equals(getDatabaseType()) || "DB2".equals(getDatabaseType())) {
+        if(Constants.DATABASETYPE_DB2.equals(connectionProperties.getDatabaseType())
+        || Constants.DATABASETYPE_ORACLE.equals(connectionProperties.getDatabaseType())){
+            logMessage = "databaseType >" + connectionProperties.getDatabaseType() + "< is supported";
+            log(myName, Constants.DEBUG, myArea, logMessage);
         } else {
-            logMessage = "databaseType >" + getDatabaseType() + "< not yet supported";
+            logMessage = "databaseType >" + connectionProperties.getDatabaseType() + "< not yet supported";
             log(myName, Constants.ERROR, myArea, logMessage);
             setError(Constants.ERROR,logMessage);
             return getErrorCode();
@@ -168,9 +159,10 @@ public class CreateTable {
     
     try {
         myArea = "SQL Execution";
-        logMessage = "Connecting to >" + getDatabaseConnection() + "< using userID (table owner) >" + getDatabaseTableOwner() + "<.";
+        logMessage = "Connecting to >" + connectionProperties.getDatabaseConnection() + "< using userID (table owner) >" + connectionProperties.getDatabaseTableOwner() + "<.";
         log(myName, Constants.DEBUG, myArea, logMessage);
-        connection = DriverManager.getConnection(getDatabaseUrl(), getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
+        connection = connectionProperties.getOwnerConnection();
+//        connection = DriverManager.getConnection(getDatabaseUrl(), getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
         statement = connection.createStatement();
         logMessage = "SQL >" + sqlStatement + "<.";
         log(myName, Constants.DEBUG, myArea, logMessage);
@@ -244,15 +236,15 @@ public class CreateTable {
             return false;
         }
 */
-        if("Oracle".equals(databaseType)) {
+        if(Constants.DATABASETYPE_ORACLE.equals(connectionProperties.getDatabaseType())) {
             query = "SELECT count(*) tblcount FROM user_tables WHERE table_name ='" + tableName + "'";
         }
         else {
-            if ("DB2".equals(databaseType)) {
+            if (Constants.DATABASETYPE_DB2.equals(connectionProperties.getDatabaseType())) {
                 query = "SELECT count(*) tblcount FROM SYSIBM.SYSTABLES WHERE name ='" + tableName + "'";
                 }
             else {
-            logMessage = "databaseType >" + databaseType + "< not yet supported";
+            logMessage = "databaseType >" + connectionProperties.getDatabaseType() + "< not yet supported";
             log(myName, "info", myArea, logMessage);
             setError(Constants.ERROR,logMessage);
             return false;
@@ -260,7 +252,7 @@ public class CreateTable {
         }
         
         GetSingleValue dbCol = new GetSingleValue(className);
-        dbCol.setDatabaseName(databaseConnection);
+        dbCol.setDatabaseName(connectionProperties.getDatabaseName());
         dbCol.setQuery(query);
         dbCol.setLogLevel(getLogLevel());
         nrTablesFound = dbCol.getColumn();
@@ -282,12 +274,6 @@ public class CreateTable {
         return Constants.NOT_IMPLEMENTED;
     }
 
-    public void setDatabaseConnection(String dbConn) {
-        this.databaseConnection=dbConn;
-    }
-    public String getDatabaseConnection() {
-        return databaseConnection;
-    }
     public void setTableComment(String comm) {
         this.tableComment = comm;
     }
@@ -321,138 +307,45 @@ public class CreateTable {
         return this.errorIndicator;
     }
 
-    public void readParameterFile() {
-        // database connection string has to be set by calling party
+    private void readParameterFile() {
         String myName = "readParameterFile";
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
-        String result = Constants.NOT_FOUND;
 
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".database", true);
-        if(getErrorIndicator())
-            return;
-        else setActualDatabase(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".databasetype", true);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseType(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".driver", true);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseDriver(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".url", true);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseUrl(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".username", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseUserId(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".username.password", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabasePassword(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection()+".tableowner", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseTableOwner(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".tableowner.password", false);
-        if(getErrorIndicator())
-            return;
-        else setDatabaseTableOwnerPassword(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".tableowner.usetableprefix", false);
-        if(!getErrorIndicator())
-            setTableOwnerUseTablePrefix(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".tableowner.tableprefix", false);
-        if(!getErrorIndicator())
-            setTableOwnerTablePrefix(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".schemaname", false);
-        if(!getErrorIndicator())
-            setDatabaseSchema(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".databasename", false);
-        if(!getErrorIndicator())
-            setDatabaseName(result);
-
-        result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".accelerator", false);
-        if(!getErrorIndicator())
-            setAccelerator(result);
-
-        log(myName, Constants.INFO, myArea, "databaseType ..........>" + getDatabaseType() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseConnection ....>" + getDatabaseConnection() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseDriver ........>" + getDatabaseDriver() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseUrl ...........>" + getDatabaseUrl() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseUserId ........>" + getDatabaseUserId() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseTableOwner ....>" + getDatabaseTableOwner() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseSchema ........>" + getDatabaseSchema() + "<.");
-        log(myName, Constants.INFO, myArea, "databaseName ..........>" + getDatabaseName() + "<.");
-        log(myName, Constants.INFO, myArea, "db2Accelerator ........>" + getAccelerator() + "<.");
-        log(myName, Constants.INFO, myArea, "tablePrefix ...........>" + getTableOwnerTablePrefix() + "<.");
-        log(myName, Constants.INFO, myArea, "useTablePrefix ........>" + getTableOwnerUseTablePrefix() +"<.");
-        if(Constants.FALSE.equalsIgnoreCase(getTableOwnerUseTablePrefix())) {
-            setTableOwnerUseTablePrefix(false);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        if(connectionProperties.refreshConnectionProperties(databaseName)) {
+            log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
         } else {
-            setTableOwnerUseTablePrefix(true);
-        }
-        if(useTablePrefix) log(myName, Constants.DEBUG, myArea, "useTablePrefix has been set to >true<");
-            else log(myName, Constants.DEBUG, myArea, "useTablePrefix has been set to >false<");
-
-        if(Constants.DEFAULT_PROPVALUE.equals(getDatabaseSchema())) {
-            setUseSchema(false);
-        } else {
-            setUseSchema(true);
-        }
-        if(useSchema) log(myName, Constants.DEBUG, myArea, "useSchema has been set to >true<.");
-        else log(myName, Constants.DEBUG, myArea, "useSchema has been set to >false<");
-
-        if(Constants.DEFAULT_PROPVALUE.equals(getDatabaseTableOwner())) {
-            setUseTableOwner(false);
-        } else {
-            setUseTableOwner(true);
-        }
-        if(useTableOwner) log(myName, Constants.DEBUG, myArea, "useTableOwner has been set to >true<.");
-        else log(myName, Constants.DEBUG, myArea, "useTableOwner has been set to >false<.");
-
-        if(Constants.DEFAULT_PROPVALUE.equals(getTableOwnerTablePrefix())) {
-            setTableOwnerTablePrefix(Constants.TABLE_PREFIX);
-            log(myName, Constants.INFO, myArea, "Table prefix has been set to >" + getTableOwnerTablePrefix() +"<.");
+            log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
         }
 
     }
 
-    private void setTableOwnerUseTablePrefix(boolean b) {
-        this.useTablePrefix =b;
-    }
-
-    private void setDatabaseUrl(String databaseUrl) {
-        this.databaseUrl = databaseUrl;
-    }
-
-    private void log(String name, String level, String location, String logText) {
-        if(Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
-               return;
-        }
-        logEntries++;
-        if(logEntries ==1) {
-        Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
+    private void log(String name, String level, String area, String logMessage) {
+        if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
+            return;
         }
 
-    Logging.LogEntry(logFileName, name, level, location, logText);  
-       }
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+        }
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
+    }
 
-
+    /**
+     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
+     */
     public String getLogFilename() {
-        return logFileName + ".log";
+        if(logUrl.startsWith("http"))
+            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        else
+            return logUrl+logFileName + ".log";
     }
 
     /**
@@ -511,25 +404,6 @@ public class CreateTable {
         return this.tableName;
     }
 
-    /**
-     * @param dbName for DB2, the database name for the table
-     */
-    public void setDatabase(String dbName) {
-        this.databaseName =dbName;
-    }
-    public String getDatabase() {
-        return this.databaseName;
-    }
-
-    /**
-     * @param accName - The name of the IBM DB2 Analytics Accelerator (IDAA)
-     */
-    public void setAccelerator(String accName) {
-        this.idaaName = accName;
-    }
-    public String getAccelerator() {
-        return this.idaaName;
-    }
     public boolean addColumnDataType(String colName, String dataType) {
         String myName="addColumnDataType";
         String myArea="run";
@@ -644,9 +518,9 @@ public class CreateTable {
         String targetTableName;
         String targetObjectName;
 
-        log(myName, Constants.DEBUG, myLocation, "Database connection set to >" + srcDatabase +"<.");
+        log(myName, Constants.DEBUG, myLocation, "Database connection set to >" + tgtDatabase +"<.");
 
-        setDatabaseConnection(tgtDatabase);
+        setDatabaseName(tgtDatabase);
         readParameterFile();
 
         if(getErrorIndicator()) {
@@ -654,8 +528,8 @@ public class CreateTable {
             return false;
         }
 
-        if(useTablePrefix) {
-            targetTableName = getTableOwnerTablePrefix() + tgtTable;
+        if(connectionProperties.getUseTablePrefix()) {
+            targetTableName = connectionProperties.getTableOwnerTablePrefix() + tgtTable;
             log(myName, Constants.DEBUG, myLocation, "useTablePrefix is >true<. Table name set to >" + targetTableName +"<.");
         } else {
             targetTableName = tgtTable;
@@ -666,10 +540,10 @@ public class CreateTable {
             targetObjectName = tgtSchema + Constants.DATABASE_OBJECT_DELIMITER + targetTableName;
             log(myName, Constants.DEBUG, myLocation, "Provided schema is >" + tgtSchema +"<. Object name set to >" + targetObjectName +"<.");
         } else {
-            if(useSchema) {
-                targetObjectName = getDatabaseSchema() + Constants.DATABASE_OBJECT_DELIMITER + targetTableName;
+            if(connectionProperties.getUseSchema()) {
+                targetObjectName = connectionProperties.getDatabaseSchema() + Constants.DATABASE_OBJECT_DELIMITER + targetTableName;
                 log(myName, Constants.DEBUG, myLocation, "No schema provided >" + tgtSchema
-                        +"<. Schema name " + getDatabaseSchema() +" taken from properties. Object name set to >" + targetObjectName +"<.");
+                        +"<. Schema name " + connectionProperties.getDatabaseSchema() +" taken from properties. Object name set to >" + targetObjectName +"<.");
             } else {
                 targetObjectName = targetTableName;
                 log(myName, Constants.DEBUG, myLocation, "No schema provided >" + tgtSchema
@@ -679,13 +553,15 @@ public class CreateTable {
 
         log(myName, Constants.INFO, myLocation, "Target object name is >" + targetObjectName +"<.");
 
-        setDatabaseConnection(srcDatabase);
+        setDatabaseName(srcDatabase);
         readParameterFile();
 
         try {
             myLocation="getConnection";
-            log(myName, Constants.DEBUG, myLocation, "Connecting to >" + getDatabaseUrl() +"< as user >" + getDatabaseTableOwner() +"<.");
-            connection = DriverManager.getConnection(getDatabaseUrl(), getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
+            log(myName, Constants.DEBUG, myLocation, "Connecting to >" + connectionProperties.getDatabase()
+                    +"< as user >" + connectionProperties.getDatabaseTableOwner() +"<.");
+            connection = connectionProperties.getOwnerConnection();
+//            connection = DriverManager.getConnection(getDatabaseUrl(), getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
             DatabaseMetaData databaseMetaData = null;
             try {
                 myLocation="getMetaData";
@@ -723,15 +599,11 @@ public class CreateTable {
         String myLocation ="start";
 
         log(myName, Constants.DEBUG, myLocation,"Database connection set to >" + tgtDatabase +"<.");
-        setDatabaseConnection(tgtDatabase);
+        setDatabaseName(tgtDatabase);
         readParameterFile();
         if(getErrorIndicator()) return Constants.ERRCODE_PROPERTIES;
 
         return createTable(tgtTable, columnList);
-    }
-
-    private String getDatabaseUrl() {
-        return databaseUrl;
     }
 
     private List<String> getSourceTableDefinition(DatabaseMetaData databaseMetaData
@@ -863,60 +735,6 @@ public class CreateTable {
         return Constants.NOT_IMPLEMENTED;
     }
 
-    public String getDatabaseType() {
-        return databaseType;
-    }
-
-    public void setDatabaseUserId(String userId) {
-        this.databaseUserId = userId;
-    }
-
-    public String getPassword() {
-        return databasePassword;
-    }
-
-    public void setPassword(String password) {
-        this.databasePassword = password;
-    }
-
-    public void setDatabaseType(String databaseType) {
-        this.databaseType = databaseType;
-    }
-
-    public String getDatabaseTableOwner() {
-        return this.databaseTableOwner;
-    }
-
-    public void setDatabaseTableOwner(String databaseTableOwner) {
-        this.databaseTableOwner = databaseTableOwner;
-    }
-
-    private String getDatabaseTableOwnerPassword() {
-        String myName ="getDatabaseTableOwnerPassword";
-        String myLocation ="start";
-        Decrypt decrypt = new Decrypt();
-        String result = Decrypt.decrypt(databaseTableOwnerPassword);
-        if(Constants.OK.equals(decrypt.getErrorCode())) {
-            log(myName, Constants.VERBOSE, myLocation, "Password decryption successful.");
-        }
-        else {
-            setError(result,Constants.ERRCODE_DECRYPT);
-            log(myName, Constants.ERROR, myLocation, "Password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.");
-        }
-        return result;
-
-    }
-    public void setDatabaseTableOwnerPassword(String tableOwnerPassword) {
-        this.databaseTableOwnerPassword = tableOwnerPassword;
-    }
-
-    public String getIdaaName() {
-        return idaaName;
-    }
-
-    public void setIdaaName(String idaaName) {
-        this.idaaName = idaaName;
-    }
 
     public String getDatabaseName() {
         return databaseName;
@@ -925,64 +743,6 @@ public class CreateTable {
     public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;
     }
-
-    public String getDatabaseDriver() {
-        return databaseDriver;
-    }
-
-    public void setDatabaseDriver(String databaseDriver) {
-        this.databaseDriver = databaseDriver;
-    }
-
-    public String getDatabaseUserId() {
-        return databaseUserId;
-    }
-
-    public void setDatabasePassword(String databasePassword) {
-        this.databasePassword = databasePassword;
-    }
-
-    public void setActualDatabase(String actualDatabase) {
-        this.actualDatabase = actualDatabase;
-    }
-    public String getActualDatabase() {
-        return actualDatabase;
-    }
-
-    public void setDatabaseSchema(String databaseSchema) {
-        this.databaseSchema = databaseSchema;
-    }
-    public String getDatabaseSchema() {
-        return this.databaseSchema;
-    }
-
-    public void setTableOwnerUseTablePrefix(String tableOwnerUseTablePrefix) {
-        this.tableOwnerUseTablePrefix = tableOwnerUseTablePrefix;
-    }
-    public String getTableOwnerUseTablePrefix() {
-        return this.tableOwnerUseTablePrefix;
-    }
-
-    public void setTableOwnerTablePrefix(String tableOwnerTablePrefix) {
-        this.tableOwnerTablePrefix = tableOwnerTablePrefix;
-    }
-    public String getTableOwnerTablePrefix() {
-        return this.tableOwnerTablePrefix;
-    }
-
-    private void setUseSchema(boolean useSchema) {
-        this.useSchema = useSchema;
-    }
-    private boolean getUseSchema() {
-        return this.useSchema;
-    }
-    private void setUseTableOwner(boolean useTableOwner) {
-        this.useTableOwner = useTableOwner;
-    }
-    private boolean getUseTableOwner() {
-        return this.useTableOwner;
-    }
-
 
     private  class colDefinition {
         private  String colName;

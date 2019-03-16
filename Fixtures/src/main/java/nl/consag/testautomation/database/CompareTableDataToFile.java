@@ -36,12 +36,21 @@ import org.apache.commons.io.FileUtils;
 public class CompareTableDataToFile {
 
     private String className = "CompareTableDataToFile";
+    private static String version = "20180619.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
+    private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
+
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+
+    private String databaseName;
+
     private boolean verbose=false;
-    private int logLevel =3;
 
 
 // File Handling
@@ -89,13 +98,6 @@ public class CompareTableDataToFile {
     private List<String> queryColumnNames = new ArrayList<String>();
     private List<String> srcQueryColumnNames = new ArrayList<String>();
 
-    private String driver;
-    private String url;
-    private String userid;
-    private String password;
-    private String tableOwner = Constants.NOT_INITIALIZED;
-    private String tableOwnerPassword = Constants.NOT_INITIALIZED;
-    private String databaseName = Constants.NOT_INITIALIZED;
     private String srcDatabaseName = Constants.NOT_INITIALIZED;
     private String srcDatabaseType = Constants.NOT_INITIALIZED;
 
@@ -108,15 +110,9 @@ public class CompareTableDataToFile {
     private String rowFilter;
     private String allTables;
     private String dacRepository;
-    private String databaseType;
-    private String databaseConnDef;
     private String dateFormat = "YYYYMMDD";
 
     private String sqlDateFormat = "yyyy-MM-dd-HH.mm.ss";
-
-    private String oracle = "Oracle";
-    private String db2 = "DB2";
-    private String sqlServer = "SQLServer";
 
     private FileOperation fileOperation;
   
@@ -208,7 +204,7 @@ public class CompareTableDataToFile {
         //FITCONVERTDT not in filter
         if (filter.indexOf(Constants.FITCONVERTDT) == -1) {
             //          logMessage="No date conversion required in filter >" +filter+"< as it does not contain >" +cFitConvertDt +"<.";
-            //      Logging.LogEntry(myName, "debug", myArea, logMessage);
+            //      Logging.LogEntry(myName, Constants.DEBUG, myArea, logMessage);
             return filter;
         }
 
@@ -236,7 +232,7 @@ public class CompareTableDataToFile {
         //   m_dateFormat="yyyy-MM-dd-HH.mm.ss.SSS";
         //       logMessage="Trying to convert >" +convFilter +"< to a timestamp using >" +m_dateFormat +"<.";
 
-        //     log(myName, "debug", myArea, logMessage);
+        //     log(myName, Constants.DEBUG, myArea, logMessage);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         try {
             dtConvFilter = simpleDateFormat.parse(convFilter);
@@ -260,7 +256,7 @@ public class CompareTableDataToFile {
                 filter.substring(sFoundEnd + 1);
 
         //        logMessage=">" +cFitConvertDt +"< found, including opening and closing brackets in >" +filter+"<.";
-        //        log(myName, "debug", myArea, logMessage);
+        //        log(myName, Constants.DEBUG, myArea, logMessage);
         logMessage = ">" + filter + "< converted to >" + rcFilter + "<.";
         log(myName, "info", myArea, logMessage);
 
@@ -429,7 +425,7 @@ public class CompareTableDataToFile {
                }
                 sSrcQuery = sSrcQuery + " ORDER BY pk ";
               }
-            if(srcDatabaseType.equals(db2)) {
+            if(Constants.DATABASETYPE_DB2.equals(srcDatabaseType)) {
                   sSrcQuery = sSrcQuery + " with ur for fetch only";
                 }  
 
@@ -597,16 +593,15 @@ public class CompareTableDataToFile {
             
       dbConnection =sDatabase;
         readParameterFile();
-        String srcurl = url;
-        String srcuserid =userid;
-        String srcpassword=password;
-    
+        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogLevel(getIntLogLevel());
+
         try {    
 //        Class.forName(m_driver);
       logMessage="before create connection";      log(myName, Constants.DEBUG, myArea, logMessage);
 
       // Create a connection to the database
-      srcConnection = DriverManager.getConnection(srcurl, srcuserid, srcpassword);
+            srcConnection = connectionProperties.getUserConnection();
       logMessage="before create statement";        log(myName, Constants.DEBUG, myArea, logMessage);
       // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
 
@@ -615,7 +610,7 @@ public class CompareTableDataToFile {
       log(myName, Constants.DEBUG, myArea, logMessage);
       // run query
         
-        if(databaseType.equals(oracle)) {  
+        if(Constants.DATABASETYPE_ORACLE.equals(connectionProperties.getDatabaseType())) {  
             logMessage="alter session to set date format...";
             log(myName, Constants.DEBUG, myArea, logMessage);
       srcStatement = srcConnection.createStatement();
@@ -696,7 +691,7 @@ public class CompareTableDataToFile {
     } 
     catch (SQLException e) {
       myArea="exception handling";
-      logMessage="SQLException for >"+ dbConnection + "< userID=>" + srcuserid + "< dbUrl=>" + srcurl + "< Error=>" +e.toString() + "<.";
+      logMessage="SQLException for >"+ dbConnection + "< userID=>" + connectionProperties.getDatabaseUsername() + "< db=>" + connectionProperties.getDatabase() + "< Error=>" +e.toString() + "<.";
       log(myName, Constants.ERROR, myArea, logMessage);
       sResult = Constants.ERROR;
     }
@@ -805,7 +800,7 @@ public class CompareTableDataToFile {
         String logMessage = Constants.NOT_INITIALIZED;
       String colName = Constants.NOT_INITIALIZED;
 
-        if(verbose) {logMessage ="Number of columns =>" + Integer.toString(cols.size()) + "< in db=>" +srctgt +"<.";     log(myName, "debug", myArea, logMessage); }
+        if(verbose) {logMessage ="Number of columns =>" + Integer.toString(cols.size()) + "< in db=>" +srctgt +"<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
 
         int colLocationInSrc = -1;
         int numCols =0;
@@ -817,11 +812,11 @@ public class CompareTableDataToFile {
         }
 
         String[] colValues = new String[numCols];
-      if(verbose) {logMessage ="Array colValues length =>" + Integer.toString(colValues.length) + "<.";     log(myName, "debug", myArea, logMessage); }
+      if(verbose) {logMessage ="Array colValues length =>" + Integer.toString(colValues.length) + "<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
         
             for (i = 0; i < (cols.size()); ++i) {
                 if (listExcludedColIds.contains(new Integer(i))) {
-                  if(verbose) {logMessage ="ColumnId skipped =>" + Integer.toString(i) + "<.";     log(myName, "debug", myArea, logMessage); }
+                  if(verbose) {logMessage ="ColumnId skipped =>" + Integer.toString(i) + "<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
                     // skip this col
                 } else {
                     myArea = "Processing column (not excluded)";
@@ -830,7 +825,7 @@ public class CompareTableDataToFile {
                     //find where in the src table the column is
                         String colDetermined = determineMappedColumn(cols.get(i),srctgt);
                         if(colDetermined.equals(cols.get(i))) {
-                          if(verbose) {logMessage ="Column is not excluded and not mapped. ColumnId=>" + Integer.toString(i) + "<.";     log(myName, "debug", myArea, logMessage); }
+                          if(verbose) {logMessage ="Column is not excluded and not mapped. ColumnId=>" + Integer.toString(i) + "<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
                           colLocationInSrc = srcQueryColumnNames.indexOf(colDetermined);
                           if (colLocationInSrc == -1) {
                                //column not in source table
@@ -839,20 +834,20 @@ public class CompareTableDataToFile {
                                log(myName, "ERROR", myArea, logMessage);
                              return Constants.ERROR;
                           } else {
-                            if(verbose) {logMessage ="Found column in >" + srctgt + "<. ColumnId=>" + Integer.toString(i) +  "<. In source =>" + colLocationInSrc +"<.";     log(myName, "debug", myArea, logMessage); }
+                            if(verbose) {logMessage ="Found column in >" + srctgt + "<. ColumnId=>" + Integer.toString(i) +  "<. In source =>" + colLocationInSrc +"<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
                               if(colLocationInSrc >colValues.length) {
                                 logMessage ="Source table has more columns than target table. Target column is at position >" + Integer.toString(colLocationInSrc) +"< in the Source table. Target table has only >" + Integer.toString(colValues.length) + "< columns to be compared." ;
                                 log(myName, "ERROR", myArea, logMessage); 
                                   return Constants.ERROR;
                                 }
                           }
-                          if(verbose) {logMessage ="Getting columnId >"+ Integer.toString(i) + "< from cols. cols has size >" + Integer.toString(cols.size()) +"<.";     log(myName, "debug", myArea, logMessage); }
+                          if(verbose) {logMessage ="Getting columnId >"+ Integer.toString(i) + "< from cols. cols has size >" + Integer.toString(cols.size()) +"<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
                           colName =cols.get(i);
-                          if(verbose) {logMessage ="Storing column in colValues at location >" + Integer.toString(colLocationInSrc) +"<. colValues has >" + Integer.toString(colValues.length) + "< spots." ;     log(myName, "debug", myArea, logMessage); }
+                          if(verbose) {logMessage ="Storing column in colValues at location >" + Integer.toString(colLocationInSrc) +"<. colValues has >" + Integer.toString(colValues.length) + "< spots." ;     log(myName, Constants.DEBUG, myArea, logMessage); }
                           colValues[colLocationInSrc] = colName;
-                          if(verbose) {logMessage ="Column stored in colValues.";     log(myName, "debug", myArea, logMessage); }
+                          if(verbose) {logMessage ="Column stored in colValues.";     log(myName, Constants.DEBUG, myArea, logMessage); }
                         } else {
-                              if(verbose) {logMessage ="Column is mapped. Will skip this in this version. ColumnId=>" + Integer.toString(i) + "<.";     log(myName, "debug", myArea, logMessage); }
+                              if(verbose) {logMessage ="Column is mapped. Will skip this in this version. ColumnId=>" + Integer.toString(i) + "<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
                           //for now ignore this column, i.e. if it the column is mapped to a different columns
                             } 
                         }
@@ -876,7 +871,7 @@ public class CompareTableDataToFile {
       
       for (int c = 0; c < numCols; ++c) {
           if(colValues[c].equals(sDummy)) {
-            if(verbose) {logMessage ="Placeholder found at index =>" + Integer.toString(c) +"<.";     log(myName, "debug", myArea, logMessage); }
+            if(verbose) {logMessage ="Placeholder found at index =>" + Integer.toString(c) +"<.";     log(myName, Constants.DEBUG, myArea, logMessage); }
             //ignore this value
           } else {
               if(sConcatenated.equals(Constants.NOT_INITIALIZED)) {
@@ -925,7 +920,7 @@ public class CompareTableDataToFile {
           return Constants.ERROR;
         } 
         logMessage="Column >" + org + "< is a mapped column in >" + srctgt + "<. It maps to >" + srcQueryColumnNames.get(colLocationInSrc) + "<.";
-        log(myName, "debug", myArea, logMessage);
+        log(myName, Constants.DEBUG, myArea, logMessage);
         
         return srcQueryColumnNames.get(colLocationInSrc);
       } else {
@@ -972,13 +967,12 @@ public class CompareTableDataToFile {
       int numColumnsInResultSet = 0;
      List<String> queryColumnNames = new ArrayList<String>();
 
-    if(verbose) { logMessage="dtqc-01-before reading param file";               log(myName, "debug", myArea, logMessage); }
+    logMessage="dtqc-01-before reading param file";               
+    log(myName, Constants.DEBUG, myArea, logMessage);
 
       readParameterFile();
-    if(verbose) { logMessage="dtqc-01-after reading param file";               log(myName, "debug", myArea, logMessage); }
-    if(verbose) { logMessage="m_url=>" +url +"<.";               log(myName, "debug", myArea, logMessage); }
-    if(verbose) { logMessage="m_databaseconndef=>" +databaseConnDef +"<.";               log(myName, "debug", myArea, logMessage); }
-    if(verbose) { logMessage="m_userid=>" +userid +"<.";               log(myName, "debug", myArea, logMessage); }
+
+      logMessage="dtqc-01-after reading param file";               log(myName, Constants.DEBUG, myArea, logMessage); 
 
       returnMessage = Constants.OK;
   
@@ -994,33 +988,32 @@ public class CompareTableDataToFile {
           // Load the JDBC driver or oracle.jdbc.driver.OracleDriver or sun.jdbc.odbc.JdbcOdbcDriver
 //          Class.forName(m_driver);
           // Create a connection to the database
-          if(verbose) { logMessage="creating connection.";               log(myName, "debug", myArea, logMessage); }
-          m_connection =
-                  DriverManager.getConnection(url, userid, password);
+          if(verbose) { logMessage="creating connection.";               log(myName, Constants.DEBUG, myArea, logMessage); }
+          m_connection = connectionProperties.getUserConnection();
           // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
-          if(verbose) { logMessage="creating statement.";               log(myName, "debug", myArea, logMessage); }
+          if(verbose) { logMessage="creating statement.";               log(myName, Constants.DEBUG, myArea, logMessage); }
           m_statement = m_connection.createStatement();
           // sql query of string type to read database
 
           logMessage =
-                  "Query >" + sQuery + "< for db >" + databaseConnDef +
-                  "< with userid >" + userid + "<.";
-          log(myName, "debug", myArea, logMessage);
+                  "Query >" + sQuery + "< for db >" + connectionProperties.getDatabase() +
+                  "< with userid >" + connectionProperties.getDatabaseUsername() + "<.";
+          log(myName, Constants.DEBUG, myArea, logMessage);
 
-        if(verbose) { logMessage="executing statement =>" + sQuery +"<.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="executing statement =>" + sQuery +"<.";               log(myName, Constants.DEBUG, myArea, logMessage); }
           m_resultset = m_statement.executeQuery(sQuery);
-        if(verbose) { logMessage="getting metadata of result.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="getting metadata of result.";               log(myName, Constants.DEBUG, myArea, logMessage); }
               dbResultMetaSet = m_resultset.getMetaData();
-        if(verbose) { logMessage="getting number of columns.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="getting number of columns.";               log(myName, Constants.DEBUG, myArea, logMessage); }
               numColumnsInResultSet = dbResultMetaSet.getColumnCount();
-        if(verbose) { logMessage="number of columns=>" +Integer.toString(numColumnsInResultSet) + "<.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="number of columns=>" +Integer.toString(numColumnsInResultSet) + "<.";               log(myName, Constants.DEBUG, myArea, logMessage); }
 
               for (int i = 1; i <= (numColumnsInResultSet); ++i) {
                   String colname = dbResultMetaSet.getColumnName(i);
                   queryColumnNames.add(i - 1, colname);
               }
-        if(verbose) { logMessage="column name list was built.";               log(myName, "debug", myArea, logMessage); }
-        if(verbose) { logMessage="building excluded and mapped column list.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="column name list was built.";               log(myName, Constants.DEBUG, myArea, logMessage); }
+        if(verbose) { logMessage="building excluded and mapped column list.";               log(myName, Constants.DEBUG, myArea, logMessage); }
         myArea="Getting column names";
               //get ids for columns to be excluded. this way, in the data string concatenation, they can be excluded
               for (int i = 1; i <= (numColumnsInResultSet); ++i) {
@@ -1033,23 +1026,23 @@ public class CompareTableDataToFile {
                       listMappedColIds.add(new Integer(i - 1));
                   }
               }
-        if(verbose) { logMessage="excluded column and mapped column lists were built.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="excluded column and mapped column lists were built.";               log(myName, Constants.DEBUG, myArea, logMessage); }
           
          myArea = "finalization";
-        if(verbose) { logMessage="closing statement.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="closing statement.";               log(myName, Constants.DEBUG, myArea, logMessage); }
           m_statement.close();
-        if(verbose) { logMessage="closing connection.";               log(myName, "debug", myArea, logMessage); }
+        if(verbose) { logMessage="closing connection.";               log(myName, Constants.DEBUG, myArea, logMessage); }
           m_connection.close();
 
       }  catch (SQLException e) {
           returnMessage = "SQLException >" + e.toString() + "<.";
         nrDbRecords="ERROR";
           myArea = "Exception handling";
-          logMessage = "dbUrl=>"+ url + "< UserID=>" + userid + "< Error=>" + e.toString() + "<.";
+          logMessage = "db=>"+ connectionProperties.getDatabase() + "< UserID=>" + connectionProperties.getDatabaseUsername() + "< Error=>" + e.toString() + "<.";
           log(myName, "ERROR", myArea, logMessage);
       }
 
-    if(verbose) { logMessage="return code >" + queryColumnNames.toString() + "<.";               log(myName, "debug", myArea, logMessage); }
+    if(verbose) { logMessage="return code >" + queryColumnNames.toString() + "<.";               log(myName, Constants.DEBUG, myArea, logMessage); }
       return queryColumnNames;
   }
 
@@ -1087,16 +1080,16 @@ public class CompareTableDataToFile {
             // Load the JDBC driver or oracle.jdbc.driver.OracleDriver or sun.jdbc.odbc.JdbcOdbcDriver
             //Class.forName(m_driver);
             // Create a connection to the database
-            m_connection =
-                    DriverManager.getConnection(url, userid, password);
+            m_connection = connectionProperties.getUserConnection();
+
             // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
             m_statement = m_connection.createStatement();
             // sql query of string type to read database
 
             logMessage =
-                    "Query >" + sQuery + "< for db >" + databaseConnDef +
-                    "< with userid >" + userid + "<.";
-            log(myName, "debug", myArea, logMessage);
+                    "Query >" + sQuery + "< for db >" + connectionProperties.getDatabase() +
+                    "< with userid >" + connectionProperties.getDatabaseUsername() + "<.";
+            log(myName, Constants.DEBUG, myArea, logMessage);
 
             m_resultset = m_statement.executeQuery(sQuery);
             if (nColumnsInResultSet == colsResultSetDummy) {
@@ -1115,7 +1108,7 @@ public class CompareTableDataToFile {
                     if (listExcludeCols.contains(dbResultMetaSet.getColumnName(i))) {
 //                        logMessage =
 //                                "columnid >" + Integer.toString(i) + "< to be excluded.";
-//                        log(myName, "debug", myArea, logMessage);
+//                        log(myName, Constants.DEBUG, myArea, logMessage);
                         listExcludedColIds.add(new Integer(i - 1));
                     }
                 }
@@ -1141,7 +1134,7 @@ public class CompareTableDataToFile {
             nrDbRecords = Integer.toString(database_table.size());
             logMessage =
                     "Number of database rows found =>" + nrDbRecords +"<.";
-            log(myName, "debug", myArea, logMessage);
+            log(myName, Constants.DEBUG, myArea, logMessage);
 
 
             m_statement.close();
@@ -1174,25 +1167,18 @@ public class CompareTableDataToFile {
     String myArea="reading parameters";
     String logMessage = Constants.NOT_INITIALIZED;
 
-    databaseType = GetParameters.GetDatabaseType(dbConnection);
-    databaseConnDef = GetParameters.GetDatabaseConnectionDefinition(dbConnection);
-    driver = GetParameters.GetDatabaseDriver(databaseType);
-    url = GetParameters.GetDatabaseURL(databaseConnDef);
-    userid = GetParameters.GetDatabaseUserName(dbConnection);
-    password = GetParameters.GetDatabaseUserPWD(dbConnection);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +dbConnection +"<.");
+        if(connectionProperties.refreshConnectionProperties(dbConnection)) {
+            log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
+        } else {
+            log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
+        }
+
 
         tmpDir =GetParameters.GetTemp();
         logMessage="tmpDir >" + tmpDir +"<.";    log(myName, Constants.VERBOSE, myArea, logMessage);
 
-    logMessage="databaseName >" + dbConnection +"<.";    log(myName, Constants.VERBOSE, myArea, logMessage);
-    logMessage="databaseType >" + databaseType +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-    logMessage="connection >" + databaseConnDef +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-    logMessage="driver >" + driver +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-    logMessage="url >" + url +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
-    logMessage="userId >" + userid +"<.";       log(myName, Constants.VERBOSE, myArea, logMessage);
     }
-
-
 
     public String numberOfDifferences() {
       return nrOfDifferences;
@@ -1204,53 +1190,69 @@ public class CompareTableDataToFile {
       return nrTgtFileRecords;
     }
     
-    
-    private void log(String name, String level, String location, String logText) {
-           if(Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
-               return;
-           }
-
-        Logging.LogEntry(getLogFilename(), name, level, location, logText);
-       }
-
-    /**
-    * @return
-    */
-    public String getLogFilename() {
-            return logFileName;
-    }
     public String logFilename() {
         return logFileName +".log";
     }
 
+    private void log(String name, String level, String area, String logMessage) {
+        if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
+            return;
+        }
+
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+        }
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
+    }
     /**
-    * @param level
-    */
+     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
+     */
+    public String getLogFilename() {
+        if(logUrl.startsWith("http"))
+            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        else
+            return logUrl+logFileName + ".log";
+    }
+
+    public static String getVersion() {
+        return version;
+    }
+
+    /**
+     * @param level to which logging should be set. Must be VERBOSE, DEBUG, INFO, WARNING, ERROR or FATAL. Defaults to INFO.
+     */
     public void setLogLevel(String level) {
-    String myName ="setLogLevel";
-    String myArea ="determineLevel";
-    
-    logLevel = Constants.logLevel.indexOf(level.toUpperCase());
-    if (logLevel <0) {
-       log(myName, Constants.WARNING, myArea,"Wrong log level >" + level +"< specified. Defaulting to level 3.");
-       logLevel =3;
-    }
-    
-    log(myName, Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
+        String myName = "setLogLevel";
+        String myArea = "determineLevel";
+
+        logLevel = Constants.logLevel.indexOf(level.toUpperCase());
+        if (logLevel < 0) {
+            log(myName, Constants.WARNING, myArea, "Wrong log level >" + level + "< specified. Defaulting to level 3.");
+            logLevel = 3;
+        }
+
+        log(myName, Constants.INFO, myArea,
+                "Log level has been set to >" + level + "< which is level >" + getIntLogLevel() + "<.");
     }
 
     /**
-    * @return
-    */
+     * @return - the log level
+     */
     public String getLogLevel() {
-    return Constants.logLevel.get(getIntLogLevel());
+        return Constants.logLevel.get(getIntLogLevel());
     }
 
     /**
-    * @return
-    */
+     * @return - the log level as Integer data type
+     */
     public Integer getIntLogLevel() {
-    return logLevel;
+        return logLevel;
     }
 
     public void setVerboseLogging(String yesNo) {

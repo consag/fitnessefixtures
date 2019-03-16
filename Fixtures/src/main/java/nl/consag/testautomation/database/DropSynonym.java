@@ -16,25 +16,24 @@ import nl.consag.testautomation.supporting.Logging;
 public class DropSynonym {
 
 	private String className = "DropSynonym";
-	private String logFileName = Constants.NOT_INITIALIZED;
-	private String context = Constants.DEFAULT;
-	private String startDate = Constants.NOT_INITIALIZED;
-    private String errorMessage = Constants.NO_ERRORS;
-    private int logLevel =3;
+    private static String version = "20180620.1";
 
-	private String driver;
-	private String url;
-	private String userId;
-	private String password;
-	private String databaseName;
-	private String query;
-	private String databaseType;
-	private String databaseConnDef;
-        private String tableOwner;
-        private String tableOwnerPassword;
+    private String logFileName = Constants.NOT_INITIALIZED;
+    private String context = Constants.DEFAULT;
+    private String startDate = Constants.NOT_INITIALIZED;
+    private int logLevel = 3;
+    private String logUrl = Constants.LOG_DIR;
+
+    private String errorMessage = Constants.NOERRORS;
+
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+
+    private String databaseName;
+    private String query;
     private boolean ignoreErrorOnDrop =false;
         
-    private String tablePrefix = Constants.TABLE_PREFIX;
     private String tableComment = Constants.TABLE_COMMENT;
 	private int NO_FITNESSE_ROWS_TO_SKIP = 3;
 
@@ -57,6 +56,10 @@ public class DropSynonym {
 	        logFileName = startDate + "." + className +"." + context;
 	    }
 
+public void ignoreErrorOnDrop(String yesNo) {
+	    ignoreError(yesNo);
+}
+
     public void ignoreError(String yesNo) {
         if(yesNo.equals(Constants.YES))
             ignoreErrorOnDrop=true;
@@ -77,31 +80,40 @@ public class DropSynonym {
         boolean rc =false;
         String commentFound=Constants.NOT_FOUND;
 
-        String synonymName = tablePrefix + inSynonymName;
         databaseName=inDatabase;
-        myArea="check db type";
         readParameterFile();
-        
-        if("Oracle".equals(databaseType) || "DB2".equals(databaseType)) {
-            sqlStatement = "drop synonym " + synonymName;  
+
+        String synonymName;
+        if(connectionProperties.getUseTablePrefix()) {
+            synonymName = connectionProperties.getTableOwnerTablePrefix() + inSynonymName;
+        } else {
+            synonymName = inSynonymName;
+        }
+        myArea="check db type";
+
+        if (Constants.DATABASETYPE_ORACLE.equals(connectionProperties.getDatabaseType())
+            || Constants.DATABASETYPE_DB2.equals(connectionProperties.getDatabaseType())) {
+            sqlStatement = "drop synonym " + synonymName;
             commentStatement ="select distinct comments from all_tab_comments where table_name ='" + synonymName +"'";
         } else {
-            logMessage="databaseType >" + databaseType +"< not yet supported";       log(myName, "info", myArea, logMessage);  
+            logMessage="databaseType >" + connectionProperties.getDatabaseType() +"< not yet supported";
+            log(myName, Constants.INFO, myArea, logMessage);
             errorMessage=logMessage;
             return false;
         }
          
         try {
         myArea="SQL Execution";
-           logMessage = "Connecting to >" + databaseConnDef +"< using userID >" + tableOwner + "<.";
-           log(myName, "info", myArea, logMessage);
-                connection = DriverManager.getConnection(url, tableOwner, tableOwnerPassword);      
+           logMessage = "Connecting to >" + connectionProperties.getDatabaseType() +"< using userID >" + connectionProperties.getDatabaseTableOwner() + "<.";
+           log(myName, Constants.INFO, myArea, logMessage);
+           connection =connectionProperties.getOwnerConnection();
+//                connection = DriverManager.getConnection(url, tableOwner, tableOwnerPassword);
                 statement = connection.createStatement();
                 logMessage="SQL >" + sqlStatement +"<.";
-                log(myName, "info", myArea, logMessage);
+                log(myName, Constants.INFO, myArea, logMessage);
                 sqlResult= statement.executeUpdate(sqlStatement);
             logMessage="SQL returned >" + Integer.toString(sqlResult) + "<.";
-           log(myName, "info", myArea, logMessage);
+           log(myName, Constants.INFO, myArea, logMessage);
 
           statement.close();
           connection.close();      
@@ -109,8 +121,10 @@ public class DropSynonym {
               }  catch (SQLException e) {
                 myArea="Exception handling";
                 logMessage = "SQLException at >" + myName + "<. Error =>" + e.toString() +"<.";
-                log(myName, "ERROR", myArea, logMessage);
-                if(e.toString().contains("ORA-01434") && ignoreErrorOnDrop) {
+                log(myName, Constants.ERROR, myArea, logMessage);
+                if((/*Oracle*/ e.toString().contains("ORA-01434")
+                        || /*DB2*/ e.toString().contains("SQLCODE=-204, SQLSTATE=42704") )
+                        && ignoreErrorOnDrop) {
                     errorMessage=Constants.NO_ERRORS;
                     rc =true;
                 } else {
@@ -121,12 +135,7 @@ public class DropSynonym {
     
          return rc;
     }
-    
-    public String tableNameFor (String inTableName) {
-        return tablePrefix + inTableName;
 
-    }
-    
     public String errorMessage() {
         return errorMessage;
     }
@@ -136,15 +145,23 @@ public class DropSynonym {
         String myArea="init";
         String logMessage=Constants.NOT_INITIALIZED;
 
-        String synonymName = tablePrefix + inSynonymName;
+        String synonymName;
         String nrTablesFound =Constants.NOT_INITIALIZED;
         
         myArea="check db type";
         readParameterFile();
-        if(databaseType.equals("Oracle")) {
+
+        if(connectionProperties.getUseTablePrefix()) {
+            synonymName = connectionProperties.getTableOwnerTablePrefix() + inSynonymName;
+        } else {
+            synonymName = inSynonymName;
+        }
+
+        if(Constants.DATABASETYPE_ORACLE.equals(connectionProperties.getDatabaseType())) {
             query="SELECT count(*) syncount FROM user_synonyms WHERE synonym_name ='" +synonymName +"'";
         } else {
-            logMessage="databaseType >" + databaseType +"< not yet supported";       log(myName, "info", myArea, logMessage);            
+            logMessage="databaseType >" + connectionProperties.getDatabaseType() +"< not yet supported";
+            log(myName, Constants.INFO, myArea, logMessage);
             return false;
         }
         GetSingleValue dbCol= new GetSingleValue(className);
@@ -158,74 +175,79 @@ public class DropSynonym {
 
         return false;
     }
-    
-    
 
+    private void readParameterFile() {
+        String myName = "readParameterFile";
+        String myArea = "reading parameters";
+        String logMessage = Constants.NOT_INITIALIZED;
 
+        log(myName, Constants.DEBUG, myArea, "getting properties for >" + databaseName + "<.");
+        if (connectionProperties.refreshConnectionProperties(databaseName)) {
+            log(myName, Constants.DEBUG, myArea, "username set to >" + connectionProperties.getDatabaseUsername() + "<.");
+        } else {
+            log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
+        }
+    }
 
-	public void readParameterFile(){	 
-        String myName="readParameterFile";
-        String myArea="reading parameters";
-        String logMessage=Constants.NOT_INITIALIZED;
+    private void log(String name, String level, String area, String logMessage) {
+        if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
+            return;
+        }
 
-        databaseType = GetParameters.GetDatabaseType(databaseName);
-        databaseConnDef = GetParameters.GetDatabaseConnectionDefinition(databaseName);
-        driver = GetParameters.GetDatabaseDriver(databaseType);
-        url = GetParameters.GetDatabaseURL(databaseConnDef);
-        userId = GetParameters.GetDatabaseUserName(databaseName);
-        password = GetParameters.GetDatabaseUserPWD(databaseName);
-        tableOwner = GetParameters.GetDatabaseTableOwnerName(databaseName);
-        tableOwnerPassword =GetParameters.GetDatabaseTableOwnerPWD(databaseName);
-
-        logMessage="databaseType >" + databaseType +"<.";       log(myName, "info", myArea, logMessage);
-        logMessage="connection >" + databaseConnDef +"<.";       log(myName, "info", myArea, logMessage);
-        logMessage="driver >" + driver +"<.";       log(myName, "info", myArea, logMessage);
-        logMessage="url >" + url +"<.";       log(myName, "info", myArea, logMessage);
-        logMessage="userId >" + userId +"<.";       log(myName, "info", myArea, logMessage);
-        logMessage="tblowner >" + tableOwner +"<."; log(myName, "info", myArea, logMessage);
-        
-	}
-
-    private void log(String name, String level, String location, String logText) {
-           if(Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
-               return;
-           }
-
-            Logging.LogEntry(logFileName, name, level, location, logText);
-       }
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+        }
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
+    }
 
     /**
-     * @param level
+     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
+     */
+    public String getLogFilename() {
+        if (logUrl.startsWith("http"))
+            return "<a href=\"" + logUrl + logFileName + ".log\" target=\"_blank\">" + logFileName + "</a>";
+        else
+            return logUrl + logFileName + ".log";
+    }
+
+    public static String getVersion() {
+        return version;
+    }
+    /**
+     * @param level to which logging should be set. Must be VERBOSE, DEBUG, INFO, WARNING, ERROR or FATAL. Defaults to INFO.
      */
     public void setLogLevel(String level) {
-       String myName ="setLogLevel";
-       String myArea ="determineLevel";
-       
-       logLevel =Constants.logLevel.indexOf(level.toUpperCase());
-       if (logLevel <0) {
-           log(myName, Constants.WARNING, myArea,"Wrong log level >" + level +"< specified. Defaulting to level 3.");
-           logLevel =3;
-       }
-       
-       log(myName,Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
+        String myName = "setLogLevel";
+        String myArea = "determineLevel";
+
+        logLevel = Constants.logLevel.indexOf(level.toUpperCase());
+        if (logLevel < 0) {
+            log(myName, Constants.WARNING, myArea, "Wrong log level >" + level + "< specified. Defaulting to level 3.");
+            logLevel = 3;
+        }
+
+        log(myName, Constants.INFO, myArea,
+                "Log level has been set to >" + level + "< which is level >" + getIntLogLevel() + "<.");
     }
 
     /**
-     * @return
+     * @return - the log level
      */
     public String getLogLevel() {
-       return Constants.logLevel.get(getIntLogLevel());
+        return Constants.logLevel.get(getIntLogLevel());
     }
 
     /**
-     * @return
+     * @return - the log level as Integer data type
      */
     public Integer getIntLogLevel() {
         return logLevel;
     }
-
-	public String getLogFilename() {
-		return logFileName + ".log";
-       }
 
 }

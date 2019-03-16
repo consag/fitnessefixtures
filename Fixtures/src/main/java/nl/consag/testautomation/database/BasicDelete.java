@@ -16,19 +16,19 @@ import java.text.SimpleDateFormat;
 public class BasicDelete {
 
     private String className = "BasicDelete";
+    private static String version = "20180619.1";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
 
-    private String driver;
-    private String url;
-    private String userId;
-    private String password;
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+
     private String databaseName;
-    private String databaseType;
-    private String databaseConnDef;
 
     private String tableName;
     private String ignore0Records = Constants.NO;
@@ -69,7 +69,6 @@ public class BasicDelete {
      */
     public boolean result(String expected) {
 
-        readParameterFile();
         submitDeleteStatement();
 
         if (getErrorLevel().equals(expected))
@@ -122,7 +121,13 @@ public class BasicDelete {
         String updateString = Constants.NOT_INITIALIZED;
         
         try {
-            connection = DriverManager.getConnection(url, userId, password);
+            myArea="readParameterFile";
+            readParameterFile();
+            log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName +"<.");
+            connectionProperties.setLogFileName(logFileName);
+            connectionProperties.setLogLevel(getIntLogLevel());
+            connection = connectionProperties.getUserConnection();
+//            connection = DriverManager.getConnection(url, userId, password);
             // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
             statement = connection.createStatement();
             // sql query of string type to submit update SQL statement into database.
@@ -166,40 +171,40 @@ public class BasicDelete {
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
 
-        databaseType = GetParameters.GetDatabaseType(databaseName);
-        databaseConnDef = GetParameters.GetDatabaseConnectionDefinition(databaseName);
-        driver = GetParameters.GetDatabaseDriver(databaseType);
-        url = GetParameters.GetDatabaseURL(databaseConnDef);
-        userId = GetParameters.GetDatabaseUserName(databaseName);
-        password = GetParameters.GetDatabaseUserPWD(databaseName);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        connectionProperties.refreshConnectionProperties(databaseName);
 
-        logMessage = "databaseType >" + databaseType + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "connection >" + databaseConnDef + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "driver >" + driver + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "url >" + url + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
-        logMessage = "userId >" + userId + "<.";
-        log(myName, Constants.VERBOSE, myArea, logMessage);
     }
 
-    private void log(String name, String level, String location, String logText) {
+    private void log(String name, String level, String area, String logMessage) {
         if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
             return;
         }
 
-        Logging.LogEntry(getLogFilename(), name, level, location, logText);
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+        }
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
-
     /**
-     * @return the log file name
+     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
      */
     public String getLogFilename() {
-        return logFileName + ".log";
+        if(logUrl.startsWith("http"))
+            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        else
+            return logUrl+logFileName + ".log";
     }
 
+    public static String getVersion() {
+        return version;
+    }
     /**
      * @param level to which logging should be set. Must be VERBOSE, DEBUG, INFO, WARNING, ERROR or FATAL. Defaults to INFO.
      */

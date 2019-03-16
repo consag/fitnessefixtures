@@ -1,0 +1,22 @@
+
+!define myVar {}
+!define resultVar {}
+
+!3 Using a SELECT statement
+!4 This allows to use of any valid SQL function
+
+!|check outcome query                                                  |
+|database name|query                                  |get column ?|
+|EB2|SELECT '123456789012345' , 'ABC' FROM dual WHERE 1=1|$myVar=     |
+
+!|check outcome query                                                |
+|database name|query                                  |get column ?|
+|EB2|SELECT substr('$myVar',0,10) as x , 'ABC' FROM dual WHERE 1=1|$resultVar=     |
+
+
+!3 Using a scenario table
+
+TODO
+
+
+

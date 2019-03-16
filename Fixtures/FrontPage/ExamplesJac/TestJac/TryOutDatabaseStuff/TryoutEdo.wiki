@@ -1,0 +1,33 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+
+!|import                      |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+
+!|get query result                                                            |
+|database name|query                           |get column ?|get log filename?|
+|HHB_RT       |select count(*) nr from CUSTAGR |7071        |                 |
+|HHB_RT       |select count(*) nr from AFFLBNK |1061        |                 |
+|HHB_RT       |select count(*) nr from REKOVK  |46786       |                 |
+|HHB_RT       |select count(*) nr from OVPDCT  |9548        |                 |
+|HHB_RT       |select count(*) nr from GEBOVPD |9565        |                 |
+|HHB_RT       |select count(*) nr from SUACC   |44597       |                 |
+|HHB_RT       |select count(*) nr from SERVUSR |7218        |                 |
+|HHB_RT       |select count(*) nr from GEBR    |6709        |                 |
+|HHB_RT       |select count(*) nr from BPASCST |3953        |                 |
+|HHB_RT       |select count(*) nr from USERFGP |19473       |                 |
+|HHB_RT       |select count(*) nr from OVKLTG  |1881        |                 |
+|HHB_RT       |select count(*) nr from ACNTCOD |136         |                 |
+|HHB_RT       |select count(*) nr from ONDSTP  |159         |                 |
+|HHB_RT       |select count(*) nr from COJEXTR |12930       |                 |
+|HHB_RT       |select count(*) nr from ACNTCODQ|136         |                 |

@@ -22,12 +22,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import nl.consag.testautomation.database.ConnectionProperties;
 import nl.consag.testautomation.supporting.Constants;
 import nl.consag.testautomation.supporting.Parameters;
 
 public class getQueries {
+    private static String version = "20180706.0";
 
-    private static String dbUrl;
     private static String errorMessage;
     private static boolean error;
 
@@ -40,7 +41,10 @@ public class getQueries {
     private static String startDateForDB2;
     private static String collectionDB =Constants.IDAA_STATS_COLLECTION_DB;
 
-    
+    private static ConnectionProperties connectionProperties = new ConnectionProperties();
+
+    private static String databaseName;
+
     public static void main(String[] args) throws IOException, Exception {
         System.out.println(collectQueryNumbers());
     }
@@ -96,6 +100,7 @@ public class getQueries {
     }
     
     public static String collectQueryNumbers() throws IOException, Exception {
+        String myArea="init";
 
         String zOs = getZosMachineName();
         if (Constants.NOT_FOUND.equals(zOs)) {
@@ -125,31 +130,20 @@ public class getQueries {
             collectionDB =Constants.IDAA_STATS_COLLECTION_DB;
         }
         paramCollection.getDatabaseParameters(collectionDB);
-        String collectionDBHost = paramCollection.getDbHostname();
-        String collectionDBPort = paramCollection.getDbPort();
-        String collectionDBLocation = paramCollection.getDbLocation();
-        String collectionDBUserId = paramCollection.getDbUserId();
-        String collectionDBPassword = paramCollection.getDbPassword();
-        
+
         if(Constants.ERROR.equals(paramCollection.getResult()) || Constants.NOT_FOUND.equals(paramCollection.getResult())) {
             System.out.println("Error getting password information: " + paramCollection.getErrorMessage());
             storeHistory = false;
         }
         if(storeHistory) {
             try {
-                insertConnection =
-                    DriverManager.getConnection("jdbc:db2://" + collectionDBHost + ":" + collectionDBPort + "/" +
-                                                collectionDBLocation + ":specialRegisters=CURRENT QUERY ACCELERATION=ELIGIBLE;retrieveMessagesFromServerOnGetMessage=true;", collectionDBUserId, collectionDBPassword);
-                deleteConnection =
-                    DriverManager.getConnection("jdbc:db2://" + collectionDBHost + ":" + collectionDBPort + "/" +
-                                                collectionDBLocation + ":specialRegisters=CURRENT QUERY ACCELERATION=ELIGIBLE;retrieveMessagesFromServerOnGetMessage=true;", collectionDBUserId, collectionDBPassword);
-                queryConnection =
-                    DriverManager.getConnection("jdbc:db2://" + collectionDBHost + ":" + collectionDBPort + "/" +
-                                                collectionDBLocation + ":specialRegisters=CURRENT QUERY ACCELERATION=NONE;retrieveMessagesFromServerOnGetMessage=true;", collectionDBUserId, collectionDBPassword);
+                myArea="readParameterFile";
+                readParameterFile();
+                insertConnection = connectionProperties.getUserConnection();
+                deleteConnection = connectionProperties.getUserConnection();
+                queryConnection = connectionProperties.getUserConnection();
             } catch (Exception e) {
-                System.out.println("The connection for data collection failed.  Check your connection parameters! host=>" + collectionDBHost +
-                               "< port=>" + collectionDBPort + "< database =>" + collectionDBLocation + "< user=>" +
-                               collectionDBUserId + "<");
+                System.out.println("The connection for data collection failed.  Check your connection parameters! ");
                 System.out.println(e.toString());
                 storeHistory = false;
             }
@@ -200,6 +194,15 @@ public class getQueries {
             return Constants.ERROR;
         else 
         return Constants.OK;
+
+    }
+
+    private static void readParameterFile() {
+        String myName = "readParameterFile";
+        String myArea = "reading parameters";
+        String logMessage = Constants.NOT_INITIALIZED;
+
+        connectionProperties.refreshConnectionProperties(databaseName);
 
     }
 
@@ -259,14 +262,6 @@ public class getQueries {
 
     }
 
-
-    private static void setDBUrl(String url) {
-        dbUrl = url;
-    }
-
-    private static String getDBUrl() {
-        return dbUrl;
-    }
 
     private static void setErrorMessage(String msg) {
         errorMessage = msg;
@@ -580,6 +575,10 @@ public class getQueries {
             return sql.equals(rhs.sql);
         }
     }
+    public static String getVersion() {
+        return version;
+    }
+
 
 }
 

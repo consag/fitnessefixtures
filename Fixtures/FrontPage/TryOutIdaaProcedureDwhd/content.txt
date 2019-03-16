@@ -1,0 +1,27 @@
+!define TEST_SYSTEM {slim} 
+!path ./lib/*.jar
+!path ./lib/hive/*.jar
+!path ./config
+!path ./config/keys
+
+
+|import                              |
+|nl.consag.testautomation.database|
+|nl.consag.testautomation.supporting|
+|nl.consag.testautomation.powercenter|
+|nl.consag.testautomation.informatica|
+|nl.consag.testautomation.linux|
+|nl.consag.testautomation.siebel|
+|nl.consag.testautomation.scripts|
+|nl.consag.testautomation.idaaprocedures|
+|supporting                          |
+|scheduleFitNesse                          |
+|scheduler                          |
+|database                            |
+|generic.fixtures.DBFixture          |
+
+
+!style_indigo {'''IDAA Sync'''}
+|idaa procedures|tryout_idaa_procedures                                                                        |
+|idaa name      |database name|schema name|table name    |action|result?|get error message?|get result message?|
+|IDAABX02       |DWHDDA         |DB98AY1A   |CX_RB_SALESBLK|sync  |OK     |                  |                   |

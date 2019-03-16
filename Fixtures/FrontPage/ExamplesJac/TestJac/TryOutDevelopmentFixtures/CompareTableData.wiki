@@ -1,0 +1,30 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+
+|import                     |
+|generic.fixtures.Global    |
+|generic.fixtures.DBFixture |
+|generic.fixtures.DACFixture|
+
+!define myTestCase {tralala}
+
+|script           |Check fixture properties |
+|for database name|DWHD_IN                  |
+|ensure           |login user   |user_dih   |
+|show             |login user               |
+|ensure           |db connection|SRV0OPWL401|
+|show             |db connection            |
+|for database name|SIEBEL|
+|show             |db connection            |
+|show             |login user               |
+
+!2 Compare table data
+|Compare Table Data|fixturetest|
+|date format       |source databaseName|Source Table|Source Filter                      |target database name|Target Table        |Target Filter|same data?|number Of Differences?|number Of Source Records?|number Of Target Records?|get log filename?|get output file?|
+|yyyyMMdd          |SIEBEL             |S_LST_OF_VAL|ROW_ID='0-10CWC'|DWHD_IN             |STI_WC_LST_OF_VAL_G |INTEGRATION_ID='0-10CWC' and delivery_sqn=(select max(delivery_sqn) from sti_wc_lst_of_val_g)|Yes       |0|1|1|||

@@ -1,0 +1,41 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+--path /u01/app/ibm/db2c/db2inst/sqllib/java/db2jcc.jar
+!path /u01/app/ibm/db2c/db2inst/sqllib/java/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+
+
+!define variable {varNextValue}
+
+
+|oracle sequence|
+|database name|sequence|resetValue?|next value?|
+|EB2|wc_row_wid_seq|OK|$varNextValue=|
+
+
+|table: basic query |
+|database name|EB2|
+|select query|SELECT dummy, '$varNextValue' as nextval from dual where '$varNextValue'=1|
+|nr of cols okay|dummy|nextval|
+|2|X|1|
+
+|oracle sequence|
+|database name|sequence|next value?|
+|EB2|wc_row_wid_seq|$varNextValue=|
+
+|table: select query |
+|database name|EB2|
+|select query|SELECT dummy, '$varNextValue' as nextval from dual where 1=1|
+|nr of cols okay|dummy|nextval|
+|2|X|2|

@@ -1,0 +1,12 @@
+---
+Test
+---
+# DWHD job to analyze incoming delivery
+# This version expects parameters which specify the interface code and table
+
+|Table:Job Definition                                                                                                                                                                                                                |
+|DWHD|DHWD Analyze STI Delivery|Version=20170112.0|Persistence=Yes|Max Concurrent=2                |IDQConfig=/rabo/sserole/tws/config/idq101.cfg    |DB2Config=/rabo/sserole/tws/config/rundb2sql.cfg                               |
+|Steps                                                                                                                                                                                                                               |
+|10  |Extract data             |Run IDQ           |mapping        |project=DWHD_4_Mappings         |application=Appl_DWHD_DeliveryAnalysis           |mapping=map_ExtractSTIDelivery|pf={usr1}.param|result=OK|On Error=STOP|Wait=Yes|
+|20  |Profile data             |Run IDQ           |profile        |project=DWHD_5_Profile_Scorecard|object=Historize_Profiles/Profile_DWHD_PRF_{usr1}|result=OK                     |On Error=STOP  |Wait=Yes                        |
+|30  |Erase temp data          |Run DB2           |connection=SIEBDQ |sqlFile=truncate_a_table.sql    |args=ATableName                                                                                                                      |

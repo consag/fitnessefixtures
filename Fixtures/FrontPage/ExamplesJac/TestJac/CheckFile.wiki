@@ -1,0 +1,25 @@
+---
+Suites: File Management
+Test
+---
+
+
+!define incl_file_name {jactest.dat}
+!define incl_db_name_source {FBSSTO}
+!define incl_delimiter {!-Delimiter=;|-!}
+!define incl_scheme {OWNER_STO}
+
+!define var_wf_application {BBI1}
+!define var_wf_folder {FIN_STAG}
+
+!define incl_where {where loading_wid = (select max(loading_wid) from ${incl_table_name_source})} 
+
+!define incl_record_filter {BFS_FINANCIAL_GRPS}
+!define var_count_source {0}
+
+
+|table:check file|check_file                                            |
+|file name       |${incl_file_name}|incoming DWHD/busy|${incl_delimiter}|
+|filter          |Table=${incl_record_filter}                           |
+|Database        |Schema           |Table                               |
+|!-#ANYVALUE#-!  |${incl_scheme}   |${incl_record_filter}               |

@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Constants {
+    public String version="20180808.0";
 
     public static final String FITNESSE_PREFIX_REPORT="report:";    // typically no color
     public static final String FITNESSE_PREFIX_PASS="pass:";        // typically green
@@ -18,7 +19,6 @@ public class Constants {
     public static final String FITNESSE_PREFIX_IGNORE="ignore:";    // typically blue
     public static final String FITNESSE_PREFIX_ERROR="error:";      // typically yellow
     
-    public static final String SF_CONNECTIONCACHEFILE="sf_access.json";
     public static final String DEFAULT_CLASS_PREFIX="nl.consag.testautomation";
     public static final String YES = "Yes";
     public static final String Y = "Y";
@@ -29,7 +29,8 @@ public class Constants {
     public static final String TRUE = "true";
     public static final String FALSE ="false";
     public static final String FAILED = "Failed";
-    
+
+    public static final String NOT_EXECUTED ="NOTEXECUTED";
     public static final String NOT_FOUND = "NOTFOUND";
     public static final String DEFAULT_PROPVALUE ="Default#Prop#Value";
     public static final String NOT_PROVIDED = "NotProvided";
@@ -47,6 +48,7 @@ public class Constants {
     public static final String ERRCODE_UNSUPPORTED_DATATYPE ="CNSG-DB-0005";
     public static final String ERRCODE_SQL_IDAASQLERROR ="CNSG-DB-0006";
     public static final String ERRCODE_SQL_IDAAGETRESULT ="CNSG-DB-0007";
+    public static final String ERRCODE_UNSUPPORTED_DATABASE ="CNSG-DB-0008";
 
     public static final String ERRCODE_DECRYPT ="CNSG-SEC-0001";
 
@@ -70,6 +72,7 @@ public class Constants {
     public static final String COLUMN_DATATYPE_NUMBER="NUMBER";
     public static final String COLUMN_DATATYPE_DECIMAL="DECIMAL";
     public static final String COLUMN_DATATYPE_TIMESTAMP ="TIMESTAMP";
+    public static final String COLUMN_DATATYPE_TIMESTMP ="TIMESTMP";
     public static final String COLUMN_DATATYPE_TIMESTAMP6="TIMESTAMP(6)";
     public static final String COLUMN_DATATYPE_TIMESTAMP9="TIMESTAMP(9)";
     public static final String COLUMN_DATATYPE_DATE="DATE";
@@ -165,8 +168,10 @@ public class Constants {
     public static final String FILEOPERATION_PROPERTIES =CONFIGDIRECTORY + "fileoperation.properties";
     public static final String APPLICATION_PROPERTIES =CONFIGDIRECTORY + "application.properties";
     public static final String CONNECTION_PROPERTIES = "connection.properties"; // Will replace database.properties. Contains encrypted passwords.
+
     public static final String DATABASE_PROPERTIES =CONFIGDIRECTORY + "database.properties"; // LEGACY
-    public static final String JDBC_PROPERTIES =CONFIGDIRECTORY + "jdbc.properties";
+    public static final String JDBC_PROPERTIES =CONFIGDIRECTORY + "jdbc.properties"; // LEGACY
+
     public static final String POWERCENTER_PROPERTIES =CONFIGDIRECTORY + "powercenter.properties";
     public static final String APPWSH_PROPERTIES =CONFIGDIRECTORY + "appwsh.properties";
     public static final String WSH_PROPERTIES =CONFIGDIRECTORY + "wsh.properties";
@@ -218,8 +223,24 @@ public class Constants {
     public static final int LOGLEVEL_WARNING=2; 
     public static final int LOGLEVEL_INFO=3; 
     public static final int LOGLEVEL_DEBUG=4; 
-    public static final int LOGLEVEL_VERBOSE=5; 
-    
+    public static final int LOGLEVEL_VERBOSE=5;
+
+    //keywords on test page - used by doTable
+    public static final String LOGLEVEL="loglevel";
+    public static final String DATABASE_NAME ="databasename";
+    public static final String CONNECT_AS ="connectas";
+    public static final String TABLE_NAME ="tablename";
+    public static final String COLUMN_NAME ="columnname";
+    public static final String COLUMN_NAMES ="columnnames";
+    public static final List<String> DBFIXTURE_KEYWORDLIST = Collections.unmodifiableList(Arrays.asList(
+            LOGLEVEL
+            ,DATABASE_NAME
+            ,CONNECT_AS
+            ,TABLE_NAME
+            ,COLUMN_NAME
+            ,COLUMN_NAMES
+            ));
+
     // Properties file management
     public static final String PROPMGMT_ACTION_ADD="add";
     public static final String PROPMGMT_ACTION_REMOVE="remove";
@@ -236,8 +257,16 @@ public class Constants {
         ,PROPMGMT_ACTIONERROR_CREATE
         ,PROPMGMT_ACTIONERROR_REPORT));
     
-    // default timestamp format used by Excel
+    // default timestamp format used by Excel and BasicInsert
     public static final String DEFAULT_TIMESTAMP_FORMAT ="yyyy-MM-dd HH:mm:ss";
+
+    public static final String DEFAULT_DATE_FORMAT ="yyyy-MM-dd";
+    public static final String PARAM_DATE_FORMAT ="DateFormat";
+    public static final String PARAM_TIMESTAMP_FORMAT ="TimestampFormat";
+    public static final String DATABASE_DEFAULT_TIMESTAMP_FORMAT = "YYYY-MM-DD HH24:MI:SS";
+    public static final String DATABASE_DEFAULT_DATE_FORMAT ="YYYY-MM-DD";
+    public static final String PARAM_DATABASE_DATE_FORMAT ="DatabaseDateFormat";
+    public static final String PARAM_DATABASE_TIMESTAMP_FORMAT ="DatabaseTimestampFormat";
 
     // Scheduler constants
     public static final String SCHEDULER_PROPERTIES = CONFIGDIRECTORY + "scheduler_client.properties";
@@ -303,7 +332,12 @@ public class Constants {
     public static final String DATABASETYPE_ORACLE ="Oracle";
     public static final String DATABASETYPE_SQLSERVER ="SQLServer";
     public static final String DATABASETYPE_NONSTOP ="Nonstop";
-    
+    public static final String DATABASETYPE_NETEZZA ="Netezza";
+
+    //Connect as user/owner
+    public static final String DBCONN_ASUSER ="USER";
+    public static final String DBCONN_ASOWNER ="OWNER";
+
     //Informatica Process defaults
     public static final String DEFAULT_ABORTONERROR=Constants.YES;
     public static final String PROP_ABORTONERROR="AbortOnError";

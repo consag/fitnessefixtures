@@ -1,0 +1,27 @@
+---
+Suites: IDAA
+Test
+---
+!3 Purpose
+The fixture should create a database table based on a query the tester supplies. The data can then be used by any other test page.
+The counterpart of this fixture is the ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.TryOutIdaaOnlyTable.DropTable fixture, which drops the specified table.
+
+!3 Limitations
+By design, the create table will only accept an indication for the table. All table names will be prefixed.
+
+|script                 |create table  |crttab                |
+|set database connection|${dbconnection}                      |
+|set table name         |${demotab}                           |
+|set database           |${database}                          |
+|set accelerator        |${accelerator}                       |
+|add column             |ROW_ID        |data type |VARCHAR(15)|
+|add column             |NAME          |data type |VARCHAR(30)|
+|ensure                 |create table  |${demotab}|is   |OK   |
+|show                   |table name for|${demotab}            |
+|ensure                 |table         |${demotab}|exists     |
+|check                  |error message |No errors encountered             |
+|show                   |get version                          |
+
+
+
+!lastmodified

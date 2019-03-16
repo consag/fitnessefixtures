@@ -1,0 +1,38 @@
+---
+Test
+---
+!contents -h
+!1 Test script fix 29-AUG-2012
+----
+ 
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+
+!3 Original Call as Huishoudboekje uses it
+|do workflows                                                       |
+|type of workflow|folder|workflow name        |workflow successfull?|
+|HHB              |HHB   |wf_HHB_CLEANUP_TABLES|Success              |
+
+!3 Extensions - ask for error msg (if any)
+|do workflows                                                       |
+|type of workflow|folder|workflow name        |workflow successfull?|error?|
+|HHB              |HHB   |wf_HHB_CLEANUP_TABLES|Success              |No errors encountered.|
+
+!3 Extension - could also ask for number of source or target records. Does not have to be in this order.
+|do workflows                                                       |
+|type of workflow|folder|workflow name        |workflow successfull?|error?|source rows?|target rows?|
+|HHB              |HHB   |wf_HHB_CLEANUP_TABLES|Success              |No errors encountered.|1|1|
+
+!3 Another example: retrieve number of source records and target records. Not interested in error msg in this example.
+|do workflows                                                       |
+|type of workflow|folder|workflow name        |workflow successfull?|target rows?|source rows?|
+|HHB              |HHB   |wf_HHB_CLEANUP_TABLES|Success              |1|1|
+

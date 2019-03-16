@@ -25,26 +25,24 @@ import nl.consag.testautomation.supporting.Logging;
 public class GetSingleValue {
 
     private String className = "GetSingleValue";
-    private static String version ="20160118.0";
-    
+    private static String version ="20180820.0";
+
     private String logFileName = Constants.NOT_INITIALIZED;
-    private String context = Constants.NOT_INITIALIZED;
+    private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
-    
+    private int logLevel = 3;
+    private String logUrl=Constants.LOG_DIR;
+
+    private boolean firstTime = true;
+
+    ConnectionProperties connectionProperties = new ConnectionProperties();
+    private String connectAs=Constants.DBCONN_ASUSER;
+
+    private String databaseName;
     private String result=Constants.OK;
     private String errorMessage=Constants.OK;
-    private int logLevel =3;
-    private String logUrl=Constants.LOG_DIR;
-    private int logEntries =0;
 
-    private String driver;
-    private String jdbcUrl;
-    private String userId;
-    private String password;
-    private String databaseName;
     private String query;
-    private String databaseType;
-    private String databaseConnection;
 
     private int numberTableColumns;
 
@@ -74,6 +72,10 @@ public class GetSingleValue {
         context = inContext;
         logFileName = startDate + "." + className +"." + context;
 
+    }
+
+    public String getClassName() {
+        return this.className;
     }
 
 
@@ -192,6 +194,12 @@ public class GetSingleValue {
         addRowToReturnTable(return_row); //return row with outcomes; pass/fail
     }
 
+    public String getConnectAs() {
+        return this.connectAs;
+    }
+    public void setConnectAs(String connectAs) {
+        this.connectAs = connectAs;
+    }
     /**
      * Function to insert statement based on input in fitnesse table row >=3.
      * @return
@@ -211,10 +219,20 @@ public class GetSingleValue {
         String myArea = "init";
         String logMessage = Constants.NOT_INITIALIZED;
 
+        readParameterFile();
+        log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName +"<.");
+        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogLevel(getIntLogLevel());
+
         try {
             myArea = "runQuery";
             // Create a connection to the database
-            connection = DriverManager.getConnection(jdbcUrl, userId, password);
+            if(Constants.DBCONN_ASOWNER.equals(getConnectAs())) {
+                connection = connectionProperties.getOwnerConnection();
+            } else { // connect as user
+                connection = connectionProperties.getUserConnection();
+            }
+//            connection = DriverManager.getConnection(jdbcUrl, userId, password);
             // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
             statement = connection.createStatement();
             // sql query of string type to read database
@@ -223,7 +241,7 @@ public class GetSingleValue {
 
             resultSet = statement.executeQuery(query);
 
-            if ("Netezza".equals((databaseType))) {
+            if (Constants.DATABASETYPE_NETEZZA.equals(connectionProperties.getDatabaseType())) {
                 // isClosed does not work for Netezza
                 logMessage = "Skipping isClosed as this is Netezza...";
                 log(myName, "debug", myArea, logMessage);
@@ -317,95 +335,77 @@ public class GetSingleValue {
         return_table.add(row);
     }
 
-    /**
-     * Function to read the parameters in a parameter file.
-     */
-    public void readParameterFile() {
+    private void readParameterFile() {
         String myName = "readParameterFile";
-        String myArea = "reading";
+        String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
 
-        databaseType = GetParameters.GetDatabaseType(databaseName);
-        logMessage = "Database type >" + databaseType +"<.";
-        log(myName, Constants.DEBUG, myArea, logMessage);
-        
-        databaseConnection = GetParameters.GetDatabaseConnectionDefinition(databaseName);
-        logMessage = "Database connection definition >" + databaseConnection +"<.";
-        log(myName, Constants.DEBUG, myArea, logMessage);
-
-        driver = GetParameters.GetDatabaseDriver(databaseType);
-        logMessage = "driver >" + driver +"<.";
-        log(myName, Constants.DEBUG, myArea, logMessage);
-        jdbcUrl = GetParameters.GetDatabaseURL(databaseConnection);
-        logMessage = "jdbc url for database >" + databaseName +"< is >" + jdbcUrl +"<.";
-        log(myName, Constants.DEBUG, myArea, logMessage);
-        
-        userId = GetParameters.GetDatabaseUserName(databaseName);
-        logMessage = "userId >" + userId +"<.";
-        log(myName, Constants.DEBUG, myArea, logMessage);
-
-        password = GetParameters.GetDatabaseUserPWD(databaseName);
-        
-        logUrl = GetParameters.GetLogUrl();
-        logMessage = "logURL >" + logUrl +"<.";
-        log(myName, Constants.DEBUG, myArea, logMessage);
-        
-        resultFormat =GetParameters.getPropertyVal(Constants.FIXTURE_PROPERTIES, Constants.PARAM_RESULT_FORMAT);
-        if(Constants.NOT_FOUND.equals(resultFormat))
-            resultFormat =Constants.DEFAULT_RESULT_FORMAT;
-        logMessage = "resultFormat >" + resultFormat +"<.";
-        log(myName, Constants.DEBUG, myArea, logMessage);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        if(connectionProperties.refreshConnectionProperties(databaseName)) {
+            log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
+        } else {
+            log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
+        }
 
     }
 
-    private void log(String name, String level, String location, String logText) {
+    private void log(String name, String level, String area, String logMessage) {
         if (Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
             return;
         }
-        logEntries++;
-        if (logEntries == 1) {
-            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
+
+        if (firstTime) {
+            firstTime = false;
+            if (context.equals(Constants.DEFAULT)) {
+                logFileName = startDate + "." + className;
+            } else {
+                logFileName = startDate + "." + context;
+            }
+            Logging.LogEntry(logFileName, getClassName() +"-" +name, Constants.INFO, "Fixture version >" + getVersion() + "<.");
         }
-
-        Logging.LogEntry(logFileName, name, level, location, logText);
+        Logging.LogEntry(logFileName, getClassName() + "-" + name, level, area, logMessage);
     }
-
     /**
-    * @return
-    */
+     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
+     */
     public String getLogFilename() {
         if(logUrl.startsWith("http"))
-            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">log</a>";
+            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
         else
             return logUrl+logFileName + ".log";
     }
 
-    /**
-    * @param level
-    */
-    public void setLogLevel(String level) {
-    String myName ="setLogLevel";
-    String myArea ="determineLevel";
-    
-    logLevel =Constants.logLevel.indexOf(level.toUpperCase());
-    if (logLevel <0) {
-       log(myName, Constants.WARNING, myArea,"Wrong log level >" + level +"< specified. Defaulting to level 3.");
-       logLevel =3;
-    }
-    
-    log(myName,Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
+    public static String getVersion() {
+        return version;
     }
 
     /**
-    * @return
-    */
+     * @param level to which logging should be set. Must be VERBOSE, DEBUG, INFO, WARNING, ERROR or FATAL. Defaults to INFO.
+     */
+    public void setLogLevel(String level) {
+        String myName = "setLogLevel";
+        String myArea = "determineLevel";
+
+        logLevel = Constants.logLevel.indexOf(level.toUpperCase());
+        if (logLevel < 0) {
+            log(myName, Constants.WARNING, myArea, "Wrong log level >" + level + "< specified. Defaulting to level 3.");
+            logLevel = 3;
+        }
+
+        log(myName, Constants.INFO, myArea,
+                "Log level has been set to >" + level + "< which is level >" + getIntLogLevel() + "<.");
+    }
+
+    /**
+     * @return - the log level
+     */
     public String getLogLevel() {
         return Constants.logLevel.get(getIntLogLevel());
     }
 
     /**
-    * @return
-    */
+     * @return - the log level as Integer data type
+     */
     public Integer getIntLogLevel() {
         return logLevel;
     }
@@ -450,10 +450,6 @@ public class GetSingleValue {
     
     public String getErrorMessage() {
         return formatResult(errorMessage);
-    }
-    
-    public static String getVersion() {
-        return version;
     }
 
 }

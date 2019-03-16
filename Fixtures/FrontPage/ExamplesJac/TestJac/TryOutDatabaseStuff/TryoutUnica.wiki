@@ -1,0 +1,101 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+
+!|import                      |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+ 
+
+|table:select query                               |
+|database name|BT_PRO                             |
+|sql statement|select count(*) nr from dual|
+|column name  |nr                                 |
+|column value |1|
+
+
+!|get query result                                |
+|database name|query         |get column ?        |get log filename?|
+|BT_PRO|select count(*) nr from dual|1||
+|BT_UNI|select count(*) nr from dual|1||
+|BT_RT1|select count(*) nr from dual|1||
+|BT_BTC|select count(*) nr from dual|1||
+|BT_TBD|select count(*) nr from dual|1||
+
+
+!2 Preparing testdata in the source tables OWNER_PRO.CUSTOMERPROFILETABLE for STARTER
+
+1a. Get CUSTOMERID from IBM Unica Interacet OWNER_PRO.CUSTOMERPROFILETABLE table for the Hypotheek segement STARTER and insert this value into the variable $CUST_TO_UPD_STARTER_1
+|get query result                                                                                                                                                                                                            |
+|database name|query                                                                                                                                                                                 |get column ?           |
+|BT_PRO          |select customerid from customerprofiletable where 1 = 1 and dnst_hyp_afn_ind=0 and leeftijd>=20 and leeftijd<=40 and EIG_HS_IND=0 and STUD_IND =0 and voeding_bedr>1500 and rownum = 1|$CUST_TO_UPD_STARTER_1=|
+
+1b. Get CUSTOMERID from IBM Unica Interacet OWNER_PRO.CUSTOMERPROFILETABLE table for the Hypotheek segement STARTER and insert this value into the variable $CUST_TO_UPD_STARTER_2
+|get query result                                                                                                                                                                                                                                                             |
+|database name|query                                                                                                                                                                                                                                  |get column ?           |
+|BT_PRO          |select customerid from customerprofiletable where 1 = 1 and dnst_hyp_afn_ind=0 and leeftijd>=20 and leeftijd<=40 and EIG_HS_IND=0 and STUD_IND =0 and voeding_bedr>1500 and customerid NOT IN ('$CUST_TO_UPD_STARTER_1') and rownum = 1|$CUST_TO_UPD_STARTER_2=|
+
+1c. Get CUSTOMERID from IBM Unica Interacet OWNER_PRO.CUSTOMERPROFILETABLE table for the Hypotheek segement STARTER and insert this value into the variable $CUST_TO_UPD_STARTER_3
+|get query result                                                                                                                                                                                                                                                                                       |
+|database name|query                                                                                                                                                                                                                                                            |get column ?           |
+|BT_PRO          |select customerid from customerprofiletable where 1 = 1 and dnst_hyp_afn_ind=0 and leeftijd>=20 and leeftijd<=40 and EIG_HS_IND=0 and STUD_IND =0 and voeding_bedr>1500 and customerid NOT IN ('$CUST_TO_UPD_STARTER_1', '$CUST_TO_UPD_STARTER_2') and rownum = 1|$CUST_TO_UPD_STARTER_3=|
+
+1d. Get CUSTOMERID from IBM Unica Interacet OWNER_PRO.CUSTOMERPROFILETABLE table for the Hypotheek segement STARTER and insert this value into the variable $CUST_TO_UPD_STARTER_4
+|get query result                                                                                                                                                                                                                                                                                                                 |
+|database name|query                                                                                                                                                                                                                                                                                      |get column ?           |
+|BT_PRO          |select customerid from customerprofiletable where 1 = 1 and dnst_hyp_afn_ind=0 and leeftijd>=20 and leeftijd<=40 and EIG_HS_IND=0 and STUD_IND =0 and voeding_bedr>1500 and customerid NOT IN ('$CUST_TO_UPD_STARTER_1', '$CUST_TO_UPD_STARTER_2', '$CUST_TO_UPD_STARTER_3') and rownum = 1|$CUST_TO_UPD_STARTER_4=|
+
+1e. Update CUSTOMERID of step 1a with the CUSTOMER_ID out of variable $CUST_UPD_TO_STARTER_1
+|table:update query                             |
+|database name   |BT_PRO                           |
+|table name      |OWNER_PRO.CUSTOMERPROFILETABLE|
+|Filter on column|CUSTOMERID                    |
+|with value      |'$CUST_TO_UPD_STARTER_1'      |
+|modify column   |CUSTOMERID                        |
+|set to value    |'$CUST_UPD_TO_STARTER_1'      |
+
+1f. Update CUSTOMERID of step 1a with the CUSTOMER_ID out of variable $CUST_UPD_TO_STARTER_2
+|table:update query                             |
+|database name   |BT_PRO                           |
+|table name      |OWNER_PRO.CUSTOMERPROFILETABLE|
+|Filter on column|CUSTOMERID                    |
+|with value      |'$CUST_TO_UPD_STARTER_2'      |
+|modify column   |CUSTOMERID                        |
+|set to value    |'$CUST_UPD_TO_STARTER_2'      |
+
+1g. Update CUSTOMERID of step 1a with the CUSTOMER_ID out of variable $CUST_UPD_TO_STARTER_3
+|table:update query                             |
+|database name   |BT_PRO                           |
+|table name      |OWNER_PRO.CUSTOMERPROFILETABLE|
+|Filter on column|CUSTOMERID                    |
+|with value      |'$CUST_TO_UPD_STARTER_3'      |
+|modify column   |CUSTOMERID                        |
+|set to value    |'$CUST_UPD_TO_STARTER_3'      |
+
+1h. Update CUSTOMERID of step 1a with the CUSTOMER_ID out of variable $CUST_UPD_TO_STARTER_4
+|table:update query                             |
+|database name   |HBT_PRO                           |
+|table name      |OWNER_PRO.CUSTOMERPROFILETABLE|
+|Filter on column|CUSTOMERID                    |
+|with value      |'$CUST_TO_UPD_STARTER_4'      |
+|modify column   |CUSTOMERID                        |
+|set to value    |'$CUST_UPD_TO_STARTER_4'      |
+
+
+18d. Check whether the following is true '''else b.act_cdd_rtg_sbl_code'''
+|table:select query                                                                                                                                        |
+|database name|BT_PRO                                                                                                                                        |
+|sql statement|select count(*) FROM owner_pcs.bt_mdb_uni_s3 c where 1 = 1 and c.customerid = '$CUST_UPD_11' and c.HGST_CDD_KLS_CD = '$ELSE_HGST_CDD_KLS_CD'|
+|column name  |TOTAL                                                                                                                                       |
+|column value |1                                                                                                                                           |
+
+
+

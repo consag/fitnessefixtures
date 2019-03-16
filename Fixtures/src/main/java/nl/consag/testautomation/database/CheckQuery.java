@@ -1048,7 +1048,7 @@ public class CheckQuery {
         // check whether or not check table exists. if not, create it.
           CreateTable tbl = new CreateTable(className +"-" +myName);
           tbl.setLogLevel(getLogLevel());
-          tbl.setDatabaseConnection(getDatabaseName());
+          tbl.setDatabaseName(getDatabaseName());
             tbl.setLogLevel(getLogLevel());
             myArea="Check table existence";
           tableExists=  tbl.tableExists(getCheckTable());
