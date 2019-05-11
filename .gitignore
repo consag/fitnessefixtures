@@ -3,3 +3,6 @@
 .idea
 FitNesseRoot
 target
+testPagesRoot
+.DS_Store
+*.zip
