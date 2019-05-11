@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>nl.consag.testautomation</groupId>
-  <artifactId>ConsagFitNesseFixtures</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <groupId>nl.jacbeekers.testautomtion.fitnesse</groupId>
+  <artifactId>DataIntegrationFixtures</artifactId>
+  <version>1.6-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -31,7 +31,7 @@
             <configuration>
                 <archive>
                     <manifest>
-                        <mainClass>nl.consag.testautomation.ConsagFitNesseFixtures</mainClass>
+                        <mainClass>nl.jacbeekers.testautomation.fitnesse.FitNesseFixtures</mainClass>
                     </manifest>
                 </archive>
             </configuration>
@@ -135,22 +135,12 @@
       <version>20180130</version>
     </dependency>
   </dependencies>
-  <description>Consag Testautomation - FitNesse Fixtures</description>
+  <description>FitNesse Testautomation - Fixtures</description>
   <repositories>
       <repository>
           <id>Maven Central</id>
           <name>Maven Central</name>
           <url>https://repo.maven.apache.org/maven2</url>
-      </repository>
-      <repository>
-          <id>rabo_dataquality_release</id>
-          <name>dqsquad-rabobank-release</name>
-          <url>https://nexus3.rabobank.nl/repository/rabo_dataquality_release/</url>
-      </repository>
-      <repository>
-          <id>rabo_dataquality_snapshot</id>
-          <name>dqsquad-rabobank-snapshot</name>
-          <url>https://nexus3.rabobank.nl/repository/rabo_dataquality_snapshot/</url>
       </repository>
       <repository>
           <id>jboss-maven2-release-repository</id>
@@ -159,14 +149,15 @@
       </repository>
   </repositories>
     <distributionManagement>
-    <snapshotRepository>
+<!--    <snapshotRepository>
         <id>rabo_dataquality_snapshot</id>
-        <url>https://nexus3.rabobank.nl/repository/rabo_dataquality_snapshot/</url>
+        <url>https://somewhere/repository/snapshot/</url>
     </snapshotRepository>
     <repository>
         <id>rabo_dataquality_release</id>
-        <url>https://nexus3.rabobank.nl/repository/rabo_dataquality_release/</url>
+        <url>https://somewhere/repository/release/</url>
     </repository>
-</distributionManagement>
+-->
+    </distributionManagement>
 
 </project>
