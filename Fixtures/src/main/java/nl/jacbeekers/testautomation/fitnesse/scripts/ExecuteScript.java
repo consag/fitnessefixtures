@@ -11,23 +11,22 @@
  */
 package nl.jacbeekers.testautomation.fitnesse.scripts;
 
-import java.io.*;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
 import nl.jacbeekers.testautomation.fitnesse.supporting.GetParameters;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
+import nl.jacbeekers.testautomation.fitnesse.supporting.RunProcess;
 
 public class ExecuteScript {
     private static final String className = "ExecuteScript";
-    private static final String version = "20170304.0";
+    private static final String version = "20190512s.0";
 
     private String scriptName = Constants.NOT_PROVIDED;
     private List<String> parameterList = new ArrayList<String>();
+    private String[] environment =null;
     private String startDate = Constants.NOT_INITIALIZED;
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.NOT_PROVIDED;
@@ -44,6 +43,7 @@ public class ExecuteScript {
     private String baseDir = Constants.NOT_INITIALIZED;
     private String scriptLoc = Constants.NOT_INITIALIZED; // provided on test page as <baseloc> <subdir>
     private String scriptBaseDir = Constants.NOT_INITIALIZED; // from directory.properties
+    private boolean determinePath = true;
 
     private String resultFileName = Constants.NOT_PROVIDED;
     private String resultFileLocation = Constants.NOT_PROVIDED;
@@ -65,12 +65,12 @@ public class ExecuteScript {
         logFileName = startDate + "." + className;
     }
 
-    public ExecuteScript(String scriptName) {    
-            this.scriptName = scriptName;    
-      java.util.Date started = new java.util.Date();
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-      this.startDate = sdf.format(started);
-        logFileName = startDate + "." + className +"." +this.scriptName;
+    public ExecuteScript(String scriptName) {
+        setScriptName(scriptName);
+        java.util.Date started = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        this.startDate = sdf.format(started);
+        logFileName = startDate + "." + className ;
     }
      
     public ExecuteScript(String scriptName, String context) {    
@@ -79,12 +79,12 @@ public class ExecuteScript {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
       this.startDate = sdf.format(started);
       this.context=context;
-        logFileName = startDate + "." + className +"."+this.scriptName +"." + context;
+        logFileName = startDate + "." + className +"." + context;
     }
 
     /**
      * @param abortYesNo
-     * @throws RunScriptStopTest
+     * @throws ExecuteScriptStopTest
      */
     public void setAbortOnError(String abortYesNo) throws ExecuteScriptStopTest {
         //Function to set abort on error, i.e. if RunScriptStopTest should be thrown in case of exceptions
@@ -110,27 +110,19 @@ public class ExecuteScript {
         return this.abortYesNo;
     }
 
-    /**
-     * @param scriptName - Sets the script name. Should be a full path.
-     */
     public void nameScript(String scriptName) {
         this.scriptName = scriptName;
     }
-
-    /**
-     * @param parameter - Adds a parameter to the script's command line
-     */
     public void addParameter(String parameter) {
         if(parameter == null) {
             parameter=getValueForNull();
         }
         parameterList.add(parameter);
-             
     }
 
-    /**
-     * @return return code of the called script.
-     */
+    public void setDeterminePath(boolean determinePath) { this.determinePath = determinePath ; }
+    public boolean getDeterminePath() { return this.determinePath; }
+
     public String runScriptReturnCode() throws ExecuteScriptStopTest {
         String myName ="runScriptReturnCode";
         String myArea ="init";
@@ -142,79 +134,42 @@ public class ExecuteScript {
         //get base dir
         readParameterFile();
         
-        if (Constants.NOT_INITIALIZED.equals(scriptLoc)) {
-          fullPathScript = baseDir +"/" + scriptName;
+        if(determinePath) {
+            if (Constants.NOT_INITIALIZED.equals(scriptLoc)) {
+                fullPathScript = baseDir + "/" + scriptName;
+            } else {
+                fullPathScript =
+                        DetermineCompleteFileName(scriptLoc, scriptName);
+            }
         } else {
-              fullPathScript =
-                      DetermineCompleteFileName(scriptLoc, scriptName);
+            fullPathScript = scriptName;
         }
         
         List<String> cmdLine = new ArrayList<String>();
         cmdLine.add(fullPathScript);
         cmdLine.addAll(parameterList);
-                                
-        ProcessBuilder pb = new ProcessBuilder(cmdLine);
-        try {
-            log(myName, Constants.INFO, myArea,"Script name is >" + scriptName +"<.");
-            printUsedParameters();
-            log(myName, Constants.INFO, myArea,"Command line is >" + fullPathScript + "< with the following arguments >" + parameterList.toString() + "<.");
+        String command = String.join(" ", cmdLine);
 
+        log(myName, Constants.INFO, myArea,"Script name is >" + scriptName +"<.");
+        printUsedParameters();
+        log(myName, Constants.INFO, myArea,"Command line is >" + fullPathScript + "< with the following arguments >" + parameterList.toString() + "<.");
 
-            process = pb.start();
-            
-            myArea = "stdout";
-                BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                log(myName, Constants.INFO, myArea,
-                    "Here is the standard output of the command (if the script does not re-route stdout:\n");
-                while ((s = stdInput.readLine()) != null) {
-                    log(myName, Constants.INFO, myArea, s);
-                    if(getRerouteStdOut()) stdOut +=s;
-                }
-
-                myArea = "stderr";
-                BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                log(myName, Constants.INFO, myArea,
-                    "Here is the standard error of the command (if any and if script does not re-route stderr):\n");
-                while ((s = stdError.readLine()) != null) {
-                    if(getRerouteStdErr()) stdErr+=s;
-                    
-                    if(s.contains(Constants.ERROR) || s.contains(Constants.FATAL)) {
-                        setError(Constants.ERROR,s);
-                        log(myName, Constants.ERROR, myArea, s);
-                    } else {
-                        log(myName, Constants.INFO, myArea, s);
-                    }
-                }
-            try {
-                //wait for process to return a return code
-                process.waitFor();
-                returnMessage = Integer.toString(process.exitValue());
-            } catch (InterruptedException e) {
-                returnMessage="Script was interrupted (killed?). Exception: " +e.toString() +"<.";
-                log(myName, Constants.ERROR, myArea, returnMessage);
-                setError(Constants.ERROR,returnMessage);
-                if (Constants.YES.equals(getAbortOnError())) {
-                    throw new ExecuteScriptStopTest(getErrorMessage());
-                }
-
-            }
-        } catch (IOException e) {
-            returnMessage ="Script >" + fullPathScript + "< not found.";
-            log(myName, Constants.ERROR, myArea,"IOException occurred: >" +e.toString()+"<.");   
-            setError(Constants.ERROR,returnMessage);
-            if (Constants.YES.equals(getAbortOnError())) {
-                throw new ExecuteScriptStopTest(getErrorMessage());
-            }
-
+        myArea="RunProcess";
+        RunProcess runProcess = new RunProcess(command);
+        runProcess.setEnvironment(getEnvironment());
+        int returnCode = runProcess.runAndWait();
+        if (returnCode !=0) {
+            log(myName, Constants.ERROR, myArea,"runProcess returned exit code >" + returnCode +"< with error >" + runProcess.getResultMessage() +"<.");
         }
+        setError(runProcess.getResultCode(), runProcess.getResultMessage());
 
-        return returnMessage;
+        return getErrorMessage();
     }
 
     private void printUsedParameters() {
         String myName ="printUsedParameters";
         String myArea ="run";
-        log(myName, Constants.DEBUG, myArea, "====================== Run Script fixture ======================");
+        log(myName, Constants.DEBUG, myArea, "======================" + className + " fixture ======================");
         log(myName, Constants.INFO, myArea, "Entered parameters: ");            
         parameterList.forEach(((s) -> {
             log(myName, Constants.INFO, myArea, s);            
@@ -228,15 +183,11 @@ public class ExecuteScript {
         }
         logEntries++;
         if(logEntries ==1) {
-        Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
         }
-
-    Logging.LogEntry(logFileName, name, level, location, logText);  
+        Logging.LogEntry(logFileName, name, level, location, logText);
        }
 
-    /**
-    * @return
-    */
     public String getLogFilename() {
         if(logUrl.startsWith("http"))
             return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
@@ -260,45 +211,20 @@ public class ExecuteScript {
     log(myName, Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
     }
 
-    /**
-    * @return
-    */
-    public String getLogLevel() {
-    return Constants.logLevel.get(getIntLogLevel());
-    }
+    public String getLogLevel() { return Constants.logLevel.get(getIntLogLevel()); }
+    public Integer getIntLogLevel() { return logLevel; }
 
-    /**
-    * @return
-    */
-    public Integer getIntLogLevel() {
-    return logLevel;
-    }
-
-    /**
-     * @return fixture version info
-     */
-    public static String getVersion() {
-        return version;
-    }
+    public static String getVersion() { return version; }
 
     private void setError(String errCode, String errMsg) {
         setErrorCode(errCode);
         setErrorMessage(errMsg);
     }
     
-    private void setErrorCode(String errCode) {
-        this.errCode =errCode;
-    }
-    public String getErrorCode() {
-        return this.errCode;
-    }
-    
-    private void setErrorMessage(String errMsg) {
-        this.errorMessage =errMsg;
-    }
-    public String getErrorMessage() {
-        return this.errorMessage;
-    }
+    private void setErrorCode(String errCode) { this.errCode =errCode; }
+    public String getErrorCode() { return this.errCode; }
+    private void setErrorMessage(String errMsg) { this.errorMessage =errMsg; }
+    public String getErrorMessage() { return this.errorMessage; }
 
     private boolean getRerouteStdErr() {
         if(Constants.YES.equals(getCaptureErrors()))
@@ -399,30 +325,14 @@ public class ExecuteScript {
 
     }
 
+    public void setScriptName(String scriptName) { this.scriptName = scriptName; }
+    public String getScriptName() { return this.scriptName; }
+    public void setScriptLocation(String loc) { this.scriptLoc = loc; }
 
-    public void setScriptLocation(String loc) {
-    this.scriptLoc = loc;
-
-    
-    }
-
-    public void setResultFileName(String resultFileName) {
-        this.resultFileName = resultFileName;
-    }
-
-    public void setResultLocation(String location) {
-        this.resultFileLocation =location;
-    }
-    
-    public String getResultFileLocation() {
-        return this.resultFileLocation;
-    }
-
-    public String getResultFileName() {
-        return this.resultFileName;
-    }
-    
-    
+    public void setResultFileName(String resultFileName) { this.resultFileName = resultFileName; }
+    public void setResultLocation(String location) { this.resultFileLocation =location; }
+    public String getResultFileLocation() { return this.resultFileLocation; }
+    public String getResultFileName() { return this.resultFileName; }
     public String getResultValue(String resultProperty) throws ExecuteScriptStopTest {
         return getResultValue(getResultFileName(), resultProperty);
     }
@@ -452,22 +362,14 @@ public class ExecuteScript {
         
     }
 
-    public void setValueForNull(String nullValue) {
-        this.valueForNull = nullValue;
-    }
+    public void setValueForNull(String nullValue) { this.valueForNull = nullValue; }
+    public String getValueForNull() { return valueForNull; }
 
-    public String getValueForNull() {
-        return valueForNull;
-    }
+    public void setResultFormat(String resultFormat) { this.resultFormat = resultFormat; }
+    public String getResultFormat() { return resultFormat; }
 
-    public void setResultFormat(String resultFormat) {
-        this.resultFormat = resultFormat;
-    }
-
-    public String getResultFormat() {
-        return resultFormat;
-    }
-
+    public void setEnvironment(String [] environment) { this.environment = environment; }
+    public String[] getEnvironment() { return this.environment; }
 
     static public class ExecuteScriptStopTest extends Exception {
         @SuppressWarnings("compatibility:-1205507658112959053")

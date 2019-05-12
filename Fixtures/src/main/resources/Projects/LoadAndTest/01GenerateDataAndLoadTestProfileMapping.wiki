@@ -1,7 +1,7 @@
 ---
 Suite
 ---
-!3 Performance test Profile
+!3 Performance test Profile and Mapping
 
 !*****> Variables
 
@@ -12,6 +12,13 @@ Suite
 !define database { DEMO }
 !define numberOfRecords {10000}
 !define numberOfRecordsInclHeader {${= ${numberOfRecords} + 1 =}}
+
+!define InfaMRS {MRS_Demo}
+!define InfaDIS {DIS_Demo01}
+!define InfaConnection {DEMO}
+
+!define MRSProject {Demo}
+!define FolderName { }
 
 **********!
 

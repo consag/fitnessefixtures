@@ -151,6 +151,7 @@ public class Constants {
     public static final String WSH_PROPERTIES =CONFIGDIRECTORY + "wsh.properties";
     public static final String DAC_PROPERTIES =CONFIGDIRECTORY + "dac.properties";
     public static final String ENVIRONMENT_PROPERTIES =CONFIGDIRECTORY + "environment.properties";
+    public static final String INFA_PLATFORM_PROPERTIES =CONFIGDIRECTORY + "infaplatform.properties";
     public static final String INFA_PROCESS_PROPERTIES =CONFIGDIRECTORY + "infaprocess.properties";
     public static final String FIXTURE_PROPERTIES =CONFIGDIRECTORY + "fixture.properties";
 

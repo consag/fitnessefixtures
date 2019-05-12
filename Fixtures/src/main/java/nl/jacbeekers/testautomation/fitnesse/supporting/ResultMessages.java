@@ -45,13 +45,14 @@ public class ResultMessages {
 
 
     private static final Map<String, MessageStructure> msgList = createMap();
-    
     private static Map<String, MessageStructure> createMap() {
         HashMap<String, MessageStructure> result = new HashMap<String, MessageStructure>();
         result.put(ERR_FILE_NOTFOUND, new MessageStructure(ERR_FILE_NOTFOUND,ERR_FILE_NOTFOUND, Constants.FATAL,
                 "File not found"));
         result.put(OS_COMMAND_ERROR, new MessageStructure(OS_COMMAND_ERROR,OS_COMMAND_ERROR, Constants.ERROR,
                 "Error running OS process."));
+        result.put(ERRCODE_NOT_IMPLEMENTED, new MessageStructure(ERRCODE_NOT_IMPLEMENTED, ERRCODE_NOT_IMPLEMENTED, Constants.FATAL,
+                "Not implemented"));
 
         result.put(ERRCODE_PWCCONNECTION, new MessageStructure(ERRCODE_PWCCONNECTION ,ERRCODE_PWCCONNECTION, Constants.FATAL,
                                         "Could not establish connection to PowerCenter."));

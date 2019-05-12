@@ -30,15 +30,15 @@ public class LoadDataFromFile {
     /**
      * @param context: Determines part of the log file name
      * @param logLevel: set to FATAL, ERROR, WARNING, INFO, DEBUG, VERBOSE
-     * @param appName: use if you want to set application level properties
+     * @param feature: use if you want to set feature level properties
      */
-    public LoadDataFromFile(String context, String logLevel, String appName) {
+    public LoadDataFromFile(String context, String logLevel, String feature) {
         java.util.Date started = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
         this.context = context;
         setLogLevel(logLevel);
-        setApplication(appName);
+        setFeature(feature);
     }
 
     public LoadDataFromFile() {
@@ -49,7 +49,7 @@ public class LoadDataFromFile {
     }
 
     private String className = LoadDataFromFile.class.getName();
-    private static String version = "20190511.0";
+    private static String version = "20190512.0";
 
     private String resultFormat =Constants.DEFAULT_RESULT_FORMAT;
     private String logFileName = Constants.NOT_INITIALIZED;
@@ -59,7 +59,7 @@ public class LoadDataFromFile {
     private String logUrl=Constants.LOG_DIR;
     private String resultCode = Constants.OK;
     private String resultMessage = Constants.NOERRORS;
-    private String appName = Constants.NOT_INITIALIZED;
+    private String feature = Constants.NOT_INITIALIZED;
 
     private boolean firstTime = true;
 
@@ -146,8 +146,8 @@ public class LoadDataFromFile {
         return resultCode;
     }
 
-    public void setApplication(String appName) { this.appName = appName; }
-    public String getApplication() { return  this.appName; }
+    public void setFeature(String feature) { this.feature = feature; }
+    public String getFeature() { return  this.feature; }
 
     public void setCommitSize(String commitSize) {
         setCommitSize(Integer.parseInt(commitSize));

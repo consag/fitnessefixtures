@@ -8,5 +8,5 @@ Test
 !3 Load more than 1000 records from a file
 !define tablename {FITNESSETEST_LARGECSV}
 !| load data from file|load_${tablename}                                                                                                     |
-|application         |commit size|log level|database name  |table name  |input file            |result?|get result message?|get log filename?|
+|feature         |commit size|log level|database name  |table name  |input file            |result?|get result message?|get log filename?|
 |Fixturetest         |2000       |DEBUG    |${dbconnection}|${tablename}|${location} ${csvFile}|OK     |                  |                 |
