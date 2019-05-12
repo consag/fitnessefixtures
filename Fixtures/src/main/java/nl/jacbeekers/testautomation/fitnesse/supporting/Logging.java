@@ -4,10 +4,12 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.ERRMSG_NOTFOUND;
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.getMessage;
+
 public class Logging {
 	  private static String logFile = Constants.DEFAULT;
-          private static InformaticaFixtureMessages msg = new InformaticaFixtureMessages();
-          private static String logMsg = Constants.NOT_INITIALIZED;
+      private static String logMsg = Constants.NOT_INITIALIZED;
 
     /**
      * @param nameLog
@@ -29,8 +31,8 @@ public class Logging {
 	      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	      String formattedDate = sdf.format(date);
 	      try {
-	      logMsg = msg.getMessage(logText, Constants.ENGLISH);
-	      if(Constants.NOT_FOUND.equals(logMsg)) {
+	      logMsg = getMessage(logText);
+	      if(logMsg.startsWith(ERRMSG_NOTFOUND)) {
 	          logMsg=logText;
 	      }
 	       } catch (Exception e) {

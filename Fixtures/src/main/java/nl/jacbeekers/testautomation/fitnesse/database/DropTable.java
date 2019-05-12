@@ -12,8 +12,9 @@ import java.text.*;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Parameters;
+import nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages;
 
-import static nl.jacbeekers.testautomation.fitnesse.supporting.Constants.propFileErrors;
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.propFileErrors;
 
 public class DropTable {
 	private String className = "DropTable";
@@ -98,7 +99,7 @@ public class DropTable {
         readParameterFile();
 
         if(getErrorIndicator()) {
-            setError(Constants.ERRCODE_PROPERTIES,"An error occurred while determining connection properties");
+            setError(ResultMessages.ERRCODE_PROPERTIES,"An error occurred while determining connection properties");
             return false;
         }
 

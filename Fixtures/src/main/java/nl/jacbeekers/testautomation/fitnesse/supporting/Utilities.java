@@ -87,7 +87,7 @@ public class Utilities {
     }
 
     public static String convertStringToDateFunction(String theDate, String format, String dbType) {
-        String forDatabase = Constants.ERRCODE_UNSUPPORTED_DATABASE;
+        String forDatabase = ResultMessages.ERRCODE_UNSUPPORTED_DATABASE;
 
         switch (dbType) {
             case Constants.DATABASETYPE_DB2:  // DB2 z/OS
@@ -105,7 +105,7 @@ public class Utilities {
     }
 
     public static String convertStringToTimestampFunction(String theTimestamp, String format, String dbType) {
-        String forDatabase = Constants.ERRCODE_UNSUPPORTED_DATABASE;
+        String forDatabase = ResultMessages.ERRCODE_UNSUPPORTED_DATABASE;
         switch (dbType) {
             case Constants.DATABASETYPE_DB2:  // DB2 z/OS
                 forDatabase ="TIMESTAMP_FORMAT('" + theTimestamp + "','" + format + "')";

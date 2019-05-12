@@ -128,7 +128,7 @@ public class Encrypt {
         java.util.Date now = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         currDate = sdf.format(now);
-        setErrorCode(Constants.ERRCODE_DECRYPT);
+        setErrorCode(ResultMessages.ERRCODE_DECRYPT);
         setErrorMessage(currDate  + " - " + msg);
         System.out.println("\nAn exception occurred: " + getErrorMessage() + "\n");
 

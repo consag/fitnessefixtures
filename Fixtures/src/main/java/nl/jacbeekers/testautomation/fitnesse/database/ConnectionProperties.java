@@ -1,16 +1,13 @@
 package nl.jacbeekers.testautomation.fitnesse.database;
 
-import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
-import nl.jacbeekers.testautomation.fitnesse.supporting.Decrypt;
-import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
-import nl.jacbeekers.testautomation.fitnesse.supporting.Parameters;
+import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
-import static nl.jacbeekers.testautomation.fitnesse.supporting.Constants.propFileErrors;
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.propFileErrors;
 
 public class ConnectionProperties {
 
@@ -327,7 +324,7 @@ public class ConnectionProperties {
             log(myName, Constants.DEBUG, myLocation, "Password decryption successful.");
         }
         else {
-            setError(result,Constants.ERRCODE_DECRYPT);
+            setError(result, ResultMessages.ERRCODE_DECRYPT);
             log(myName, Constants.ERROR, myLocation, "Password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.");
         }
         return result;
@@ -349,7 +346,7 @@ public class ConnectionProperties {
             log(myName, Constants.DEBUG, myLocation, "Password decryption successful.");
         }
         else {
-            setError(result,Constants.ERRCODE_DECRYPT);
+            setError(result,ResultMessages.ERRCODE_DECRYPT);
             log(myName, Constants.ERROR, myLocation, "Password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.");
         }
         return result;

@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import nl.jacbeekers.testautomation.fitnesse.database.ConnectionProperties;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
+import nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -132,11 +133,11 @@ public class TableManagement {
                  */
                 //System.out.println("Accelerator load table returned: " + getLoadResult);
             } catch (Exception e) {
-                setError(Constants.ERRCODE_SQL_IDAAGETRESULT, "Could not get result: " + e.toString());
+                setError(ResultMessages.ERRCODE_SQL_IDAAGETRESULT, "Could not get result: " + e.toString());
             }
             stmt.close();
         } catch (SQLException e) {
-            setError(Constants.ERRCODE_SQL_IDAASQLERROR, "SQL Error >" + e.toString() + "<.");
+            setError(ResultMessages.ERRCODE_SQL_IDAASQLERROR, "SQL Error >" + e.toString() + "<.");
         }
         return getErrorCode();
 

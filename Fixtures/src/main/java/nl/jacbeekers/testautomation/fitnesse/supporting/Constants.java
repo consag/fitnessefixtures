@@ -19,7 +19,7 @@ public class Constants {
     public static final String FITNESSE_PREFIX_IGNORE="ignore:";    // typically blue
     public static final String FITNESSE_PREFIX_ERROR="error:";      // typically yellow
     
-    public static final String DEFAULT_CLASS_PREFIX="nl.consag.testautomation";
+    public static final String DEFAULT_CLASS_PREFIX="nl.jacbeekers.testautomation";
     public static final String YES = "Yes";
     public static final String Y = "Y";
     public static final String NO = "No";
@@ -38,32 +38,6 @@ public class Constants {
     public static final String UNKNOWN = "unknown";
     public static final String NULL_VALUE ="#NULL#"; // in Excel to indicate column should be set NULL
 
-    public static final String ERRCODE_NOT_IMPLEMENTED="CNSG-FIT-0001";
-
-    //Database errors or unexpected results
-    public static final String ERRCODE_DBCONNECTION ="CNSG-DB-0001";
-    public static final String ERRCODE_DBMETADATA  ="CNSG-DB-0002";
-    public static final String ERRCODE_DBMETADATA_COLUMNS  ="CNSG-DB-0003";
-    public static final String ERRCODE_TABLENOTFOUND ="CNSG-DB-0004";
-    public static final String ERRCODE_UNSUPPORTED_DATATYPE ="CNSG-DB-0005";
-    public static final String ERRCODE_SQL_IDAASQLERROR ="CNSG-DB-0006";
-    public static final String ERRCODE_SQL_IDAAGETRESULT ="CNSG-DB-0007";
-    public static final String ERRCODE_UNSUPPORTED_DATABASE ="CNSG-DB-0008";
-
-    public static final String ERRCODE_DECRYPT ="CNSG-SEC-0001";
-
-    public static final String ERRCODE_PROPERTIES ="CNSG-PROP-0001";
-    public static final String ERRCODE_PROPFILE ="CNSG-PROP-0002";
-    public static final String ERRCODE_PROPFILE_NOTFOUND ="CNSG-PROP-0003";
-    public static final String ERRCODE_PROPFILE_IOERROR ="CNSG-PROP-0004";
-    public static final String ERRCODE_PROP_NOT_FOUND ="CNSG-PROP-0005";
-    public static final List<String> propFileErrors = Collections.unmodifiableList(Arrays.asList(
-            ERRCODE_PROPERTIES
-            ,ERRCODE_PROPFILE
-            ,ERRCODE_PROPFILE_NOTFOUND
-            ,ERRCODE_PROPFILE_IOERROR
-            ,ERRCODE_PROP_NOT_FOUND
-    ));
 
     //Column types as reported by Oracle - Might need special handling
     public static final String COLUMN_DATATYPE_VARCHAR="VARCHAR";
@@ -318,14 +292,14 @@ public class Constants {
     public static final String PARAM_DEFAULT_VALUE_FOR_NULL="DefaultValueForNull";
     
     //Scripts
-    public static final String RUNIDQPROFILE_DEFAULT_SCRIPT="runidqprofile.sh";
-    public static final String PARAM_RUNIDQPROFILE_SCRIPT="RunIdqProfileScript";
-    public static final String RUNIDQMAPPING_DEFAULT_SCRIPT="runidqmapping.sh";
-    public static final String PARAM_RUNIDQMAPPING_SCRIPT="RunIdqMappingScript";
-    public static final String RUNIDQDISOBJECT_DEFAULT_SCRIPT="runidqdisobject.sh";
-    public static final String PARAM_RUNIDQDISOBJECT_SCRIPT="RunIdqDisObjectScript";
-    public static final String RUNIDQJOB_DEFAULT_SCRIPT="runidqjob.sh";
-    public static final String PARAM_RUNIDQJOB_SCRIPT="RunIdqJobScript";
+    public static final String RUNIDQPROFILE_DEFAULT_SCRIPT="rundqprofile.sh";
+    public static final String PARAM_RUNIDQPROFILE_SCRIPT="RunDqProfileScript";
+    public static final String RUNIDQMAPPING_DEFAULT_SCRIPT="runmapping.sh";
+    public static final String PARAM_RUNIDQMAPPING_SCRIPT="RunMappingScript";
+    public static final String RUNIDQDISOBJECT_DEFAULT_SCRIPT="rundqdisobject.sh";
+    public static final String PARAM_RUNIDQDISOBJECT_SCRIPT="RunDqDisObjectScript";
+    public static final String RUNIDQJOB_DEFAULT_SCRIPT="runjob.sh";
+    public static final String PARAM_RUNIDQJOB_SCRIPT="RunJobScript";
     
     //Database type
     public static final String DATABASETYPE_DB2 ="DB2";
@@ -492,5 +466,8 @@ public class Constants {
     public static final int DEFAULT_ARRAY_SIZE_INSERT=100;
     public static final String PARAM_ARRAY_SIZE_UPDATE="ArraySizeUpdate";
     public static final int DEFAULT_ARRAY_SIZE_UPDATE=100;
-    
+
+    //datahelix test data generation
+    public static final String DEFAULT_SCHEMA_VERSION ="0.1";
+
 }

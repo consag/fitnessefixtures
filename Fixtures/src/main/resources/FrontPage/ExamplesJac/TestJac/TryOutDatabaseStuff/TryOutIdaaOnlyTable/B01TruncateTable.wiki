@@ -1,7 +1,0 @@
----
-Suites: IDAA
-Test
----
-|Truncate table|tryoutTruncate|
-|database name|table name|truncate table?|
-|${dbconnection}|CNSG${demotab}|OK|

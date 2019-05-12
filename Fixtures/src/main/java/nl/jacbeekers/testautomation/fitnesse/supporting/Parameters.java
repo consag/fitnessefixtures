@@ -62,7 +62,7 @@ public class Parameters {
         try {
             input = Parameters.class.getClassLoader().getResourceAsStream(propFilename);
             if (input == null) {
-                setResult(Constants.ERRCODE_PROPFILE);
+                setResult(ResultMessages.ERRCODE_PROPFILE);
                 return val;
             }
 
@@ -70,13 +70,13 @@ public class Parameters {
 
             val = prop.getProperty(key, Constants.DEFAULT_PROPVALUE);
             if(Constants.DEFAULT_PROPVALUE.equals(val))
-                setResult(Constants.ERRCODE_PROP_NOT_FOUND);
+                setResult(ResultMessages.ERRCODE_PROP_NOT_FOUND);
         } catch (FileNotFoundException e) {
-            setResult(Constants.ERRCODE_PROPFILE_NOTFOUND);
-            val = Constants.ERRCODE_PROPFILE_NOTFOUND;
+            setResult(ResultMessages.ERRCODE_PROPFILE_NOTFOUND);
+            val = ResultMessages.ERRCODE_PROPFILE_NOTFOUND;
         } catch (IOException e) {
-            setResult(Constants.ERRCODE_PROPFILE_IOERROR);
-            val = Constants.ERRCODE_PROPFILE_IOERROR;
+            setResult(ResultMessages.ERRCODE_PROPFILE_IOERROR);
+            val = ResultMessages.ERRCODE_PROPFILE_IOERROR;
         }
         return val;
     }

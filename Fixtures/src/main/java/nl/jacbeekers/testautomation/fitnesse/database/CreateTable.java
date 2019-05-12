@@ -18,8 +18,9 @@ import java.util.*;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Parameters;
+import nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages;
 
-import static nl.jacbeekers.testautomation.fitnesse.supporting.Constants.propFileErrors;
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.propFileErrors;
 
 public class CreateTable {
     private String className = "CreateTable";
@@ -523,7 +524,7 @@ public class CreateTable {
         readParameterFile();
 
         if(getErrorIndicator()) {
-            setError(Constants.ERRCODE_PROPERTIES,"An error occurred while determining connection properties");
+            setError(ResultMessages.ERRCODE_PROPERTIES,"An error occurred while determining connection properties");
             return false;
         }
 
@@ -567,7 +568,7 @@ public class CreateTable {
                 databaseMetaData = connection.getMetaData();
                 columnList = getSourceTableDefinition(databaseMetaData, srcSchema.toUpperCase(), srcTable.toUpperCase());
                 if(columnList ==null) {
-                    setError(Constants.ERRCODE_TABLENOTFOUND, "Column list is empty, probably because the table does not exist.");
+                    setError(ResultMessages.ERRCODE_TABLENOTFOUND, "Column list is empty, probably because the table does not exist.");
                     log(myName, Constants.ERROR, myLocation, getErrorMessage());
                 } else {
                     log(myName, Constants.DEBUG, myLocation, "Table has >" + columnList.size() + "< columns.");
@@ -577,12 +578,12 @@ public class CreateTable {
                     setError(rc,"Error creating table >" + targetObjectName +"<. Error: " + getErrorMessage());
                 }
             } catch (SQLException e) {
-                setError(Constants.ERRCODE_DBMETADATA, "Error getting metadata. Exception=>"
+                setError(ResultMessages.ERRCODE_DBMETADATA, "Error getting metadata. Exception=>"
                         + e.toString() +"<.");
             }
 
         } catch (SQLException e) {
-            setError(Constants.ERRCODE_DBCONNECTION, "Error creating connection. Exception=>"
+            setError(ResultMessages.ERRCODE_DBCONNECTION, "Error creating connection. Exception=>"
             + e.toString() +"<.");
         }
 
@@ -600,7 +601,7 @@ public class CreateTable {
         log(myName, Constants.DEBUG, myLocation,"Database connection set to >" + tgtDatabase +"<.");
         setDatabaseName(tgtDatabase);
         readParameterFile();
-        if(getErrorIndicator()) return Constants.ERRCODE_PROPERTIES;
+        if(getErrorIndicator()) return ResultMessages.ERRCODE_PROPERTIES;
 
         return createTable(tgtTable, columnList);
     }
@@ -668,7 +669,7 @@ public class CreateTable {
 
                     default:
                         log(myName, Constants.ERROR, myLocation,"Unsupported column type name >" +col.getTypeName() +"<.");
-                        setError(Constants.ERRCODE_UNSUPPORTED_DATATYPE, Constants.UNSUPPORTED_DATATYPE
+                        setError(ResultMessages.ERRCODE_UNSUPPORTED_DATATYPE, Constants.UNSUPPORTED_DATATYPE
                                 + Constants.LOG_SEPARATOR + col.getTypeName());
                         break;
                 }
@@ -677,7 +678,7 @@ public class CreateTable {
                 columnListAsString.add(colDefinitionString);
             }
         } catch (SQLException e) {
-            setError(Constants.ERRCODE_DBMETADATA_COLUMNS,"Error retrieving column information. Exception=>"
+            setError(ResultMessages.ERRCODE_DBMETADATA_COLUMNS,"Error retrieving column information. Exception=>"
             +e.toString() +"<.");
         }
         myLocation="Conclusion";
@@ -694,7 +695,7 @@ public class CreateTable {
             ,String databaseName
             ,String schemaName
     ) {
-        setError(Constants.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return Constants.NOT_IMPLEMENTED;
     }
 
@@ -702,10 +703,10 @@ public class CreateTable {
         String myName ="doTable";
         String myLocation ="start";
 
-        log(myName, Constants.ERROR, myLocation, Constants.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
+        log(myName, Constants.ERROR, myLocation, ResultMessages.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
                 + Constants.LOG_SEPARATOR + myName);
 
-        setError(Constants.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return doTable(myName);
     }
 
@@ -713,10 +714,10 @@ public class CreateTable {
         String myName ="doTableContext";
         String myLocation ="start";
 
-        log(myName, Constants.ERROR, myLocation, Constants.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
+        log(myName, Constants.ERROR, myLocation, ResultMessages.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
                 + Constants.LOG_SEPARATOR + myName);
 
-        setError(Constants.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return doTable(context, getLogLevel());
     }
 
@@ -727,10 +728,10 @@ public class CreateTable {
 
         setLogLevel(logLevel);
 
-        log(myName, Constants.ERROR, myLocation, Constants.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
+        log(myName, Constants.ERROR, myLocation, ResultMessages.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
                 + Constants.LOG_SEPARATOR + myName);
 
-        setError(Constants.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return Constants.NOT_IMPLEMENTED;
     }
 
