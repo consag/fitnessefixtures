@@ -1,0 +1,19 @@
+---
+Suite
+---
+!3 Performance test Profile
+
+!*****> Variables
+
+!define entity { customer }
+!define jsonfile { ${sourceDirectory}/customer.json }
+!define outputfile { ${interfaceDirectory}/customers.csv }
+!define tablename { customers }
+!define database { DEMO }
+!define numberOfRecords {10000}
+!define numberOfRecordsInclHeader {${= ${numberOfRecords} + 1 =}}
+
+**********!
+
+
+!contents -R2 -g -p -f -h

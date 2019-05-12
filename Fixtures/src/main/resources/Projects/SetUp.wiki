@@ -1,0 +1,10 @@
+!*****> imports
+|import                              |
+|nl.jacbeekers.testautomation.fitnesse.data|
+|nl.jacbeekers.testautomation.fitnesse.database|
+|nl.jacbeekers.testautomation.fitnesse.supporting|
+|nl.jacbeekers.testautomation.fitnesse.powercenter|
+|nl.jacbeekers.testautomation.fitnesse.informatica|
+|nl.jacbeekers.testautomation.fitnesse.linux|
+|nl.jacbeekers.testautomation.fitnesse.scripts|
+**********!

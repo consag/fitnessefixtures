@@ -1,0 +1,10 @@
+---
+Test
+---
+!3 Generate data set
+
+
+!|Generate Data|${entity}                                                                                                                                       |
+|entity        |json file  |output file  |nr records        |json file exists?|generate file?|output file exists?|lines in output file?       |get log filename?|
+|${entity}     |${jsonfile}|${outputfile}|${numberOfRecords}|Yes              |OK            |Yes                |${numberOfRecordsInclHeader}|                 |
+
