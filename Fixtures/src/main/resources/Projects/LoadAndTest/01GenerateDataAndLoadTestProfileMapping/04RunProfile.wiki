@@ -1,4 +1,26 @@
 ---
 Test
 ---
-<test page>
+!define DISConnection {DIS_Demo01}
+!define IDQProjectName {Demo}
+!define IDQFolderName {FitNesseDemos}
+
+!4 Arguments in first line:
+- DIS to run the profile on
+- IDQ Project - Project name
+- Log level fixture
+
+!4 Per line:
+- Project - Project name
+- Folder name (if any)
+- Profile name
+
+!4 Run Profile
+!|Data Profiling  |${DISConnection}|${IDQProjectName}|VERBOSE                                                |
+|Project Name     |Folder Name     |Profile Name     |run profile?|get result message?|get log filename link?|
+|${IDQProjectName}|${IDQFolderName}|Profile_DUAL     |OK          |                   |                      |
+
+!4 Run Scorecard
+!|Data Profiling  |${DISConnection}|${IDQProjectName}|VERBOSE                                                  |
+|Project Name     |Folder Name     |Scorecard Name   |run scorecard?|get result message?|get log filename link?|
+|${IDQProjectName}|${IDQFolderName}|sc_Dual          |OK            |                   |                      |

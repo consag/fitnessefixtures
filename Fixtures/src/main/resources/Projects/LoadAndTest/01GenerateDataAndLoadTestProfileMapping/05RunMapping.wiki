@@ -1,13 +1,17 @@
 ---
 Test
 ---
+!define DISConnection {DIS_Demo01}
+!define IDQProjectName {Demo}
+!define IDQFolderName {FitNesseDemos}
+
 !4 Arguments in first line:
-- Logical Model Repository name (as defined in infaplatform.properties)
-- Project - Project name in Model Repository
+- DIS to run the mapping on
+- Project name
 - Log level fixture
 
 !4 Per line:
-- Project - Project name in Model Repository
+- Project - Project name
 - Folder name (if any)
 - Application the mapping is part of
 - Mapping name
@@ -15,10 +19,8 @@ Test
 !4 The application has to be deployed with the version of the mapping you want to run!
 
 Known limitations:
-1. Get Error Message does not return an error message --> 
-2. If a mapping fails, the next one in the list will be executed
+2. If a mapping fails, the next in the list will be executed
 
-!|Mapping     |${InfaConnection}|${MRSProject}   |VERBOSE                                                                                     |
-|Project Name |Folder Name      |Application Name|Mapping Name            |run mapping?|get result code?|get result message?|get log filename?|
-|${MRSProject}|${FolderName}    |Appl_Demo       |m_loadDQ_dim_dq_entity_d|            |OK              |                   |                 |
-|${MRSProject}|${FolderName}    |Appl_Demo       |m_loadDQ_dim_dq_field_d |            |OK              |                   |                 |
+!|Mapping         |${DISConnection}|${IDQProjectName}|VERBOSE                                                                    |
+|Project Name     |Folder Name     |Application Name |Mapping Name       |run mapping?|get result message?|get log filename link?|
+|${IDQProjectName}|${IDQFolderName}|Appl_Demo        |m_Demo_Extract_Dual|OK          |                   |                      |

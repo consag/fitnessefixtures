@@ -12,6 +12,7 @@ public class InfaCmdTools {
 
     public static final String INFA_FUNCTION_RUNMAPPING ="runMapping";
     public static final String INFA_FUNCTION_RUNPROFILE ="runProfile";
+    public static final String INFA_FUNCTION_RUNSCORECARD ="runScorecard";
 
     private static final Map<String, InfaToolingStructure> toolList = createMap();
     private static Map<String, InfaToolingStructure> createMap() {
@@ -20,7 +21,9 @@ public class InfaCmdTools {
         result.put(INFA_FUNCTION_RUNMAPPING,
                 new InfaToolingStructure(INFA_FUNCTION_RUNMAPPING, "ms", "runMapping", "-Wait true"));
         result.put(INFA_FUNCTION_RUNPROFILE,
-                new InfaToolingStructure(INFA_FUNCTION_RUNPROFILE, "ps", "executeProfile", "-w true"));
+                new InfaToolingStructure(INFA_FUNCTION_RUNPROFILE, "ps", "Execute", "-w true"));
+        result.put(INFA_FUNCTION_RUNSCORECARD,
+                new InfaToolingStructure(INFA_FUNCTION_RUNSCORECARD, "ps", "Execute", "-w true"));
 
         return Collections.unmodifiableMap(result);
     }

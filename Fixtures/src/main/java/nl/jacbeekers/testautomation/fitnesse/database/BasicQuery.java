@@ -18,10 +18,8 @@ import java.sql.*;
 import java.text.*;
 import java.util.*;
 
-import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
-import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
+import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 import nl.jacbeekers.testautomation.fitnesse.linux.CheckFile;
-import nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages;
 
 import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.ERRCODE_SQLERROR;
 
@@ -119,7 +117,23 @@ public class BasicQuery {
         getQuery(inputTable.get(1));         //read second row in FitNesse table
         getColumnNames(inputTable.get(2));  //read third row in FitNesse table
 
-        CompareExpectedTableWithDatabaseTable(inputTable, getDatabaseTable(true));
+        List<String> empty_row = new ArrayList<String>();
+        for (int i = 0; i < numberOfTableColumns; ++ i) {    // fill empty row with spaces
+            empty_row.add("");
+        }
+
+        List<List<String>> dbResult= getDatabaseTable(true);
+        if(dbResult == null || Constants.ERROR.equals(getResult())) {
+            for (int i = 0; i < (inputTable.size() - NO_FITNESSE_ROWS_TO_SKIP); ++ i) {    // less rows in database than expected
+                addRowToReturnTable(empty_row);
+            }
+            List<String> addRow = new ArrayList<String>();
+            addRow.add("fail:" +"SQL Error");
+            addRow.add("fail:" + getErrorMessage());
+            addRowToReturnTable(addRow);
+        } else {
+            CompareExpectedTableWithDatabaseTable(inputTable, dbResult);
+        }
 
         List<String> addRow = new ArrayList<String>();
         addRow.add("report:log file");
@@ -377,7 +391,8 @@ public class BasicQuery {
             logMessage = "SQLException: " + e.toString();
             log(myName, Constants.ERROR, myArea, logMessage);
             setError(Constants.ERROR, logMessage);
-            returnMessage = "SQLException : " + e;
+            returnMessage = "SQLException : " + e.toString();
+            databaseTable = null;
         }
 
         if (collectResultRows) {
@@ -400,6 +415,12 @@ public class BasicQuery {
         log(myName, Constants.DEBUG, myArea, "getting properties for >" + databaseName + "<.");
         connectionProperties.refreshConnectionProperties(databaseName);
 
+        setLogUrl(GetParameters.GetLogUrl());
+
+    }
+
+    public void setLogUrl(String logUrl) {
+        this.logUrl = logUrl;
     }
 
     private void log(String name, String level, String area, String logMessage) {

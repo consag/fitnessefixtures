@@ -233,6 +233,7 @@ public class InformaticaCommand {
         return this.abortYesNo;
     }
 
+
     public static String getVersion() {
         return version;
     }

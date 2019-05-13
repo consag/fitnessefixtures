@@ -27,12 +27,13 @@ import org.apache.commons.lang3.StringUtils;
 public class Profile {
 
     private String className = "Profile";
-    private static final String version = "20170510.0"; // removed incorrect references
+    private static final String version = "20170510.0 - DEPRECATED in May 2019";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String startDate = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private Integer logLevel =3;
+    private int nrLogEntries=0;
     private String abortYesNo = Constants.YES;
     private String errorCode = Constants.OK;
     private String errorMessage = Constants.OK;
@@ -127,7 +128,7 @@ public class Profile {
     }
 
     /**
-    * @param context
+    * @param
     */
     public Profile(String databaseName, String project, String loglevel) {
     // Constructor
@@ -144,7 +145,7 @@ public class Profile {
 
     /**
     * @param abortYesNo
-    * @throws WorkflowStopTest
+    * @throws
     */
     public void setAbortOnError(String abortYesNo) throws ProfileStopTest {
             //Function to set abort on error, i.e. if workflowstoptest should be thrown in case of exceptions
@@ -338,6 +339,11 @@ public class Profile {
         if(Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
             return;
         }
+        nrLogEntries++;
+        if(nrLogEntries ==1) {
+            Logging.LogEntry(logFileName, name, Constants.INFO, "version", "Version: " + getVersion()
+                    +"Fixture is DEPRECATED, use the DataProfiling fixture.");
+        }
 
         Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
@@ -362,7 +368,7 @@ public class Profile {
            logLevel =3;
        }
        
-       log(myName, Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
+//       log(myName, Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
     }
 
     /**

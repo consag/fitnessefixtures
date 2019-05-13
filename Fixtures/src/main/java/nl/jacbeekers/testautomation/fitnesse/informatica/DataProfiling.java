@@ -4,18 +4,19 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 
 import java.text.SimpleDateFormat;
 
-import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA_FUNCTION_RUNMAPPING;
+import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA_FUNCTION_RUNPROFILE;
+import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA_FUNCTION_RUNSCORECARD;
 
-public class Mapping {
+public class DataProfiling {
     private static final String version = "20190513.0";
-    private String className = Mapping.class.getName()
-            .substring(Mapping.class.getName().lastIndexOf(".")+1);
+    private String className = DataProfiling.class.getName()
+            .substring(DataProfiling.class.getName().lastIndexOf(".")+1);
 
-    public Mapping() {
+    public DataProfiling() {
         setLogLevel(Constants.DEBUG);
     }
 
-    public Mapping(String infaConnection, String projectName, String logLevel) {
+    public DataProfiling(String infaConnection, String projectName, String logLevel) {
         java.util.Date started = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
@@ -30,37 +31,44 @@ public class Mapping {
     private int logLevel =3;
     private int logEntries=0;
     private String logUrl=Constants.LOG_DIR;
-    private String logFilename = Mapping.class.getName() +".log";
+    private String logFilename = DataProfiling.class.getName() +".log";
     private String resultCode = Constants.OK;
     private String resultMessage = Constants.NOERRORS;
 
     //informatica
     private String infaConnection = Constants.NOT_PROVIDED;
+    private String infaMRS = Constants.NOT_FOUND;
     private String infaDIS = Constants.NOT_FOUND;
     private String projectName = Constants.NOT_PROVIDED;
     private String folderName = Constants.NOT_PROVIDED;
-    private String applicationName = Constants.NOT_PROVIDED;
-    private String mappingName = Constants.NOT_PROVIDED;
+    private String profileName = Constants.NOT_PROVIDED;
+    private String scorecardName = Constants.NOT_PROVIDED;
 
     public void getParameters() {
         InfaParameters infaParameters = new InfaParameters();
         setInfaDIS(infaParameters.getInfaDIS());
+        setInfaMRS(infaParameters.getInfaMRS());
 
         setLogUrl(GetParameters.GetLogUrl());
     }
 
-    public String runMapping() throws InformaticaCommand.InformaticaCommandStopTest {
+    public String runProfile() throws InformaticaCommand.InformaticaCommandStopTest {
 
         getParameters();
 
-        InfaParameters infaParameters = new InfaParameters();
-        InformaticaCommand informaticaCommand = new InformaticaCommand(getApplicationName(),getLogLevel());
+        InformaticaCommand informaticaCommand = new InformaticaCommand(getProfileName(),getLogLevel());
         informaticaCommand.setLogFilename(getLogFilename());
         informaticaCommand.setInfaEnvironment(getInfaConnection());
-        informaticaCommand.setInfaTool(InfaCmdTools.getTool(INFA_FUNCTION_RUNMAPPING));
-        informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNMAPPING));
-        informaticaCommand.setCommandLineOptions("-ServiceName " + infaParameters.getInfaDIS() + " -Application " + getApplicationName()
-                + " -Mapping " + getMappingName() + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNMAPPING));
+        informaticaCommand.setInfaTool(InfaCmdTools.getTool(INFA_FUNCTION_RUNPROFILE));
+        informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNPROFILE));
+        String objectPath=null;
+        if(Constants.NOT_PROVIDED.equals(getFolderName()) || "".equals(getFolderName())) {
+            objectPath = getProjectName() +"/" +getProfileName();
+        } else {
+            objectPath = getProjectName() +"/" + getFolderName() +"/"+ getProfileName();
+        }
+        informaticaCommand.setCommandLineOptions(" -ObjectType " + "profile" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
+                + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNPROFILE));
 
         informaticaCommand.runInformaticaCommand();
         setResultCode(informaticaCommand.getResultCode());
@@ -69,9 +77,38 @@ public class Mapping {
         return getResultCode();
     }
 
+    public String runScorecard() throws InformaticaCommand.InformaticaCommandStopTest {
+
+        getParameters();
+
+        InformaticaCommand informaticaCommand = new InformaticaCommand(getProfileName(),getLogLevel());
+        informaticaCommand.setLogFilename(getLogFilename());
+        informaticaCommand.setInfaEnvironment(getInfaConnection());
+        informaticaCommand.setInfaTool(InfaCmdTools.getTool(INFA_FUNCTION_RUNSCORECARD));
+        informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNSCORECARD));
+        String objectPath=null;
+        if(Constants.NOT_PROVIDED.equals(getFolderName()) || "".equals(getFolderName())) {
+            objectPath = getProjectName() +"/" +getScorecardName();
+        } else {
+            objectPath = getProjectName() +"/" + getFolderName() +"/"+ getScorecardName();
+        }
+        informaticaCommand.setCommandLineOptions(" -ObjectType " + "scorecard" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
+                + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNSCORECARD));
+
+        informaticaCommand.runInformaticaCommand();
+        setResultCode(informaticaCommand.getResultCode());
+        setResultMessage(informaticaCommand.getResultMessage());
+
+        return getResultCode();
+
+    }
+
     //getters and setters
     public void setInfaDIS(String infaDIS) { this.infaDIS = infaDIS; }
     public String getInfaDIS() { return this.infaDIS; }
+
+    public void setInfaMRS(String infaMRS) { this.infaMRS = infaMRS; }
+    public String getInfaMRS() { return this.infaMRS; }
 
     public void setResultCode(String resultCode) { this.resultCode = resultCode; }
     public String getResultCode() { return this.resultCode; }
@@ -112,14 +149,14 @@ public class Mapping {
     }
 
 
-    public void setApplicationName(String applicationName) { this.applicationName = applicationName; }
-    public String getApplicationName() { return this.applicationName; }
-
     public void setFolderName(String folderName) { this.folderName = folderName; }
     public String getFolderName() { return this.folderName; }
 
-    public void setMappingName(String mappingName) { this.mappingName = mappingName; }
-    public String getMappingName() { return this.mappingName; }
+    public void setProfileName(String profileName) { this.profileName = profileName; }
+    public String getProfileName() { return this.profileName; }
+
+    public void setScorecardName(String scorecardName) { this.scorecardName = scorecardName; }
+    public String getScorecardName() { return this.scorecardName; }
 
     public static String getVersion() { return version; }
     private void log(String name, String level, String location, String logText) {
