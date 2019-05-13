@@ -8,7 +8,9 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.OS
 
 public class RunProcess {
 
-    public String version ="20190512.0";
+    public String version ="20190513.0";
+    private String className = RunProcess.class.getName()
+            .substring(RunProcess.class.getName().lastIndexOf(".")+1);
 
     private String command= Constants.NOT_PROVIDED;
     private String[] environment = { Constants.NOT_PROVIDED };

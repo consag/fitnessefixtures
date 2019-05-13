@@ -22,6 +22,7 @@ public class ResultMessages {
     public static final String ERRCODE_SQL_IDAASQLERROR ="CNSG-DB-0006";
     public static final String ERRCODE_SQL_IDAAGETRESULT ="CNSG-DB-0007";
     public static final String ERRCODE_UNSUPPORTED_DATABASE ="CNSG-DB-0008";
+    public static final String ERRCODE_SQLERROR ="CNSG-DB-0009";
 
     //security
     public static final String ERRCODE_DECRYPT ="CNSG-SEC-0001";
@@ -54,6 +55,8 @@ public class ResultMessages {
         result.put(ERRCODE_NOT_IMPLEMENTED, new MessageStructure(ERRCODE_NOT_IMPLEMENTED, ERRCODE_NOT_IMPLEMENTED, Constants.FATAL,
                 "Not implemented"));
 
+        result.put(ERRCODE_SQLERROR, new MessageStructure(ERRCODE_SQLERROR, ERRCODE_SQLERROR, Constants.ERROR,
+                "An SQL error occurred."));
         result.put(ERRCODE_PWCCONNECTION, new MessageStructure(ERRCODE_PWCCONNECTION ,ERRCODE_PWCCONNECTION, Constants.FATAL,
                                         "Could not establish connection to PowerCenter."));
 

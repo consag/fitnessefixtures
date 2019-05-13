@@ -12,22 +12,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 
-//import static supporting.ListUtility.list;
-
 import nl.jacbeekers.testautomation.fitnesse.scripts.ExecuteScript;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class InformaticaCommand {
-    private static final String version = "20190512.0"; // removed incorrect references
+    private static final String version = "20190513.0";
 
-    private String className = InformaticaCommand.class.getName();
-    private String logFileName = Constants.NOT_INITIALIZED;
+    private String className = InformaticaCommand.class.getName()
+            .substring(InformaticaCommand.class.getName().lastIndexOf(".")+1);
+    private String context ="";
+    private String logFilename = Constants.NOT_INITIALIZED;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel =3;
     private int logEntries =0;
     private String abortYesNo = Constants.YES;
-    private String logUrl=Constants.LOG_DIR;
     private String resultFormat =Constants.DEFAULT_RESULT_FORMAT;
     private String resultCode = Constants.OK;
     private String resultMessage = Constants.NOERRORS;
@@ -52,7 +49,7 @@ public class InformaticaCommand {
     java.util.Date started = new java.util.Date();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     startDate = sdf.format(started);
-        logFileName = startDate + "." + className;
+        setLogFilename(startDate + "." + className);
 
     }
 
@@ -61,12 +58,20 @@ public class InformaticaCommand {
     java.util.Date started = new java.util.Date();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     startDate = sdf.format(started);
+    setContext(context);
     setLogFilename( startDate + "." + context + "." + className);
 
     }
 
-
-
+    public InformaticaCommand(String context, String loglevel) {
+        // Constructor
+        java.util.Date started = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        startDate = sdf.format(started);
+        setContext(context);
+        setLogFilename( startDate + "." + context + "." + className);
+        setLogLevel(loglevel);
+    }
 
     private void log(String name, String level, String location, String logText) {
         if(Constants.logLevel.indexOf(level.toUpperCase()) > getIntLogLevel()) {
@@ -74,19 +79,13 @@ public class InformaticaCommand {
         }
         logEntries++;
         if(logEntries ==1) {
-        Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
+            Logging.LogEntry(getLogFilename(), className, Constants.INFO, "Fixture version", getVersion());
         }
-
-    Logging.LogEntry(logFileName, name, level, location, logText);  
+        Logging.LogEntry(getLogFilename(), name, level, location, logText);
        }
 
-    public void setLogFilename(String logFileName) { this.logFileName = logFileName; }
-    public String getLogFilename() {
-        if(logUrl.startsWith("http"))
-            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
-        else
-            return logUrl+logFileName + ".log";
-    }
+    public void setLogFilename(String logFileName) { this.logFilename = logFileName; }
+    public String getLogFilename() { return this.logFilename; };
 
     public void setLogLevel(String level) {
        String myName ="setLogLevel";
@@ -96,7 +95,7 @@ public class InformaticaCommand {
            log(myName, Constants.WARNING, myArea,"Wrong log level >" + level +"< specified. Defaulting to level 3.");
            logLevel =3;
        }
-       log(myName, Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
+//       log(myName, Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
     }
 
     public String getLogLevel() { return Constants.logLevel.get(getIntLogLevel()); }
@@ -110,15 +109,17 @@ public class InformaticaCommand {
     public String runInformaticaCommand() throws InformaticaCommandStopTest {
         String myName="runInformaticaCommand";
         String myArea ="init";
-        readParameterFile();
+        setParameters();
+        outParameters();
 
         String command = getInfacmd() + " " + getInfaTool() + " " + getInfaToolOption()
                 + " " + getCommandLineOptions();
 
-
-        ExecuteScript rs = new ExecuteScript(command);
+        myArea="executeScript";
+        ExecuteScript rs = new ExecuteScript(command, getContext());
         rs.setDeterminePath(false);
         rs.setEnvironment(getEnvironment().toArray(new String[0]));
+        rs.setLogFilename(getLogFilename());
         rs.setLogLevel(getLogLevel());
         rs.setCaptureOutput(Constants.YES);
         rs.setCaptureErrors(Constants.YES);
@@ -139,7 +140,7 @@ public class InformaticaCommand {
         
     }
 
-    public void readParameterFile() {
+    public void setParameters() {
         InfaParameters infaParameters = new InfaParameters();
         infaParameters.setFeatureName(getFeatureName());
 
@@ -148,15 +149,32 @@ public class InformaticaCommand {
         setInfaMRS(infaParameters.getInfaMRS());
         setInfaDIS(infaParameters.getInfaDIS());
 
-        buildEnvironment(infaParameters);
+        setEnvironment(infaParameters);
     }
-    private void buildEnvironment(InfaParameters infaParameters) {
+    private void setEnvironment(InfaParameters infaParameters) {
         environment.add(infaParameters.PARAM_INFA_DOMAINS_FILE +"=" + infaParameters.getInfaDomainsFile());
         environment.add(infaParameters.PARAM_INFA_DEFAULT_DOMAIN + "=" + infaParameters.getInfaDefaultDomain());
         environment.add(infaParameters.PARAM_INFA_DOMAIN_USER + "=" + infaParameters.getInfaDefaultDomainUser());
         environment.add(infaParameters.PARAM_INFA_DOMAIN_PASSWORD + "=" + infaParameters.getInfaDefaultDomainPassword());
     }
+    public void outParameters(){
+        String myName="outParameters";
+        String myArea="run";
+
+        outEnvironment(getEnvironment());
+//        log(myName, Constants.DEBUG,myArea,"")
+    }
+    public void outEnvironment(ArrayList<String> environment){
+        String myName="outEnvironment";
+        String myArea="run";
+        for(String var : environment) {
+            log(myName, Constants.DEBUG, myArea, "Environment variable >" + var +"<.");
+        }
+    }
     public ArrayList<String> getEnvironment() { return environment; }
+
+    public void setContext(String context) { this.context = context; }
+    public String getContext() { return this.context; }
 
     public void setInfaTool(String infaTool) { this.infaTool = infaTool; }
     public String getInfaTool() { return this.infaTool; }
@@ -215,26 +233,6 @@ public class InformaticaCommand {
         return this.abortYesNo;
     }
 
-    private String parseScriptOutput(String scriptOutput) {
-        String myName ="parseScriptOutput";
-        String myArea ="init";
-                                 
-        String logMessage="Parsing script output for errors in >" + scriptOutput +"<.";
-            log(myName, Constants.DEBUG,myArea,logMessage);
-
-        if(scriptOutput.contains("failed with error")
-            || scriptOutput.contains("IOException"))
-          setError(Constants.ERROR,scriptOutput);
-        else
-          setError(Constants.OK,Constants.NOERRORS);
-        
-        return getResultCode();
-        
-    }
-    
-    /**
-     * @return fixture version info
-     */
     public static String getVersion() {
         return version;
     }

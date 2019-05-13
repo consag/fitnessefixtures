@@ -21,14 +21,15 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
 import nl.jacbeekers.testautomation.fitnesse.supporting.RunProcess;
 
 public class ExecuteScript {
-    private static final String className = "ExecuteScript";
-    private static final String version = "20190512s.0";
+    private String className = ExecuteScript.class.getName()
+            .substring(ExecuteScript.class.getName().lastIndexOf(".")+1);
+    private static final String version = "20190513.0";
 
     private String scriptName = Constants.NOT_PROVIDED;
     private List<String> parameterList = new ArrayList<String>();
     private String[] environment =null;
     private String startDate = Constants.NOT_INITIALIZED;
-    private String logFileName = Constants.NOT_INITIALIZED;
+    private String logFilename = Constants.NOT_INITIALIZED;
     private String context = Constants.NOT_PROVIDED;
 
     private int logLevel =3;
@@ -62,7 +63,7 @@ public class ExecuteScript {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
         this.context = className;
-        logFileName = startDate + "." + className;
+        setLogFilename(startDate + "." + className);
     }
 
     public ExecuteScript(String scriptName) {
@@ -70,7 +71,7 @@ public class ExecuteScript {
         java.util.Date started = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         this.startDate = sdf.format(started);
-        logFileName = startDate + "." + className ;
+        setLogFilename(startDate + "." + className) ;
     }
      
     public ExecuteScript(String scriptName, String context) {    
@@ -79,7 +80,7 @@ public class ExecuteScript {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
       this.startDate = sdf.format(started);
       this.context=context;
-        logFileName = startDate + "." + className +"." + context;
+      setLogFilename(startDate  +"." + context + "." + className);
     }
 
     /**
@@ -157,6 +158,7 @@ public class ExecuteScript {
         myArea="RunProcess";
         RunProcess runProcess = new RunProcess(command);
         runProcess.setEnvironment(getEnvironment());
+        runProcess.setLogFileName(getLogFilename());
         int returnCode = runProcess.runAndWait();
         if (returnCode !=0) {
             log(myName, Constants.ERROR, myArea,"runProcess returned exit code >" + returnCode +"< with error >" + runProcess.getResultMessage() +"<.");
@@ -183,21 +185,21 @@ public class ExecuteScript {
         }
         logEntries++;
         if(logEntries ==1) {
-            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version", getVersion());
+            Logging.LogEntry(getLogFilename(), className, Constants.INFO, "Fixture version", getVersion());
         }
-        Logging.LogEntry(logFileName, name, level, location, logText);
+        Logging.LogEntry(getLogFilename(), name, level, location, logText);
        }
 
-    public String getLogFilename() {
+    public void setLogFilename(String logFilename) { this.logFilename = logFilename; }
+    public String getLogFilename() { return this.logFilename; }
+
+    public String getLogFilenameLink() {
         if(logUrl.startsWith("http"))
-            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+            return "<a href=\"" +logUrl+getLogFilename() +".log\" target=\"_blank\">" + getLogFilename() + "</a>";
         else
-            return logUrl+logFileName + ".log";
+            return logUrl+getLogFilename() + ".log";
     }
 
-    /**
-    * @param level
-    */
     public void setLogLevel(String level) {
     String myName ="setLogLevel";
     String myArea ="determineLevel";
@@ -207,8 +209,6 @@ public class ExecuteScript {
        log(myName, Constants.WARNING, myArea,"Wrong log level >" + level +"< specified. Defaulting to level 3.");
        logLevel =3;
     }
-    
-    log(myName, Constants.INFO,myArea,"Log level has been set to >" + level +"< which is level >" +getIntLogLevel() + "<.");
     }
 
     public String getLogLevel() { return Constants.logLevel.get(getIntLogLevel()); }
