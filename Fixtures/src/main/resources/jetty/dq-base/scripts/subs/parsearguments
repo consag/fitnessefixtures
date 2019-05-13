@@ -1,0 +1,26 @@
+##
+#
+version=20190402.0  #- initial
+author="Jac. Beekers"
+license="MIT"
+
+parsearguments() {
+
+ while test $# -gt 0; do
+    case "$1" in
+         -targetpassword)
+            shift
+            targetPassword=$1
+            ;;
+         -connection)
+            shift
+            connectionName=$1
+            ;;
+    esac
+    shift
+ done
+
+}
+
+
+

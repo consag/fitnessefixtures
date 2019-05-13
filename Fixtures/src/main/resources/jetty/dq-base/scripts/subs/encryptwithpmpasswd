@@ -1,0 +1,22 @@
+##
+#
+version=20190402.0  #- initial
+author="Jac. Beekers"
+license="MIT"
+
+encryptWithPmpasswd() {
+ local rc=0
+ passWord="$1"
+ if [ -z "${passWord}" ] ; then
+    result="String to be encrypted was empty."
+    return 11
+ fi
+ echo "$(date) - Starting pmpasswd..."
+ #Capture output line Encrypted string -->SOMETHIN<--
+ THE_ENCRYPTED_PASSWORD=$(pmpasswd "${passWord}" | grep "Encrypted string" | cut -d">" -f2 | cut -d"<" -f1)
+ rc=$?
+ echo "$(date) - pmpasswd completed with rc=>$rc<."
+
+ return $rc 
+}
+

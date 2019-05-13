@@ -1,0 +1,24 @@
+##
+#
+#!/bin/bash
+logversion=20190402.0  #- initial
+logauthor="Jac. Beekers"
+loglicense="MIT"
+
+FATAL=1
+ERROR=2
+WARNING=3
+INFO=4
+DEBUG=5
+VERBOSE=6
+
+log() {
+ local rc=0
+ level="$1"
+ shift
+ message="$@"
+ echo "$(date) - $shName - $procName - $level - $message"
+
+ return $rc 
+}
+
