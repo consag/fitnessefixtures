@@ -18,39 +18,95 @@ public class InfaParameters {
     public final String PARAM_INFA_TRUSTSTORE_PASSWORD ="INFA_TRUSTSTORE_PASSWORD";
     public final String PARAM_INFA_KRB5_CONFIG ="KRB5_CONFIG";
 
-    private String infaEnvironment ="DEMO";
-    private String featureName;
+    private String infaEnvironment;
 
-    public String getInfaHome() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-                ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_HOME); }
-    public String getInfacmd() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_CMD); }
-    public String getInfaDomainsFile() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_DOMAINS_FILE); }
-    public String getInfaDomain() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_DOMAIN); }
-    public String getInfaMRS() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_MRS); }
-    public String getInfaDIS() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_DIS); }
-    public String getInfaDefaultDomain() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_DEFAULT_DOMAIN); }
-    public String getInfaDefaultSecurityDomain() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_SECURITY_DOMAIN); }
-    public String getInfaDefaultDomainUser() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_DOMAIN_USER); }
-    public String getInfaDefaultDomainPassword() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_DOMAIN_PASSWORD); }
-    public String getInfaTruststore() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_TRUSTSTORE); }
-    public String getInfaTruststorePassword() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_TRUSTSTORE_PASSWORD); }
-    public String getInfaKerberosConfig() { return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
-            ,getFeatureName(),getInfaEnvironment() +"." + PARAM_INFA_KRB5_CONFIG); }
+    public static String logFilename = Constants.NOT_PROVIDED;
+    public static String logLevel = Constants.VERBOSE;
 
+    public static String getLogFilename() { return logFilename; }
+    public static void setLogFilename(String logFilename) { InfaParameters.logFilename = logFilename; }
 
-    public void setFeatureName(String featureName) { this.featureName = featureName; }
-    public String getFeatureName() { return this.featureName; }
+    public static String getLogLevel() { return logLevel; }
+    public static void setLogLevel(String logLevel) { InfaParameters.logLevel = logLevel; }
+
+    public String getInfaHome() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+                , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_HOME);
+    }
+    public String getInfacmd() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_CMD);
+    }
+    public String getInfaDomainsFile() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_DOMAINS_FILE);
+    }
+    public String getInfaDomain() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_DOMAIN);
+    }
+    public String getInfaMRS() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_MRS);
+    }
+    public String getInfaDIS() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_DIS);
+    }
+    public String getInfaDefaultDomain() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_DEFAULT_DOMAIN);
+    }
+    public String getInfaDefaultSecurityDomain() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_SECURITY_DOMAIN);
+    }
+    public String getInfaDefaultDomainUser() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_DOMAIN_USER);
+    }
+    public String getInfaDefaultDomainPassword() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_DOMAIN_PASSWORD);
+    }
+    public String getInfaTruststore() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_TRUSTSTORE);
+    }
+    public String getInfaTruststorePassword() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_TRUSTSTORE_PASSWORD);
+    }
+    public String getInfaKerberosConfig() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+            , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_KRB5_CONFIG);
+    }
 
     public void setInfaEnvironment(String infaEnvironment) { this.infaEnvironment = infaEnvironment; }
     public String getInfaEnvironment() { return this.infaEnvironment; }

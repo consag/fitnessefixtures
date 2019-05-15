@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class GetParameters {
     
-    private static String version = "20180808.0";
+    private static String version = "20190515.0";
 
   private static String curFields[];
   private static String delimiter = Constants.INPUT_FILE_DELIMITER;
@@ -29,7 +29,16 @@ public class GetParameters {
   
   private static String errMsg=Constants.NOERRORS;
   private static String errCode=Constants.NOERRORS;
-  
+
+  public static String logFilename = Constants.NOT_PROVIDED;
+  public static String logLevel = Constants.VERBOSE;
+
+  public static String getLogFilename() { return logFilename; }
+  public static void setLogFilename(String logFilename) { GetParameters.logFilename = logFilename; }
+
+  public static String getLogLevel() { return logLevel; }
+  public static void setLogLevel(String logLevel) { GetParameters.logLevel = logLevel; }
+
   public static String GetPhysicalSourceDir(String logical) {
       return getPropertyVal(Constants.DIRECTORY_PROPERTIES, logical);
   }
@@ -230,7 +239,10 @@ public class GetParameters {
 
   //Fixtures may use application specific settings
     public static String getPropertyVal(String propFile, String appName, String className, String prop) {
+      String myName ="getPropertyVal-pacp";
         String result=Constants.NOT_FOUND;
+        Logging.LogEntry(getLogFilename(), getLogLevel(), myName, "Looking in file >" + propFile
+        + "<. appName =>" + appName +"<. className =>" + className + "<. property =>" + prop + "<.");
         result=getPropertyVal(propFile, appName + "." + className + "." + prop);
         if((Constants.NOT_FOUND.equals(result))) {
             result=getPropertyVal(propFile, className, prop);
@@ -243,7 +255,10 @@ public class GetParameters {
     }
 
     public static String getPropertyVal(String propFile, String className, String prop) {
+        String myName ="getPropertyVal-pcp";
         String result=Constants.NOT_FOUND;
+        Logging.LogEntry(getLogFilename(), getLogLevel(), myName, "Looking in file >" + propFile
+                +"<. className =>" + className + "<. property =>" + prop + "<.");
         result=getPropertyVal(propFile, className + "." + prop);
         if((Constants.NOT_FOUND.equals(result))) {
             result=getPropertyVal(propFile, prop);
@@ -254,18 +269,25 @@ public class GetParameters {
 
     public static String getPropertyVal(String propFile, String prop) {
         String val = Constants.NOT_FOUND;
+        String myName ="getPropertyVal-pp";
+        Logging.LogEntry(getLogFilename(), getLogLevel(), myName, "Looking in file >" + propFile
+                + "<. property =>" + prop + "<.");
         setError(Constants.OK, Constants.NOERRORS);
         /*
          * Get mapping
          */
         try {
-        File file = new File(propFile);
-        FileInputStream fileInput = new FileInputStream(file);
-        Properties properties = new Properties();
-        properties.load(fileInput);
-        fileInput.close();
+            Logging.LogEntry(getLogFilename(), getLogLevel(), myName, "Trying file >" + propFile
+                    +"<. property =>" + prop + "<.");
+            File file = new File(propFile);
+            FileInputStream fileInput = new FileInputStream(file);
+            Properties properties = new Properties();
+            properties.load(fileInput);
+            fileInput.close();
         
         val = properties.getProperty(prop, Constants.NOT_FOUND);
+            Logging.LogEntry(getLogFilename(), getLogLevel(), myName, "Properties file >" + propFile
+                    +"< loaded successfully. property =>" + prop + "<. value =>" +val +"<.");
         setError(Constants.OK, Constants.NOERRORS);
             
         } catch (FileNotFoundException e) {

@@ -15,13 +15,13 @@ public class Mapping {
         setLogLevel(Constants.DEBUG);
     }
 
-    public Mapping(String infaConnection, String projectName, String logLevel) {
+    public Mapping(String infaEnvironment, String projectName, String logLevel) {
         java.util.Date started = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
         setLogFilename( startDate + "." + projectName + "." + className);
 
-        setInfaConnection(infaConnection);
+        setInfaEnvironment(infaEnvironment);
         setProjectName(projectName);
         setLogLevel(logLevel);
     }
@@ -35,7 +35,7 @@ public class Mapping {
     private String resultMessage = Constants.NOERRORS;
 
     //informatica
-    private String infaConnection = Constants.NOT_PROVIDED;
+    private String infaEnvironment = Constants.NOT_PROVIDED;
     private String infaDIS = Constants.NOT_FOUND;
     private String projectName = Constants.NOT_PROVIDED;
     private String folderName = Constants.NOT_PROVIDED;
@@ -44,7 +44,11 @@ public class Mapping {
 
     public void getParameters() {
         InfaParameters infaParameters = new InfaParameters();
+        infaParameters.setInfaEnvironment(getInfaEnvironment());
+        infaParameters.setLogFilename(getLogFilename());
+        infaParameters.setLogLevel(getLogLevel());
         setInfaDIS(infaParameters.getInfaDIS());
+
 
         setLogUrl(GetParameters.GetLogUrl());
     }
@@ -53,13 +57,14 @@ public class Mapping {
 
         getParameters();
 
-        InfaParameters infaParameters = new InfaParameters();
+//        InfaParameters infaParameters = new InfaParameters();
         InformaticaCommand informaticaCommand = new InformaticaCommand(getApplicationName(),getLogLevel());
         informaticaCommand.setLogFilename(getLogFilename());
-        informaticaCommand.setInfaEnvironment(getInfaConnection());
+        informaticaCommand.setLogLevel(getLogLevel());
+        informaticaCommand.setInfaEnvironment(getInfaEnvironment());
         informaticaCommand.setInfaTool(InfaCmdTools.getTool(INFA_FUNCTION_RUNMAPPING));
         informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNMAPPING));
-        informaticaCommand.setCommandLineOptions("-ServiceName " + infaParameters.getInfaDIS() + " -Application " + getApplicationName()
+        informaticaCommand.setCommandLineOptions("-ServiceName " + getInfaDIS() + " -Application " + getApplicationName()
                 + " -Mapping " + getMappingName() + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNMAPPING));
 
         informaticaCommand.runInformaticaCommand();
@@ -79,8 +84,8 @@ public class Mapping {
     public void setResultMessage(String resultMessage){ this.resultMessage = resultMessage; }
     public String getResultMessage() { return this.resultMessage; }
 
-    public void setInfaConnection(String infaConnection) { this.infaConnection = infaConnection; }
-    public String getInfaConnection() { return infaConnection; }
+    public void setInfaEnvironment(String infaEnvironment) { this.infaEnvironment = infaEnvironment; }
+    public String getInfaEnvironment() { return infaEnvironment; }
 
     public void setProjectName(String projectName) { this.projectName = projectName; }
     public String getProjectName() { return projectName; }

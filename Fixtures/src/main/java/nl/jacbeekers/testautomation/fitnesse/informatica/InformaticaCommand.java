@@ -31,7 +31,7 @@ public class InformaticaCommand {
 
     private boolean userSetAbortOnError = false;
 
-    private String featureName =null;
+//    private String featureName =null;
 
     private ArrayList<String> environment = new ArrayList<String>();
     //informatica
@@ -142,7 +142,7 @@ public class InformaticaCommand {
 
     public void setParameters() {
         InfaParameters infaParameters = new InfaParameters();
-        infaParameters.setFeatureName(getFeatureName());
+        infaParameters.setInfaEnvironment(getInfaEnvironment());
 
         setInfaHome(infaParameters.getInfaHome());
         setInfacmd(infaParameters.getInfacmd());
@@ -197,8 +197,8 @@ public class InformaticaCommand {
     public void setInfaDIS(String infaDIS) { this.infaDIS = infaDIS; }
     public String getInfaDIS() { return this.infaDIS; }
 
-    public void setFeatureName(String featureName) { this.featureName = featureName; }
-    public String getFeatureName() { return this.featureName; }
+//    public void setFeatureName(String featureName) { this.featureName = featureName; }
+//    public String getFeatureName() { return this.featureName; }
 
     public void setCommandLineOptions(String commandLineOptions) { this.commandLineOptions = commandLineOptions;}
     public String getCommandLineOptions() { return this.commandLineOptions; }
