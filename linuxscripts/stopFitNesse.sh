@@ -6,3 +6,4 @@ INSTALLDIR=/appl/testautomation/fitnesse
 #--
 pidfile=$INSTALLDIR/fit.pid
 [[ -f $pidfile ]] && { kill `cat $pidfile` ; rm $pidfile ; }
+

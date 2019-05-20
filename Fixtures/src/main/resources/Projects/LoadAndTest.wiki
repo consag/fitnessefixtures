@@ -1,0 +1,10 @@
+---
+Test: no
+---
+!***> Parameters
+
+!define sourceDirectory {/appl/data/source}
+!define targetDirectory {/appl/data/target}
+!define interfaceDirectory {/appl/data/interface}
+*!
+!contents -R2 -g -p -f -h

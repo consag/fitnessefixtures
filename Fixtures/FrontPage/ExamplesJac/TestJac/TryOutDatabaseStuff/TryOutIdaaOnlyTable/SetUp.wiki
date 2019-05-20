@@ -1,7 +1,0 @@
----
-Test
----
-!2 ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.TryOutIdaaOnlyTable.SetUp page for IDAAOnly Table Tryout Suite
-
-|import     |
-|nl.consag.testautomation.database   |

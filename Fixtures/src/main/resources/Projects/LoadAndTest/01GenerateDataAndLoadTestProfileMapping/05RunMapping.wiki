@@ -1,0 +1,26 @@
+---
+Test
+---
+!define DISConnection {DIS_Demo01}
+!define IDQProjectName {Demo}
+!define IDQFolderName {FitNesseDemos}
+
+!4 Arguments in first line:
+- DIS to run the mapping on
+- Project name
+- Log level fixture
+
+!4 Per line:
+- Project - Project name
+- Folder name (if any)
+- Application the mapping is part of
+- Mapping name
+
+!4 The application has to be deployed with the version of the mapping you want to run!
+
+Known limitations:
+2. If a mapping fails, the next in the list will be executed
+
+!|Mapping         |${DISConnection}|${IDQProjectName}|VERBOSE                                                                    |
+|Project Name     |Folder Name     |Application Name |Mapping Name       |run mapping?|get result message?|get log filename link?|
+|${IDQProjectName}|${IDQFolderName}|Appl_Demo        |m_Demo_Extract_Dual|OK          |                   |                      |

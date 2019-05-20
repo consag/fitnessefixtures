@@ -6,3 +6,4 @@ target
 testPagesRoot
 .DS_Store
 *.zip
+*.jar

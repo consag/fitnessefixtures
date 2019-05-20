@@ -1,0 +1,45 @@
+---
+Help: Generate JSON to be used by datahelix to generate test dataset
+Test
+---
+!3 Generate JSON file for helixdata
+
+!*****> JSON Example
+
+{{{
+
+{
+  "schemaVersion": "0.1",
+  "fields": [
+    { "name": "firstName" },
+    { "name": "age" }
+  ],
+  "rules": [
+    {
+      "constraints": [
+        { "field": "firstName", "is": "ofType", "value": "string" },
+        { "not": { "field": "firstName", "is": "null" } },
+        { "field": "firstName", "is": "matchingRegex", "value": "(Joh?n|Mar[yk])" }
+      ]
+    },
+    {
+      "constraints": [
+        { "field": "age", "is": "ofType", "value": "integer" },
+        { "field": "age", "is": "greaterThan", "value": 0 },
+        { "field": "age", "is": "lessThan", "value": 100 },
+        { "not": { "field": "age", "is": "null" } }
+      ]
+    }
+  ]
+}
+
+}}}
+**********!
+
+!|table: Generate Json For Data Helix|
+|output file|files ${jsonfile}|
+|schema version|0.1|
+|fields|firstname|age|
+|rules|constraints|field|firstname|is|ofType|string|
+|rules|constraints|field|firstname|is|not null|
+|rules|constraints|field|firstname|is|matchingRegex|!-(Joh?n|Mar[yk])-!|

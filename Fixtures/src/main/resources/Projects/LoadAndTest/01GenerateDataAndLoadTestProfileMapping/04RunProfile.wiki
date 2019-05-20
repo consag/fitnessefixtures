@@ -1,0 +1,24 @@
+---
+Test
+---
+!define IDQFolderName {FitNesseDemos}
+
+!4 Arguments in first line:
+- Informatica environment to run the profile on
+- Context for logging, e.g. the project name
+- Log level fixture
+
+!4 Per line:
+- Model Repository Project name
+- Folder name (if any)
+- Profile name
+
+!4 Run Profile
+!|Data Profiling  |${InfaConnection}|${MRSProject}|VERBOSE                                                |
+|Project Name     |Folder Name     |Profile Name     |run profile?|get result message?|get log filename link?|
+|${MRSProject}|${IDQFolderName}|Profile_DUAL     |OK          |                   |                      |
+
+!4 Run Scorecard
+!|Data Profiling  |${InfaConnection}|${MRSProject}|VERBOSE                                                  |
+|Project Name     |Folder Name     |Scorecard Name   |run scorecard?|get result message?|get log filename link?|
+|${MRSProject}|${IDQFolderName}|sc_Dual          |OK            |                   |                      |

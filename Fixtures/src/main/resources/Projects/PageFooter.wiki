@@ -1,0 +1,2 @@
+It's !today -t
+Running FitNesse Release ''${FITNESSE_VERSION}''

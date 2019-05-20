@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "0.1",
+  "fields": [
+    { "name": "firstName" },
+    { "name": "age" }
+  ],
+  "rules": [
+    {
+      "constraints": [
+        { "field": "firstName", "is": "ofType", "value": "string" },
+        { "not": { "field": "firstName", "is": "null" } },
+        { "field": "firstName", "is": "matchingRegex", "value": "(Joh?n|Mar[yk])" }
+      ]
+    },
+    {
+      "constraints": [
+        { "field": "age", "is": "ofType", "value": "integer" },
+        { "field": "age", "is": "greaterThan", "value": 0 },
+        { "field": "age", "is": "lessThan", "value": 100 },
+        { "not": { "field": "age", "is": "null" } }
+      ]
+    }
+  ]
+}
+
