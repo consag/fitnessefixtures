@@ -44,6 +44,8 @@ public class ResultMessages {
     //powercenter
     public static final String ERRCODE_PWCCONNECTION ="INFA-PWC-0001";
 
+    //platform
+    public static final String ERRCODE_INFACMD_ERROR ="INFA-PLF-0001";
 
     private static final Map<String, MessageStructure> msgList = createMap();
     private static Map<String, MessageStructure> createMap() {
@@ -55,12 +57,14 @@ public class ResultMessages {
         result.put(ERRCODE_NOT_IMPLEMENTED, new MessageStructure(ERRCODE_NOT_IMPLEMENTED, ERRCODE_NOT_IMPLEMENTED, Constants.FATAL,
                 "Not implemented"));
 
+        result.put(ERRCODE_INFACMD_ERROR, new MessageStructure(ERRCODE_INFACMD_ERROR, ERRCODE_INFACMD_ERROR, Constants.ERROR,
+                "infacmd reported an error"));
+
         result.put(ERRCODE_SQLERROR, new MessageStructure(ERRCODE_SQLERROR, ERRCODE_SQLERROR, Constants.ERROR,
                 "An SQL error occurred."));
         result.put(ERRCODE_PWCCONNECTION, new MessageStructure(ERRCODE_PWCCONNECTION ,ERRCODE_PWCCONNECTION, Constants.FATAL,
                                         "Could not establish connection to PowerCenter."));
 
-        
         return Collections.unmodifiableMap(result);
     }
 

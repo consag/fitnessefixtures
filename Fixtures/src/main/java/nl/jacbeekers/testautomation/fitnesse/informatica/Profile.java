@@ -24,6 +24,8 @@ import nl.jacbeekers.testautomation.fitnesse.scripts.ExecuteScript;
 
 import org.apache.commons.lang3.StringUtils;
 
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.ERRCODE_INFACMD_ERROR;
+
 public class Profile {
 
     private String className = "Profile";
@@ -560,14 +562,29 @@ public class Profile {
             + getObjectName();
     }
 
-    private String parseScriptOutput(String scriptOutput) {
-        if(scriptOutput.contains("failed with error"))
-          setError(Constants.ERROR,scriptOutput);
-        else
-          setError(Constants.OK,Constants.NOERRORS);
-        
+
+    private String parseScriptOutput(ArrayList<String> cmdOutput) {
+
+        String result = Constants.UNKNOWN;
+        String getit[] = { "1", "2"};
+        if(cmdOutput != null) {
+            for(String line : cmdOutput) {
+                //Profile run status =FAILURE
+                if(line.contains("run status")) {
+                    getit = line.split("=", 2);
+                    if(getit.length >1)
+                        result = getit[1];
+                    switch(result) {
+                        case "FAILURE":
+                            setError(ERRCODE_INFACMD_ERROR,"infacmd returned 0, but output reported FAILURE");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
         return getErrorCode();
-        
     }
 
     public void setProfileScript(String profileScript) {

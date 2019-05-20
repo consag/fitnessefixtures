@@ -3,12 +3,13 @@ package nl.jacbeekers.testautomation.fitnesse.supporting;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.OS_COMMAND_ERROR;
 
 public class RunProcess {
 
-    public String version ="20190513.0";
+    public String version ="20190520.0";
     private String className = RunProcess.class.getName()
             .substring(RunProcess.class.getName().lastIndexOf(".")+1);
 
@@ -19,6 +20,9 @@ public class RunProcess {
     private int rc=0;
     private String startDate;
     private String logFileName = RunProcess.class.getName();
+
+    private boolean captureOutput = true;
+    private ArrayList<String> capturedOutput = new ArrayList<String>();
 
     //constructor
     public RunProcess() {
@@ -54,8 +58,13 @@ public class RunProcess {
             }
             BufferedReader br = new BufferedReader(
                     new InputStreamReader(p.getInputStream()));
-            while ((s = br.readLine()) != null)
-                Logging.LogEntry(getLogFileName(), Constants.DEBUG, procName, "command output: " + s );
+            while ((s = br.readLine()) != null) {
+                if(getCaptureOutput()) {
+                    //TODO: Might want to limit this
+                    capturedOutput.add(s);
+                }
+                Logging.LogEntry(getLogFileName(), Constants.DEBUG, procName, "command output: " + s);
+            }
             p.waitFor();
             rc = p.exitValue();
             Logging.LogEntry(getLogFileName(), Constants.DEBUG, procName, "Completed command >" + command +"< with exit code>" + rc +"<.");
@@ -74,6 +83,11 @@ public class RunProcess {
     }
 
     //getters and setters
+    public void setCaptureOutput(boolean captureOutput) { this.captureOutput = captureOutput; }
+    public boolean getCaptureOutput() { return this.captureOutput; }
+
+    public ArrayList<String> getCapturedOutput() { return this.capturedOutput; }
+
     public void setEnvironment(String[] env) { this.environment = env; }
     public String[] getEnvironment() { return this.environment; }
     public void setCommand(String command) { this.command = command; }
