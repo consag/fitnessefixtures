@@ -8,7 +8,7 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA
 import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA_FUNCTION_RUNSCORECARD;
 
 public class DataProfiling {
-    private static final String version = "20190513.0";
+    private static final String version = "20190520.0";
     private String className = DataProfiling.class.getName()
             .substring(DataProfiling.class.getName().lastIndexOf(".")+1);
 
@@ -46,6 +46,7 @@ public class DataProfiling {
 
     public void getParameters() {
         InfaParameters infaParameters = new InfaParameters();
+        infaParameters.setInfaEnvironment(getInfaConnection());
         setInfaDIS(infaParameters.getInfaDIS());
         setInfaMRS(infaParameters.getInfaMRS());
 
