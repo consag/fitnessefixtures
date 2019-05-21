@@ -136,7 +136,7 @@ public class RemoveDataUsingExcel {
                 myArea="readParameterFile";
                 readParameterFile();
                 log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName +"<.");
-                connectionProperties.setLogFileName(logFileName);
+                connectionProperties.setLogFilename(logFileName);
                 connectionProperties.setLogLevel(getIntLogLevel());
 
                 myArea="SQL Execution";

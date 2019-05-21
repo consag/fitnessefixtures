@@ -18,7 +18,7 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.pr
 
 public class DropTable {
 	private String className = "DropTable";
-    private static String version ="20180620.0";
+    private static String version ="20190521.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
@@ -52,7 +52,7 @@ public class DropTable {
 	      	startDate = sdf.format(started);
 	      	this.context=className;
 	        logFileName = startDate + "." + className ;
-
+	        setLogFilename(logFileName);
 	    }
 	
 	public DropTable(String context) {
@@ -61,8 +61,20 @@ public class DropTable {
 	    	startDate = sdf.format(started);
 	    	this.context=context;
 	        logFileName = startDate + "." + className +"." + context;
+	        setLogFilename(logFileName);
 
 	    }
+
+    public DropTable(String context, String logLevel) {
+        java.util.Date started = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        startDate = sdf.format(started);
+        this.context=context;
+        logFileName = startDate + "." + className +"." + context;
+        setLogFilename(logFileName);
+        setLogLevel(logLevel);
+
+    }
 
     public void ignoreErrorOnDrop(String yesNo) {
 	    ignoreError(yesNo);
@@ -80,7 +92,7 @@ public class DropTable {
     }
     
     public boolean tableDoesNotExistInDatabase(String inTableName, String inDatabase) {
-        String myName="tableDoesNotExistInDatabaseInSchema";
+        String myName="tableDoesNotExistInDatabase";
         String myArea="init";
         String logMessage=Constants.NOT_INITIALIZED;
         Connection connection = null;
@@ -280,15 +292,16 @@ public class DropTable {
     /**
      * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
      */
-    public String getLogFilename() {
-        if(logUrl.startsWith("http"))
-            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
-        else
-            return logUrl+logFileName + ".log";
-    }
-    /**
-     * @param level
-     */
+    public String getLogFilename() { return this.logFileName; }
+    public void setLogFilename(String logFilename) { this.logFileName = logFilename;}
+
+     public String getLogFilenameLink() {
+     if(logUrl.startsWith("http"))
+     return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+     else
+     return logUrl+logFileName + ".log";
+     }
+
     public void setLogLevel(String level) {
         String myName ="setLogLevel";
         String myArea ="determineLevel";
@@ -346,6 +359,10 @@ public class DropTable {
         String myName = "readParameterFile";
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
+
+        log(myName, Constants.DEBUG, myArea, "Setting log file for connectionProperties to >" + getLogFilename() +"<.");
+        connectionProperties.setLogFilename(getLogFilename());
+        connectionProperties.setLogLevel(getIntLogLevel());
 
         log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
         if(connectionProperties.refreshConnectionProperties(databaseName)) {

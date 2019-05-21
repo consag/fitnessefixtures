@@ -68,7 +68,7 @@ public class TableManagement {
         myArea = "readParameterFile";
         readParameterFile();
         log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName + "<.");
-        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogFilename(logFileName);
         connectionProperties.setLogLevel(getIntLogLevel());
         try {
             connection = connectionProperties.getUserConnection();
@@ -183,7 +183,7 @@ public class TableManagement {
         myArea = "readParameterFile";
         readParameterFile();
         log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName + "<.");
-        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogFilename(logFileName);
         connectionProperties.setLogLevel(getIntLogLevel());
 
         try {

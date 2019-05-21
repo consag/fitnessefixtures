@@ -214,7 +214,7 @@ public class BasicInsert {
         myArea = "readParameterFile";
         readParameterFile();
         log(myName, Constants.DEBUG, myArea, "Setting logFileName for connectionProperties to >" + logFileName + "<.");
-        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogFilename(logFileName);
         connectionProperties.setLogLevel(getIntLogLevel());
         log(myName, Constants.DEBUG, myArea, "connectionProperties-dbType is >" + connectionProperties.getDatabaseType() + "<.");
         setDatabaseType(connectionProperties.getDatabaseType());
@@ -366,7 +366,7 @@ public class BasicInsert {
         String propVal = Constants.NOT_FOUND;
 
         log(myName, Constants.DEBUG, myArea, "getting properties for >" + databaseName + "<.");
-        connectionProperties.setLogFileName(getLogFileNameOnly());
+        connectionProperties.setLogFilename(getLogFileNameOnly());
         connectionProperties.setLogLevel(getIntLogLevel());
         connectionProperties.setDatabaseName(databaseName);
         connectionProperties.refreshConnectionProperties(databaseName);
@@ -641,7 +641,7 @@ public class BasicInsert {
 
         readParameterFile();
         log(myName, Constants.VERBOSE, myArea, "Setting logFileName for connectionProperties to >" + logFileName + "<.");
-        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogFilename(logFileName);
         connectionProperties.setLogLevel(getIntLogLevel());
         log(myName, Constants.DEBUG, myArea, "connectionProperties reports dbType >" + connectionProperties.getDatabaseType() + "<.");
         setDatabaseType(connectionProperties.getDatabaseType());
@@ -719,7 +719,7 @@ public class BasicInsert {
         myArea = "readParameterFile";
         readParameterFile();
         log(myName, Constants.VERBOSE, myArea, "Setting logFileName for connectionProperties to >" + logFileName + "<.");
-        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogFilename(logFileName);
         connectionProperties.setLogLevel(getIntLogLevel());
         setDatabaseType(connectionProperties.getDatabaseType());
 

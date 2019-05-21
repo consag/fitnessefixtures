@@ -88,7 +88,7 @@ public class CreateSynonym {
         myArea = "check db type";
         readParameterFile();
         log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName + "<.");
-        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogFilename(logFileName);
         connectionProperties.setLogLevel(getIntLogLevel());
 
         String synonymName;

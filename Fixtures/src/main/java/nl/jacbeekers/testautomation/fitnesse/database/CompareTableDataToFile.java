@@ -593,7 +593,7 @@ public class CompareTableDataToFile {
             
       dbConnection =sDatabase;
         readParameterFile();
-        connectionProperties.setLogFileName(logFileName);
+        connectionProperties.setLogFilename(logFileName);
         connectionProperties.setLogLevel(getIntLogLevel());
 
         try {    
