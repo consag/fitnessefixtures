@@ -8,7 +8,7 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA
 import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA_FUNCTION_RUNSCORECARD;
 
 public class DataProfiling {
-    private static final String version = "20190520.0";
+    private static final String version = "20190520.1";
     private String className = DataProfiling.class.getName()
             .substring(DataProfiling.class.getName().lastIndexOf(".")+1);
 
@@ -16,13 +16,13 @@ public class DataProfiling {
         setLogLevel(Constants.DEBUG);
     }
 
-    public DataProfiling(String infaConnection, String projectName, String logLevel) {
+    public DataProfiling(String infaEnvironment, String projectName, String logLevel) {
         java.util.Date started = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
         setLogFilename( startDate + "." + projectName + "." + className);
 
-        setInfaConnection(infaConnection);
+        setInfaEnvironment(infaEnvironment);
         setProjectName(projectName);
         setLogLevel(logLevel);
     }
@@ -36,7 +36,7 @@ public class DataProfiling {
     private String resultMessage = Constants.NOERRORS;
 
     //informatica
-    private String infaConnection = Constants.NOT_PROVIDED;
+    private String infaEnvironment = Constants.NOT_PROVIDED;
     private String infaMRS = Constants.NOT_FOUND;
     private String infaDIS = Constants.NOT_FOUND;
     private String projectName = Constants.NOT_PROVIDED;
@@ -46,7 +46,10 @@ public class DataProfiling {
 
     public void getParameters() {
         InfaParameters infaParameters = new InfaParameters();
-        infaParameters.setInfaEnvironment(getInfaConnection());
+        infaParameters.setInfaEnvironment(getInfaEnvironment());
+        infaParameters.setLogFilename(getLogFilename());
+        infaParameters.setLogLevel(getLogLevel());
+
         setInfaDIS(infaParameters.getInfaDIS());
         setInfaMRS(infaParameters.getInfaMRS());
 
@@ -59,7 +62,8 @@ public class DataProfiling {
 
         InformaticaCommand informaticaCommand = new InformaticaCommand(getProfileName(),getLogLevel());
         informaticaCommand.setLogFilename(getLogFilename());
-        informaticaCommand.setInfaEnvironment(getInfaConnection());
+        informaticaCommand.setLogLevel(getLogLevel());
+        informaticaCommand.setInfaEnvironment(getInfaEnvironment());
         informaticaCommand.setInfaTool(InfaCmdTools.getTool(INFA_FUNCTION_RUNPROFILE));
         informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNPROFILE));
         String objectPath=null;
@@ -84,7 +88,8 @@ public class DataProfiling {
 
         InformaticaCommand informaticaCommand = new InformaticaCommand(getProfileName(),getLogLevel());
         informaticaCommand.setLogFilename(getLogFilename());
-        informaticaCommand.setInfaEnvironment(getInfaConnection());
+        informaticaCommand.setLogLevel(getLogLevel());
+        informaticaCommand.setInfaEnvironment(getInfaEnvironment());
         informaticaCommand.setInfaTool(InfaCmdTools.getTool(INFA_FUNCTION_RUNSCORECARD));
         informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNSCORECARD));
         String objectPath=null;
@@ -117,8 +122,8 @@ public class DataProfiling {
     public void setResultMessage(String resultMessage){ this.resultMessage = resultMessage; }
     public String getResultMessage() { return this.resultMessage; }
 
-    public void setInfaConnection(String infaConnection) { this.infaConnection = infaConnection; }
-    public String getInfaConnection() { return infaConnection; }
+    public void setInfaEnvironment(String infaEnvironment) { this.infaEnvironment = infaEnvironment; }
+    public String getInfaEnvironment() { return infaEnvironment; }
 
     public void setProjectName(String projectName) { this.projectName = projectName; }
     public String getProjectName() { return projectName; }

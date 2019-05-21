@@ -14,8 +14,10 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 
 import nl.jacbeekers.testautomation.fitnesse.scripts.ExecuteScript;
 
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.ERRCODE_INFACMD_ERROR;
+
 public class InformaticaCommand {
-    private static final String version = "20190513.0";
+    private static final String version = "20190520.0";
 
     private String className = InformaticaCommand.class.getName()
             .substring(InformaticaCommand.class.getName().lastIndexOf(".")+1);
@@ -116,16 +118,23 @@ public class InformaticaCommand {
                 + " " + getCommandLineOptions();
 
         myArea="executeScript";
-        ExecuteScript rs = new ExecuteScript(command, getContext());
-        rs.setDeterminePath(false);
-        rs.setEnvironment(getEnvironment().toArray(new String[0]));
-        rs.setLogFilename(getLogFilename());
-        rs.setLogLevel(getLogLevel());
-        rs.setCaptureOutput(Constants.YES);
-        rs.setCaptureErrors(Constants.YES);
+        ExecuteScript executeScript = new ExecuteScript(command, getContext());
+        executeScript.setDeterminePath(false);
+        executeScript.setEnvironment(getEnvironment().toArray(new String[0]));
+        executeScript.setLogFilename(getLogFilename());
+        executeScript.setLogLevel(getLogLevel());
+        executeScript.setCaptureOutput(Constants.YES);
+        executeScript.setCaptureErrors(Constants.YES);
         
         try {
-            rs.runScriptReturnCode();
+            executeScript.runScriptReturnCode();
+            //initially check script exit code
+            setResultMessage(executeScript.getErrorMessage());
+            setResultCode(executeScript.getErrorCode());
+            //with infacmd, the rc=0 even though the profile, scorecard or workflow failed
+            if(Constants.OK.equals(getResultCode())) {
+                parseOutputForErrors(executeScript.getStdOut());
+            }
         } catch (ExecuteScript.ExecuteScriptStopTest e) {
             if (Constants.YES.equals(getAbortOnError())) {
                 throw new InformaticaCommandStopTest(getResultMessage());
@@ -133,11 +142,32 @@ public class InformaticaCommand {
 
         }
 
-        setResultMessage(rs.getErrorMessage());
-        setResultCode(rs.getErrorCode());
-        
+
         return getResultCode();
         
+    }
+
+    private void parseOutputForErrors(ArrayList<String> cmdOutput) {
+        String result = Constants.UNKNOWN;
+        String getit[] = { "1", "2"};
+        if(cmdOutput != null) {
+            for(String line : cmdOutput) {
+                //Profile run status =FAILURE
+                if(line.contains("run status")) {
+                    getit = line.split("=", 2);
+                    if(getit.length >1)
+                        result = getit[1];
+                    switch(result) {
+                        case "FAILURE":
+                            setResultMessage("infacmd returned 0, but output reported FAILURE");
+                            setResultCode(ERRCODE_INFACMD_ERROR);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
     }
 
     public void setParameters() {

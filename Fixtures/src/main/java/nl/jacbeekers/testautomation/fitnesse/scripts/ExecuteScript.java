@@ -23,7 +23,7 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.RunProcess;
 public class ExecuteScript {
     private String className = ExecuteScript.class.getName()
             .substring(ExecuteScript.class.getName().lastIndexOf(".")+1);
-    private static final String version = "20190513.0";
+    private static final String version = "20190520.0";
 
     private String scriptName = Constants.NOT_PROVIDED;
     private List<String> parameterList = new ArrayList<String>();
@@ -38,8 +38,7 @@ public class ExecuteScript {
     private String errorMessage =Constants.NOERRORS;
     private String captureErrors =Constants.NO;
     private String captureOutput =Constants.NO;
-    private String stdOut ="***STDOUT***";
-    private String stdErr ="***STDERR***";
+    private ArrayList<String> stdOut = new ArrayList<String>();
 
     private String baseDir = Constants.NOT_INITIALIZED;
     private String scriptLoc = Constants.NOT_INITIALIZED; // provided on test page as <baseloc> <subdir>
@@ -159,14 +158,21 @@ public class ExecuteScript {
         RunProcess runProcess = new RunProcess(command);
         runProcess.setEnvironment(getEnvironment());
         runProcess.setLogFileName(getLogFilename());
+        runProcess.setCaptureOutput(getRerouteStdOut());
         int returnCode = runProcess.runAndWait();
         if (returnCode !=0) {
             log(myName, Constants.ERROR, myArea,"runProcess returned exit code >" + returnCode +"< with error >" + runProcess.getResultMessage() +"<.");
+        }
+        if(getRerouteStdOut()) {
+            setStdOut(runProcess.getCapturedOutput());
         }
         setError(runProcess.getResultCode(), runProcess.getResultMessage());
 
         return getErrorMessage();
     }
+
+    private void setStdOut(ArrayList<String> stdOut) { this.stdOut = stdOut; }
+    public ArrayList<String> getStdOut() { return this.stdOut; }
 
     private void printUsedParameters() {
         String myName ="printUsedParameters";
@@ -226,11 +232,6 @@ public class ExecuteScript {
     private void setErrorMessage(String errMsg) { this.errorMessage =errMsg; }
     public String getErrorMessage() { return this.errorMessage; }
 
-    private boolean getRerouteStdErr() {
-        if(Constants.YES.equals(getCaptureErrors()))
-        return true;
-        else return false;
-    }
     private boolean getRerouteStdOut() {
         if(Constants.YES.equals(getCaptureOutput()))
         return true;
@@ -250,19 +251,13 @@ public class ExecuteScript {
     public void setCaptureOutput(String yesNo) {
         this.captureOutput =yesNo;
     }
-    public String getCapturedOutput() {
+    public ArrayList<String> getCapturedOutput() {
         if(getRerouteStdOut())
             return this.stdOut;
         else
-            return "Output not captured";
+            return null;
     }
-    public String getCapturedErrors() {
-        if(getRerouteStdErr())
-            return this.stdErr;
-        else
-            return "Error output not captured";
-    }
-    
+
     private void readParameterFile() {
       String logMessage = Constants.NOT_INITIALIZED;
       String myName="readParamterFile";
