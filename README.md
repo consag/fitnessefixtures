@@ -25,3 +25,10 @@ Some scripts, like encrypt_for_fitnesse.sh, also use these properties files.
 Password encryption is enabled for connection.properties (used by database fixtures) and security.properties (used only if you enable HTTPS). 
 Use the encrypt_for_fitnesse.sh script (adjust it for Windows) to encrypt passwords.
 Note: encrypt_for_fitnesse.sh requires the file config/siteKey. This file must contain one line only and will be used as random seed for the encryption of passwords.
+
+## HTTPS enablement
+You can find the example configuration in config/security.properties, linuxscripts/plugins-https.properties and linuxscripts/startFitNesse-https.sh
+The example uses myfitnesse.jks, which was generated with the following command:
+keytool -genkey -keyalg RSA -alias selfsigned -keystore myfitnesse.jks -storepass <somethingYouNeedToKeepSecret> -validity 365.
+Use a command that fits your needs and/or use a certificate from your favourite CA and place it in the jks.
+  
