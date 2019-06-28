@@ -15,5 +15,13 @@ Check the properties files, [Properties files on gist](https://gist.github.com/j
 Fixtures rely on various parameters that need to be set up in properties files. Not all fixtures use all properties files.
 Check our [wiki](https://github.com/consag/fitnessefixtures/wiki/Fixture-configuration) for more information.
 
-## Consag Fixtures - Properties file examples
+## Fixtures - Properties file examples
 If you're wondering what you need to put in the properties files, check out our [examples on GitHub Gist](https://gist.github.com/search?utf8=%E2%9C%93&q=user%3Ajacbeekers+properties&ref=searchresults).
+
+Examples can also be found in config folder in this repository.
+Some scripts, like encrypt_for_fitnesse.sh, also use these properties files.
+
+## Password encryption
+Password encryption is enabled for connection.properties (used by database fixtures) and security.properties (used only if you enable HTTPS). 
+Use the encrypt_for_fitnesse.sh script (adjust it for Windows) to encrypt passwords.
+Note: encrypt_for_fitnesse.sh requires the file config/siteKey. This file must contain one line only and will be used as random seed for the encryption of passwords.
