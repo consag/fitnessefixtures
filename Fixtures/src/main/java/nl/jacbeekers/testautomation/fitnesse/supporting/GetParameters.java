@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class GetParameters {
     
-    private static String version = "20190515.0";
+    private static String version = "20190628.0";
 
   private static String curFields[];
   private static String delimiter = Constants.INPUT_FILE_DELIMITER;
@@ -30,7 +30,7 @@ public class GetParameters {
   private static String errMsg=Constants.NOERRORS;
   private static String errCode=Constants.NOERRORS;
 
-  public static String logFilename = Constants.NOT_PROVIDED;
+  public static String logFilename = Constants.GENERIC;
   public static String logLevel = Constants.VERBOSE;
 
   public static String getLogFilename() { return logFilename; }
