@@ -5,6 +5,7 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
 import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.propFileErrors;
@@ -12,13 +13,12 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.pr
 public class ConnectionProperties {
 
     private String className = "ConnectionProperties";
-    private static String version = "20180820.0";
+    private static String version = "20190521.0";
 
     private int logLevel =3;
     private boolean firstTime=true;
     private String context = Constants.DEFAULT;
-    private String logFileName = Constants.NOT_INITIALIZED;
-    private boolean logFileNameAlreadySet=false;
+    private String logFilename = Constants.NOT_INITIALIZED;
     private String logUrl = Constants.NOT_INITIALIZED;
     private String startDate = Constants.NOT_INITIALIZED;
 
@@ -53,33 +53,26 @@ public class ConnectionProperties {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
         context = className;
-        logFileName = startDate + "." + className;
+        logFilename = startDate + "." + className;
 
     }
     public String getClassName() {
         return this.className;
     }
-    public void setLogFileName(String logFileName) {
-        String myName="setLogFileName";
-        String myArea ="run";
-
-        if(!logFileNameAlreadySet) {
-            this.logFileName = logFileName;
-            log(myName, Constants.DEBUG, myArea, "log file set to >" + getLogFileNameOnly() +"<.");
-        } else {
-            log(myName, Constants.VERBOSE, myArea, "log file name was already set to >" + getLogFileNameOnly() +"<.");
-        }
-        this.logFileNameAlreadySet =true;
+    public String getLogFilenameLink() {
+        if(getLogUrl().startsWith("http"))
+            return "<a href=\"" +getLogUrl() + this.logFilename +".log\" target=\"_blank\">" + this.logFilename + "</a>";
+        else
+            return getLogUrl() + this.logFilename + ".log";
     }
     public String getLogFilename() {
-        if(getLogUrl().startsWith("http"))
-            return "<a href=\"" +getLogUrl() + this.logFileName +".log\" target=\"_blank\">" + this.logFileName + "</a>";
-        else
-            return getLogUrl() + this.logFileName + ".log";
+        return this.logFilename;
     }
-    public String getLogFileNameOnly() {
-        return this.logFileName;
+    public void setLogFilename(String logFilename) {
+        log("ConnectionProperties.setLogFilename", Constants.DEBUG, "setter", "logFilename set to >" + logFilename +"<.");
+        this.logFilename = logFilename;
     }
+
     public String getLogUrl() {
         return this.logUrl;
     }
@@ -436,14 +429,9 @@ public class ConnectionProperties {
         }
         if (firstTime) {
             firstTime = false;
-            if (context.equals(Constants.DEFAULT)) {
-                logFileName = startDate + "." + className;
-            } else {
-                logFileName = startDate + "." + context;
-            }
-            Logging.LogEntry(logFileName, getClassName() +"-" +name, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+            Logging.LogEntry(getLogFilename(), getClassName() +"-" +name, Constants.INFO, "Fixture version >" + getVersion() + "<.");
         }
-        Logging.LogEntry(logFileName, getClassName() + "-" +name, level, area, logMessage);
+        Logging.LogEntry(getLogFilename(), getClassName() + "-" +name, level, area, logMessage);
 
     }
 
@@ -453,19 +441,47 @@ public class ConnectionProperties {
 
     private Connection getConnection(String username, String password) throws SQLException {
         String myName="getConnection";
-        String myLocation="start";
+        String myArea="start";
+        String logMessage =Constants.NOT_INITIALIZED;
         String url =getDatabaseUrl();
+
         if(getDatabaseUrlOptions() != null && ! getDatabaseUrlOptions().isEmpty()) {
             if(! getDatabaseUrlOptions().equalsIgnoreCase(Constants.DEFAULT_PROPVALUE)) {
                 url= url + ":" + getDatabaseUrlOptions();
             }
         }
-        log(myName, Constants.DEBUG, myLocation, "Database URL for user >" +username +"< is >"
+        log(myName, Constants.DEBUG, myArea, "Database URL for user >" +username +"< is >"
                 + url +"<.");
 
         Connection connection = DriverManager.getConnection(url
                 , username
                 , password);
+
+        if(getUseSchema()) {
+            myArea = "setSchema";
+            switch (getDatabaseType()) {
+                case Constants.DATABASETYPE_ORACLE:
+                    Statement sessionStatement = connection.createStatement();
+                    String sqlStatement ="ALTER SESSION SET CURRENT_SCHEMA=" + getDatabaseSchema();
+                    logMessage="Session SQL >" + sqlStatement +"<.";
+                    log(myName, Constants.INFO, myArea, logMessage);
+                    int result =sessionStatement.executeUpdate(sqlStatement);
+                    if(result ==0) {
+                        log(myName, Constants.INFO, myArea, "SQL executed with rc=>" + result +"<.");
+                    } else {
+                        log(myName, Constants.WARNING, myArea, "Session SQL failed. Schema may not be set correctly.");
+                    }
+                    sessionStatement.close();
+                    break;
+                default:
+                    logMessage="Session SQL not yet supported for database type > "
+                        + getDatabaseType() +"<.";
+                    log(myName, Constants.WARNING, myArea, logMessage);
+                    break;
+            }
+
+        }
+
         return connection;
     }
 

@@ -18,9 +18,9 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.pr
 
 public class DropTable {
 	private String className = "DropTable";
-    private static String version ="20180620.0";
+    private static String version ="20190521.0";
 
-    private String logFileName = Constants.NOT_INITIALIZED;
+    private String logFilename = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
@@ -51,8 +51,8 @@ public class DropTable {
 	      	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	      	startDate = sdf.format(started);
 	      	this.context=className;
-	        logFileName = startDate + "." + className ;
-
+	        logFilename = startDate + "." + className ;
+	        setLogFilename(logFilename);
 	    }
 	
 	public DropTable(String context) {
@@ -60,9 +60,21 @@ public class DropTable {
 	    	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	    	startDate = sdf.format(started);
 	    	this.context=context;
-	        logFileName = startDate + "." + className +"." + context;
+	        logFilename = startDate + "." + className +"." + context;
+	        setLogFilename(logFilename);
 
 	    }
+
+    public DropTable(String context, String logLevel) {
+        java.util.Date started = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        startDate = sdf.format(started);
+        this.context=context;
+        logFilename = startDate + "." + className +"." + context;
+        setLogFilename(logFilename);
+        setLogLevel(logLevel);
+
+    }
 
     public void ignoreErrorOnDrop(String yesNo) {
 	    ignoreError(yesNo);
@@ -80,7 +92,7 @@ public class DropTable {
     }
     
     public boolean tableDoesNotExistInDatabase(String inTableName, String inDatabase) {
-        String myName="tableDoesNotExistInDatabaseInSchema";
+        String myName="tableDoesNotExistInDatabase";
         String myArea="init";
         String logMessage=Constants.NOT_INITIALIZED;
         Connection connection = null;
@@ -264,13 +276,13 @@ public class DropTable {
         if (firstTime) {
             firstTime = false;
             if (context.equals(Constants.DEFAULT)) {
-                logFileName = startDate + "." + className;
+                logFilename = startDate + "." + className;
             } else {
-                logFileName = startDate + "." + context;
+                logFilename = startDate + "." + context;
             }
-            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+            Logging.LogEntry(logFilename, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
         }
-        Logging.LogEntry(logFileName, name, level, area, logMessage);
+        Logging.LogEntry(logFilename, name, level, area, logMessage);
     }
 
     public static String getVersion() {
@@ -280,15 +292,16 @@ public class DropTable {
     /**
      * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
      */
-    public String getLogFilename() {
-        if(logUrl.startsWith("http"))
-            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
-        else
-            return logUrl+logFileName + ".log";
-    }
-    /**
-     * @param level
-     */
+    public String getLogFilename() { return this.logFilename; }
+    public void setLogFilename(String logFilename) { this.logFilename = logFilename;}
+
+     public String getLogFilenameLink() {
+     if(logUrl.startsWith("http"))
+     return "<a href=\"" +logUrl+getLogFilename() +".log\" target=\"_blank\">" + getLogFilename() + "</a>";
+     else
+     return logUrl+getLogFilename() + ".log";
+     }
+
     public void setLogLevel(String level) {
         String myName ="setLogLevel";
         String myArea ="determineLevel";
@@ -316,25 +329,6 @@ public class DropTable {
         return logLevel;
     }
 
-    private String getProperty(String propertiesFile, String key, boolean mustExist) {
-        String myName ="getProperty";
-        String myLocation="start";
-        String result =Constants.NOT_FOUND;
-        Parameters parameters = new Parameters();
-
-        log(myName, Constants.VERBOSE, myLocation, "Retrieving value for property >"
-                + key +"< from >" + propertiesFile +"<.");
-        result =parameters.getPropertyVal(propertiesFile, key);
-        log(myName, Constants.VERBOSE, myLocation, "search for property >" +key + "< returned result code >" +parameters.getResult() +"<.");
-        if(mustExist && propFileErrors.contains(parameters.getResult())) {
-            setError(result, "Error retrieving property >" + key + "< from >" + propertiesFile + "<.");
-            setErrorIndicator(true);
-            return parameters.getResult();
-        }
-        setErrorIndicator(false);
-        return result;
-    }
-
     private void setErrorIndicator(boolean indicator) {
         errorIndicator =indicator;
     }
@@ -346,6 +340,10 @@ public class DropTable {
         String myName = "readParameterFile";
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
+
+        log(myName, Constants.DEBUG, myArea, "Setting log file for connectionProperties to >" + getLogFilename() +"<.");
+        connectionProperties.setLogFilename(getLogFilename());
+        connectionProperties.setLogLevel(getIntLogLevel());
 
         log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
         if(connectionProperties.refreshConnectionProperties(databaseName)) {

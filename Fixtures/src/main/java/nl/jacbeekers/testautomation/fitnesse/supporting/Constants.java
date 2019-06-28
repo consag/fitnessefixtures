@@ -74,6 +74,7 @@ public class Constants {
     public static final String ENVIRONMENT ="Environment";
     public static final String PARAM_LOG_DIR ="LogDir";
     public static final String PARAM_LOG_URL ="LogURL";
+    public static final String GENERIC = "generic";  // used if logfile is not provided. Will collect all kind of logs
 
     public static final String LOG_DIR = "log/";
     // The log url points to a web server (e.g. Jetty) that is configured to list FitNesse log files from <installdir>/log
@@ -134,14 +135,14 @@ public class Constants {
 
     // Location of config files
     public static final String CONFIGDIRECTORY="config/";
-    public static final String DEFAULT_KEYSTORE = "siteKey";
+    public static final String DEFAULT_KEYSTORE = CONFIGDIRECTORY + "siteKey";
     // Logical to physical directory mapping
     public static final String DIRECTORY_PROPERTIES = CONFIGDIRECTORY + "directory.properties";
-        // Siebel connectivity
-        public static final String ZOS_PROPERTIES = CONFIGDIRECTORY + "zos.properties";
+    public static final String ZOS_PROPERTIES = CONFIGDIRECTORY + "zos.properties";
     public static final String FILEOPERATION_PROPERTIES =CONFIGDIRECTORY + "fileoperation.properties";
     public static final String APPLICATION_PROPERTIES =CONFIGDIRECTORY + "application.properties";
-    public static final String CONNECTION_PROPERTIES = "connection.properties"; // Will replace database.properties. Contains encrypted passwords.
+    public static final String CONNECTION_PROPERTIES = CONFIGDIRECTORY + "connection.properties"; // Will replace database.properties. Contains encrypted passwords.
+    public static final String SECURITY_PROPERTIES = CONFIGDIRECTORY + "security.properties";
 
     public static final String DATABASE_PROPERTIES =CONFIGDIRECTORY + "database.properties"; // LEGACY
     public static final String JDBC_PROPERTIES =CONFIGDIRECTORY + "jdbc.properties"; // LEGACY
@@ -470,5 +471,15 @@ public class Constants {
 
     //datahelix test data generation
     public static final String DEFAULT_SCHEMA_VERSION ="0.1";
+
+    //security properties
+    //Note: there is no default for keystore/truststore passwords
+    public static final String PARAM_FITNESSE_KEYSTORE_FILENAME ="FITNESSE.keystore.filename";
+    public static final String DEFAULT_FITNESSE_KEYSTORE_FILENAME ="fitnesse.jks";
+    public static final String PARAM_FITNESSE_KEYSTORE_PASSWORD ="FITNESSE.keystore.password"; //encrypted
+    public static final String PARAM_FITNESSE_TRUSTSTORE_FILENAME ="FITNESSE.truststore.filename";
+    public static final String DEFAULT_FITNESSE_TRUSTSTORE_FILENAME ="fitnesse.jks";
+    public static final String PARAM_FITNESSE_TRUSTSTORE_PASSWORD ="FITNESSE.truststore.password"; //encrypted
+
 
 }
