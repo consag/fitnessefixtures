@@ -82,15 +82,17 @@ public class Encrypt {
         }
 
     private static char[] getTheKey() {
-
+        File inFile = null;
         String theKeyAsString = Constants.NOT_INITIALIZED;
 
         URL u =Decrypt.class.getClassLoader().getResource(getKeystoreFile());
-        if(u == null) {
-            setErrorMessage("Keystore file not found.");
-            return Constants.ERROR.toCharArray();
+        if (u == null) {
+            // try to read it directly
+            inFile = new File(getKeystoreFile());
+        } else {
+            inFile = new File(u.getFile());
+
         }
-        File inFile = new File(u.getFile());
 
         try (Scanner scanner = new Scanner(inFile)) {
             theKeyAsString =scanner.nextLine();
