@@ -32,3 +32,4 @@ The example uses myfitnesse.jks, which was generated with the following command:
 keytool -genkey -keyalg RSA -alias selfsigned -keystore myfitnesse.jks -storepass <somethingYouNeedToKeepSecret> -validity 365.
 Use a command that fits your needs and/or use a certificate from your favourite CA and place it in the jks.
   
+Use OpenJDK to avoid Oracle license fees and to avoid JCE Export restrictions which lead to errors as we are using bouncycastle. If you cannot use OpenJDK, download the Unlimited Strength jars from Oracle (Google for java jce policy). The 1.8 files and how-to install are here: https://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
