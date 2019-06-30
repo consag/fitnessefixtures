@@ -17,10 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
 public class Encrypt {
-    
+    /*
     private static final String key1 ="oas38seia0d72jvy";
     private static final String key2 ="supeThatIsConsag";
-
+*/
     private static String currDate = Constants.NOT_INITIALIZED;
     private static String keystoreFile = Constants.DEFAULT_KEYSTORE;
     private static String errorMessage = Constants.NO_ERRORS;

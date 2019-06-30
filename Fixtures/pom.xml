@@ -55,7 +55,7 @@
       <dependency>
           <groupId>org.fitnesse</groupId>
           <artifactId>fitnesse</artifactId>
-          <version>20190620</version>
+          <version>20190628</version>
       </dependency>
 
       <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
@@ -65,12 +65,13 @@
           <version>5.0.1.201806211838-r</version>
       </dependency>
 
-      <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/versions-maven-plugin -->
+      <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
       <dependency>
-          <groupId>org.bouncycastle.bcprov-jdk15on.1.57.org.bouncycastle</groupId>
+          <groupId>org.bouncycastle</groupId>
           <artifactId>bcprov-jdk15on</artifactId>
-          <version>1.57</version>
+          <version>1.62</version>
       </dependency>
+
       <dependency>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
