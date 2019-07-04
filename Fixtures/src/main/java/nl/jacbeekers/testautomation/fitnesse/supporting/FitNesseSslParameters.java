@@ -4,7 +4,7 @@ import fitnesse.socketservice.SslParameters;
 import static nl.jacbeekers.testautomation.fitnesse.supporting.GetParameters.getPropertyVal;
 
 public class FitNesseSslParameters extends SslParameters{
-    String version = "20190628.0";
+    String version = "20190630.0";
 
     public FitNesseSslParameters() {
         super();

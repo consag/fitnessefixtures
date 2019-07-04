@@ -1,9 +1,7 @@
 package nl.jacbeekers.testautomation.fitnesse.supporting;
 
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import java.util.Properties;
 
@@ -62,8 +60,11 @@ public class Parameters {
         try {
             input = Parameters.class.getClassLoader().getResourceAsStream(propFilename);
             if (input == null) {
-                setResult(ResultMessages.ERRCODE_PROPFILE);
-                return val;
+                input = new FileInputStream(new File(propFilename));
+                if(input == null) {
+                    setResult(ResultMessages.ERRCODE_PROPFILE);
+                    return val;
+                }
             }
 
             prop.load(input);

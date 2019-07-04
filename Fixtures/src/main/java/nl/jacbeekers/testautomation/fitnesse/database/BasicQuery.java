@@ -27,14 +27,14 @@ public class BasicQuery {
     private String className = BasicQuery.class.getName()
             .substring(BasicQuery.class.getName().lastIndexOf(".") + 1);
 
-    private static String version = "20190513.0";
+    private static String version = "20190704.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
     private String logUrl = Constants.LOG_DIR;
-
+    private boolean logFileNameAlreadySet =false;
     private boolean firstTime = true;
 
     ConnectionProperties connectionProperties = new ConnectionProperties();
@@ -412,15 +412,14 @@ public class BasicQuery {
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
 
-        log(myName, Constants.DEBUG, myArea, "getting properties for >" + databaseName + "<.");
-        connectionProperties.refreshConnectionProperties(databaseName);
+        log(myName, Constants.DEBUG, myArea, "getting properties for >" + getDatabaseName() + "<.");
+        connectionProperties.setLogFilename(getLogFileNameOnly());
+        connectionProperties.setLogLevel(getIntLogLevel());
+        connectionProperties.setDatabaseName(getDatabaseName());
+        connectionProperties.refreshConnectionProperties(getDatabaseName());
 
         setLogUrl(GetParameters.GetLogUrl());
 
-    }
-
-    public void setLogUrl(String logUrl) {
-        this.logUrl = logUrl;
     }
 
     private void log(String name, String level, String area, String logMessage) {
@@ -447,17 +446,36 @@ public class BasicQuery {
     public String getTableName() {
         return this.tableName;
     }
-
-    public String getLogFilename() {
-        if (logUrl.startsWith("http"))
-            return "<a href=\"" + logUrl + logFileName + ".log\" target=\"_blank\">" + logFileName + "</a>";
-        else
-            return logUrl + logFileName + ".log";
+    public String getLogUrl() {
+        return this.logUrl;
+    }
+    public void setLogUrl(String logUrl) {
+        if (Constants.NOT_FOUND.equals(logUrl)) {
+            String myName = "setLogUrl";
+            String myArea = "run";
+            String logMessage = "Properties file does not contain LogURL value.";
+            log(myName, Constants.WARNING, myArea, logMessage);
+        } else {
+            this.logUrl = logUrl;
+        }
     }
 
-    /**
-     * @param level
-     */
+    public String getLogFilename() {
+        if (getLogUrl().startsWith("http"))
+            return "<a href=\"" + getLogUrl() + this.logFileName + ".log\" target=\"_blank\">" + this.logFileName + "</a>";
+        else
+            return getLogUrl() + this.logFileName + ".log";
+    }
+    public String getLogFileNameOnly() {
+        return this.logFileName;
+    }
+    public void setLogFileName(String logFileName) {
+        if (!logFileNameAlreadySet) {
+            this.logFileName = logFileName;
+        }
+        this.logFileNameAlreadySet = true;
+    }
+
     public void setLogLevel(String level) {
         String myName = "setLogLevel";
         String myArea = "determineLevel";

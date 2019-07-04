@@ -22,6 +22,7 @@ public class BasicDelete {
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
     private String logUrl=Constants.LOG_DIR;
+    private boolean logFileNameAlreadySet =false;
 
     private boolean firstTime = true;
 
@@ -48,7 +49,7 @@ public class BasicDelete {
         startDate = sdf.format(started);
         context = className;
         logFileName = startDate + "." + className;
-
+        logFileNameAlreadySet = false; // allow override
     }
 
     /**
@@ -59,6 +60,7 @@ public class BasicDelete {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
         logFileName = startDate + "." + className + "." + context;
+        logFileNameAlreadySet = false;
     }
 
 
@@ -170,8 +172,11 @@ public class BasicDelete {
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
 
-        log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
-        connectionProperties.refreshConnectionProperties(databaseName);
+        log(myName, Constants.DEBUG, myArea,"getting properties for >" +getDatabaseName() +"<.");
+        connectionProperties.setLogFilename(getLogFileNameOnly());
+        connectionProperties.setLogLevel(getIntLogLevel());
+        connectionProperties.setDatabaseName(getDatabaseName());
+        connectionProperties.refreshConnectionProperties(getDatabaseName());
 
     }
 
@@ -191,14 +196,34 @@ public class BasicDelete {
         }
         Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
-    /**
-     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
-     */
+    public String getLogUrl() {
+        return this.logUrl;
+    }
+    public void setLogUrl(String logUrl) {
+        if (Constants.NOT_FOUND.equals(logUrl)) {
+            String myName = "setLogUrl";
+            String myArea = "run";
+            String logMessage = "Properties file does not contain LogURL value.";
+            log(myName, Constants.WARNING, myArea, logMessage);
+        } else {
+            this.logUrl = logUrl;
+        }
+    }
+
     public String getLogFilename() {
-        if(logUrl.startsWith("http"))
-            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        if (getLogUrl().startsWith("http"))
+            return "<a href=\"" + getLogUrl() + this.logFileName + ".log\" target=\"_blank\">" + this.logFileName + "</a>";
         else
-            return logUrl+logFileName + ".log";
+            return getLogUrl() + this.logFileName + ".log";
+    }
+    public String getLogFileNameOnly() {
+        return this.logFileName;
+    }
+    public void setLogFileName(String logFileName) {
+        if (!logFileNameAlreadySet) {
+            this.logFileName = logFileName;
+        }
+        this.logFileNameAlreadySet = true;
     }
 
     public static String getVersion() {

@@ -281,8 +281,8 @@ public class BasicTruncate {
         log(myName, Constants.DEBUG, myArea, "getting properties for >" + databaseName + "<.");
         connectionProperties.setLogFilename(getLogFileNameOnly());
         connectionProperties.setLogLevel(getIntLogLevel());
-        connectionProperties.setDatabaseName(databaseName);
-        connectionProperties.refreshConnectionProperties(databaseName);
+        connectionProperties.setDatabaseName(getDatabaseName());
+        connectionProperties.refreshConnectionProperties(getDatabaseName());
         setDatabaseType(connectionProperties.getDatabaseType());
 
         setLogUrl(GetParameters.GetLogUrl());

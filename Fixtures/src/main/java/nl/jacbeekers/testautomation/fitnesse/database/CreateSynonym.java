@@ -15,14 +15,14 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
 
 public class CreateSynonym {
     private String className = "CreateSynonym";
-    private static String version = "20180620.0";
+    private static String version = "20190704.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
     private String logUrl = Constants.LOG_DIR;
-
+    private boolean logFileNameAlreadySet =false;
     private String errorMessage = Constants.NOERRORS;
 
     private boolean firstTime = true;
@@ -88,8 +88,9 @@ public class CreateSynonym {
         myArea = "check db type";
         readParameterFile();
         log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName + "<.");
-        connectionProperties.setLogFilename(logFileName);
+        connectionProperties.setLogFilename(getLogFileNameOnly());
         connectionProperties.setLogLevel(getIntLogLevel());
+        connectionProperties.setDatabaseName(getDatabaseName());
 
         String synonymName;
         if(connectionProperties.getUseTablePrefix()) {
@@ -226,14 +227,34 @@ public class CreateSynonym {
         Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
 
-    /**
-     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
-     */
+    public String getLogUrl() {
+        return this.logUrl;
+    }
+    public void setLogUrl(String logUrl) {
+        if (Constants.NOT_FOUND.equals(logUrl)) {
+            String myName = "setLogUrl";
+            String myArea = "run";
+            String logMessage = "Properties file does not contain LogURL value.";
+            log(myName, Constants.WARNING, myArea, logMessage);
+        } else {
+            this.logUrl = logUrl;
+        }
+    }
+
     public String getLogFilename() {
-        if (logUrl.startsWith("http"))
-            return "<a href=\"" + logUrl + logFileName + ".log\" target=\"_blank\">" + logFileName + "</a>";
+        if (getLogUrl().startsWith("http"))
+            return "<a href=\"" + getLogUrl() + this.logFileName + ".log\" target=\"_blank\">" + this.logFileName + "</a>";
         else
-            return logUrl + logFileName + ".log";
+            return getLogUrl() + this.logFileName + ".log";
+    }
+    public String getLogFileNameOnly() {
+        return this.logFileName;
+    }
+    public void setLogFileName(String logFileName) {
+        if (!logFileNameAlreadySet) {
+            this.logFileName = logFileName;
+        }
+        this.logFileNameAlreadySet = true;
     }
 
     public static String getVersion() {
@@ -283,6 +304,19 @@ public class CreateSynonym {
     ) {
         setErrorMessage(Constants.NOT_IMPLEMENTED);
         return Constants.NOT_IMPLEMENTED;
+    }
+
+    public String getDatabaseName() {
+        return this.databaseName;
+    }
+    public void setDatabaseName(String databaseName) {
+        String myName = "setDatabaseName";
+        String myArea = "run";
+        String logMessage = Constants.NOT_INITIALIZED;
+        this.databaseName = databaseName;
+
+        logMessage = "Database name has been set to >" + this.databaseName + "<.";
+        log(myName, Constants.VERBOSE, myArea, logMessage);
     }
 
 }

@@ -13,7 +13,7 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.pr
 public class ConnectionProperties {
 
     private String className = "ConnectionProperties";
-    private static String version = "20190521.0";
+    private static String version = "20190704.1";
 
     private int logLevel =3;
     private boolean firstTime=true;
@@ -102,15 +102,20 @@ public class ConnectionProperties {
         String logMessage = Constants.NOT_INITIALIZED;
         String result = Constants.NOT_FOUND;
 
-        log(myName, Constants.DEBUG, myArea, "Using databaseName >" + fitnesseDatabaseName +"<.");
+        log(myName, Constants.DEBUG, myArea, "Using fitnesseDatabaseName >" + fitnesseDatabaseName +"<.");
         setDatabaseConnection(fitnesseDatabaseName);
-        log(myName, Constants.DEBUG, myArea, "databaseConnection is >" + getDatabaseConnection() +"<.");
-        log(myName, Constants.DEBUG, myArea, "actualDatabase is >" + getActualDatabase() +"<.");
+        log(myName, Constants.DEBUG, myArea, "databaseConnection has been set to >" + getDatabaseConnection() +"<.");
 
         result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".database", true);
-        if(getErrorIndicator())
+        if(getErrorIndicator()) {
+            log(myName, Constants.DEBUG, myArea, "Error getting property >" + getDatabaseConnection() +".database" +"<. Error: "
+                + result);
             return false;
-        else setActualDatabase(result);
+        }
+        else {
+            setActualDatabase(result);
+            log(myName, Constants.DEBUG, myArea, "actualDatabase is >" + getActualDatabase() +"<.");
+        }
 
         result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".databasetype", true);
         if(getErrorIndicator())
@@ -172,18 +177,6 @@ public class ConnectionProperties {
         if(!getErrorIndicator())
             setAccelerator(result);
 
-        log(myName, Constants.VERBOSE, myArea, "databaseType ..........>" + getDatabaseType() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseConnection ....>" + getDatabaseConnection() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseDriver ........>" + getDatabaseDriver() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseUrl ...........>" + getDatabaseUrl() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseUrlOptions ....>" + getDatabaseUrlOptions() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseUsername ......>" + getDatabaseUsername() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseTableOwner ....>" + getDatabaseTableOwner() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseSchema ........>" + getDatabaseSchema() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "databaseName ..........>" + getDatabaseName() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "db2Accelerator ........>" + getAccelerator() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "tablePrefix ...........>" + getTableOwnerTablePrefix() + "<.");
-        log(myName, Constants.VERBOSE, myArea, "useTablePrefix ........>" + getTableOwnerUseTablePrefix() +"<.");
         if(Constants.FALSE.equalsIgnoreCase(getTableOwnerUseTablePrefix())) {
             setTableOwnerUseTablePrefix(false);
         } else {

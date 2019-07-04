@@ -17,7 +17,7 @@ import java.util.List;
 
 public class BasicInsert {
 
-    private static String version = "20180822.1";
+    private static String version = "20190704.0";
     ConnectionProperties connectionProperties = new ConnectionProperties();
     private String className = "BasicInsert";
     private String logFileName = Constants.NOT_INITIALIZED;
@@ -365,11 +365,11 @@ public class BasicInsert {
         String logMessage = Constants.NOT_INITIALIZED;
         String propVal = Constants.NOT_FOUND;
 
-        log(myName, Constants.DEBUG, myArea, "getting properties for >" + databaseName + "<.");
+        log(myName, Constants.DEBUG, myArea, "getting properties for >" + getDatabaseName() + "<.");
         connectionProperties.setLogFilename(getLogFileNameOnly());
         connectionProperties.setLogLevel(getIntLogLevel());
-        connectionProperties.setDatabaseName(databaseName);
-        connectionProperties.refreshConnectionProperties(databaseName);
+        connectionProperties.setDatabaseName(getDatabaseName());
+        connectionProperties.refreshConnectionProperties(getDatabaseName());
         setDatabaseType(connectionProperties.getDatabaseType());
 
         setLogUrl(GetParameters.GetLogUrl());
@@ -436,7 +436,6 @@ public class BasicInsert {
     public String getLogUrl() {
         return this.logUrl;
     }
-
     public void setLogUrl(String logUrl) {
         if (Constants.NOT_FOUND.equals(logUrl)) {
             String myName = "setLogUrl";
@@ -448,40 +447,25 @@ public class BasicInsert {
         }
     }
 
-    /**
-     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
-     */
     public String getLogFilename() {
         if (getLogUrl().startsWith("http"))
             return "<a href=\"" + getLogUrl() + this.logFileName + ".log\" target=\"_blank\">" + this.logFileName + "</a>";
         else
             return getLogUrl() + this.logFileName + ".log";
     }
-
     public String getLogFileNameOnly() {
         return this.logFileName;
     }
-
     public void setLogFileName(String logFileName) {
         if (!logFileNameAlreadySet) {
             this.logFileName = logFileName;
         }
         this.logFileNameAlreadySet = true;
     }
-    /**
-     * @param level to which logging should be set. Must be VERBOSE, DEBUG, INFO, WARNING, ERROR or FATAL. Defaults to INFO.
-     */
 
-    /**
-     * @return - the log level
-     */
     public String getLogLevel() {
         return Constants.logLevel.get(getIntLogLevel());
     }
-
-    /**
-     * @param level to which logging should be set. Must be VERBOSE, DEBUG, INFO, WARNING, ERROR or FATAL. Defaults to INFO.
-     */
     public void setLogLevel(String level) {
         String myName = "setLogLevel";
         String myArea = "determineLevel";
@@ -503,16 +487,9 @@ public class BasicInsert {
         return logLevel;
     }
 
-    /**
-     * @return - the database name the fixture runs against
-     */
     public String getDatabaseName() {
         return this.databaseName;
     }
-
-    /**
-     * @param databaseName to run the fixture against. This logical name must exist in database.properties
-     */
     public void setDatabaseName(String databaseName) {
         String myName = "setDatabaseName";
         String myArea = "run";

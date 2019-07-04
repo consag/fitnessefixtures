@@ -18,14 +18,14 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.pr
 
 public class DropTable {
 	private String className = "DropTable";
-    private static String version ="20190521.0";
+    private static String version ="20190704.0";
 
-    private String logFilename = Constants.NOT_INITIALIZED;
+    private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
     private String logUrl=Constants.LOG_DIR;
-
+    private boolean logFileNameAlreadySet = false;
     private boolean firstTime = true;
 
     ConnectionProperties connectionProperties = new ConnectionProperties();
@@ -51,8 +51,9 @@ public class DropTable {
 	      	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	      	startDate = sdf.format(started);
 	      	this.context=className;
-	        logFilename = startDate + "." + className ;
-	        setLogFilename(logFilename);
+	        String logFilename = startDate + "." + className ;
+	        setLogFileName(logFilename);
+	        logFileNameAlreadySet = false;
 	    }
 	
 	public DropTable(String context) {
@@ -60,8 +61,9 @@ public class DropTable {
 	    	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	    	startDate = sdf.format(started);
 	    	this.context=context;
-	        logFilename = startDate + "." + className +"." + context;
-	        setLogFilename(logFilename);
+	        String logFilename = startDate + "." + className +"." + context;
+	        setLogFileName(logFilename);
+	        logFileNameAlreadySet = false;
 
 	    }
 
@@ -70,9 +72,10 @@ public class DropTable {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         startDate = sdf.format(started);
         this.context=context;
-        logFilename = startDate + "." + className +"." + context;
-        setLogFilename(logFilename);
+        String logFilename = startDate + "." + className +"." + context;
+        setLogFileName(logFilename);
         setLogLevel(logLevel);
+        logFileNameAlreadySet = false;
 
     }
 
@@ -276,31 +279,18 @@ public class DropTable {
         if (firstTime) {
             firstTime = false;
             if (context.equals(Constants.DEFAULT)) {
-                logFilename = startDate + "." + className;
+                logFileName = startDate + "." + className;
             } else {
-                logFilename = startDate + "." + context;
+                logFileName = startDate + "." + context;
             }
-            Logging.LogEntry(logFilename, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
+            Logging.LogEntry(logFileName, className, Constants.INFO, "Fixture version >" + getVersion() + "<.");
         }
-        Logging.LogEntry(logFilename, name, level, area, logMessage);
+        Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
 
     public static String getVersion() {
         return version;
     }
-
-    /**
-     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
-     */
-    public String getLogFilename() { return this.logFilename; }
-    public void setLogFilename(String logFilename) { this.logFilename = logFilename;}
-
-     public String getLogFilenameLink() {
-     if(logUrl.startsWith("http"))
-     return "<a href=\"" +logUrl+getLogFilename() +".log\" target=\"_blank\">" + getLogFilename() + "</a>";
-     else
-     return logUrl+getLogFilename() + ".log";
-     }
 
     public void setLogLevel(String level) {
         String myName ="setLogLevel";
@@ -342,8 +332,9 @@ public class DropTable {
         String logMessage = Constants.NOT_INITIALIZED;
 
         log(myName, Constants.DEBUG, myArea, "Setting log file for connectionProperties to >" + getLogFilename() +"<.");
-        connectionProperties.setLogFilename(getLogFilename());
+        connectionProperties.setLogFilename(getLogFileNameOnly());
         connectionProperties.setLogLevel(getIntLogLevel());
+        connectionProperties.setDatabaseName(getDatabaseName());
 
         log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
         if(connectionProperties.refreshConnectionProperties(databaseName)) {
@@ -393,6 +384,35 @@ public class DropTable {
     private void setError(String errorCode, String errorMessage) {
         this.errorCode =errorCode;
         this.errorMessage = errorMessage;
+    }
+    public String getLogUrl() {
+        return this.logUrl;
+    }
+    public void setLogUrl(String logUrl) {
+        if (Constants.NOT_FOUND.equals(logUrl)) {
+            String myName = "setLogUrl";
+            String myArea = "run";
+            String logMessage = "Properties file does not contain LogURL value.";
+            log(myName, Constants.WARNING, myArea, logMessage);
+        } else {
+            this.logUrl = logUrl;
+        }
+    }
+
+    public String getLogFilename() {
+        if (getLogUrl().startsWith("http"))
+            return "<a href=\"" + getLogUrl() + this.logFileName + ".log\" target=\"_blank\">" + this.logFileName + "</a>";
+        else
+            return getLogUrl() + this.logFileName + ".log";
+    }
+    public String getLogFileNameOnly() {
+        return this.logFileName;
+    }
+    public void setLogFileName(String logFileName) {
+        if (!logFileNameAlreadySet) {
+            this.logFileName = logFileName;
+        }
+        this.logFileNameAlreadySet = true;
     }
 
 }
