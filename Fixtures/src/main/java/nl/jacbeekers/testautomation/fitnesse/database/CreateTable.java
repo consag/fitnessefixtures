@@ -24,7 +24,7 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.pr
 
 public class CreateTable {
     private String className = "CreateTable";
-    private static String version ="20190704.0";
+    private static String version ="20190704.1";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
@@ -102,10 +102,9 @@ public class CreateTable {
                     log(myName, Constants.DEBUG, myArea, "getDatabase not provided and useSchema not set or DatabaseSchema not sset in propfile.");
                 }
             } else {
-                sqlStatement +=" IN DATABASE " + connectionProperties.getDatabase();
-                log(myName, Constants.DEBUG, myArea, "getDatabase provided. Added IN DATABASE.");
+                log(myName, Constants.DEBUG, myArea, "Not a DB2 database. \"IN DATABASE\" mot added.");
             }
-            if(!connectionProperties.getAccelerator().equals(Constants.NOT_PROVIDED)) {
+            if(!connectionProperties.getAccelerator().equals(Constants.DEFAULT_PROPVALUE)) {
                 sqlStatement +=" IN ACCELERATOR " + connectionProperties.getAccelerator();
             }
 

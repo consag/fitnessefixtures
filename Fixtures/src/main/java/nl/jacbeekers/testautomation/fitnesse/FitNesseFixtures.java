@@ -30,7 +30,7 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.Encrypt;
 
 public class FitNesseFixtures {
     private static final String className="FitNesseFixtures";
-    private static final String version = "20190628.0";
+    private static final String version = "20190704.1";
     private static int logLevel = 3;
     private static int logEntries = 0;
     private static boolean noClassFilter =true;
