@@ -105,12 +105,16 @@ public class ConnectionProperties {
         log(myName, Constants.DEBUG, myArea, "Using databaseName >" + fitnesseDatabaseName +"<.");
         setDatabaseConnection(fitnesseDatabaseName);
         log(myName, Constants.DEBUG, myArea, "databaseConnection is >" + getDatabaseConnection() +"<.");
-        log(myName, Constants.DEBUG, myArea, "actualDatabase is >" + getActualDatabase() +"<.");
 
         result =getProperty(Constants.CONNECTION_PROPERTIES, getDatabaseConnection() +".database", true);
-        if(getErrorIndicator())
+        if(getErrorIndicator()) {
+            log(myName, Constants.DEBUG, myArea, "actualDatabase is >" + getActualDatabase() +"<.");
             return false;
-        else setActualDatabase(result);
+        }
+        else {
+            setActualDatabase(result);
+            log(myName, Constants.DEBUG, myArea, "actualDatabase is >" + getActualDatabase() +"<.");
+        }
 
         result =getProperty(Constants.CONNECTION_PROPERTIES, getActualDatabase() +".databasetype", true);
         if(getErrorIndicator())

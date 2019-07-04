@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 public class TruncateTable {
     //27-07-2013 Change to new log mechanism, preventing java heap space error with fitnesse stdout
     private String className = "TruncateTable";
-    private static String version = "20180621.0";
+    private static String version = "20190704.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
@@ -25,7 +25,7 @@ public class TruncateTable {
     private int logLevel = 3;
     private String logUrl = Constants.LOG_DIR;
     private String returnMessage = ""; //text message that is returned to FitNesse
-
+    private boolean logFileNameAlreadySet = false;
     private boolean firstTime = true;
 
     ConnectionProperties connectionProperties = new ConnectionProperties();
@@ -108,8 +108,6 @@ public class TruncateTable {
         myArea = "readParameterFile";
         readParameterFile();
         log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName + "<.");
-        connectionProperties.setLogFilename(logFileName);
-        connectionProperties.setLogLevel(getIntLogLevel());
 
         //Get parameters from file
         readParameterFile();
@@ -189,8 +187,12 @@ public class TruncateTable {
         String myArea = "reading parameters";
         String logMessage = Constants.NOT_INITIALIZED;
 
-        log(myName, Constants.DEBUG, myArea, "getting properties for >" + databaseName + "<.");
-        if (connectionProperties.refreshConnectionProperties(databaseName)) {
+        log(myName, Constants.DEBUG, myArea, "getting properties for >" + getDatabaseName() + "<.");
+        connectionProperties.setLogFilename(getLogFileNameOnly());
+        connectionProperties.setLogLevel(getIntLogLevel());
+        connectionProperties.setDatabaseName(getDatabaseName());
+
+        if (connectionProperties.refreshConnectionProperties(getDatabaseName())) {
             log(myName, Constants.DEBUG, myArea, "username set to >" + connectionProperties.getDatabaseUsername() + "<.");
         } else {
             log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
@@ -215,14 +217,34 @@ public class TruncateTable {
         Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
 
-    /**
-     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
-     */
+    public String getLogUrl() {
+        return this.logUrl;
+    }
+    public void setLogUrl(String logUrl) {
+        if (Constants.NOT_FOUND.equals(logUrl)) {
+            String myName = "setLogUrl";
+            String myArea = "run";
+            String logMessage = "Properties file does not contain LogURL value.";
+            log(myName, Constants.WARNING, myArea, logMessage);
+        } else {
+            this.logUrl = logUrl;
+        }
+    }
+
     public String getLogFilename() {
-        if (logUrl.startsWith("http"))
-            return "<a href=\"" + logUrl + logFileName + ".log\" target=\"_blank\">" + logFileName + "</a>";
+        if (getLogUrl().startsWith("http"))
+            return "<a href=\"" + getLogUrl() + this.logFileName + ".log\" target=\"_blank\">" + this.logFileName + "</a>";
         else
-            return logUrl + logFileName + ".log";
+            return getLogUrl() + this.logFileName + ".log";
+    }
+    public String getLogFileNameOnly() {
+        return this.logFileName;
+    }
+    public void setLogFileName(String logFileName) {
+        if (!logFileNameAlreadySet) {
+            this.logFileName = logFileName;
+        }
+        this.logFileNameAlreadySet = true;
     }
 
     public static String getVersion() {
@@ -258,6 +280,10 @@ public class TruncateTable {
      */
     public Integer getIntLogLevel() {
         return logLevel;
+    }
+
+    public String getDatabaseName() {
+        return this.databaseName;
     }
 
 

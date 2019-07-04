@@ -15,14 +15,14 @@ import java.text.SimpleDateFormat;
 public class BasicUpdate {
 
     private String className = "BasicUpdate";
-    private static String version = "20180823.0";
+    private static String version = "20190704.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
     private String startDate = Constants.NOT_INITIALIZED;
     private int logLevel = 3;
     private String logUrl=Constants.LOG_DIR;
-
+    private boolean logFileNameAlreadySet = false;
     private boolean firstTime = true;
 
     ConnectionProperties connectionProperties = new ConnectionProperties();
@@ -199,6 +199,10 @@ public class BasicUpdate {
         String logMessage = Constants.NOT_INITIALIZED;
 
         log(myName, Constants.DEBUG, myArea,"getting properties for >" +databaseName +"<.");
+        connectionProperties.setLogFilename(getLogFileNameOnly());
+        connectionProperties.setLogLevel(getIntLogLevel());
+        connectionProperties.setDatabaseName(getDatabaseName());
+
         if(connectionProperties.refreshConnectionProperties(databaseName)) {
             log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
         } else {
@@ -223,14 +227,34 @@ public class BasicUpdate {
         }
         Logging.LogEntry(logFileName, name, level, area, logMessage);
     }
-    /**
-     * @return Log file name. If the LogUrl starts with http, a hyperlink will be created
-     */
+    public String getLogUrl() {
+        return this.logUrl;
+    }
+    public void setLogUrl(String logUrl) {
+        if (Constants.NOT_FOUND.equals(logUrl)) {
+            String myName = "setLogUrl";
+            String myArea = "run";
+            String logMessage = "Properties file does not contain LogURL value.";
+            log(myName, Constants.WARNING, myArea, logMessage);
+        } else {
+            this.logUrl = logUrl;
+        }
+    }
+
     public String getLogFilename() {
-        if(logUrl.startsWith("http"))
-            return "<a href=\"" +logUrl+logFileName +".log\" target=\"_blank\">" + logFileName + "</a>";
+        if (getLogUrl().startsWith("http"))
+            return "<a href=\"" + getLogUrl() + this.logFileName + ".log\" target=\"_blank\">" + this.logFileName + "</a>";
         else
-            return logUrl+logFileName + ".log";
+            return getLogUrl() + this.logFileName + ".log";
+    }
+    public String getLogFileNameOnly() {
+        return this.logFileName;
+    }
+    public void setLogFileName(String logFileName) {
+        if (!logFileNameAlreadySet) {
+            this.logFileName = logFileName;
+        }
+        this.logFileNameAlreadySet = true;
     }
 
     public static String getVersion() {
