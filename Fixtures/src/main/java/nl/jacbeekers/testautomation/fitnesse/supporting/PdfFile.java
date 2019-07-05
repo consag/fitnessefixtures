@@ -2,7 +2,7 @@ package nl.jacbeekers.testautomation.fitnesse.supporting;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+//import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -23,10 +23,6 @@ public class PdfFile {
              }
 
             pdfDoc.save(filePath);
-        }
-        catch (  COSVisitorException e1) {
-            e1.printStackTrace();
-            setReturnMessage("Error creating empty PDF file - " + e1.toString());      
         }
         catch (  IOException e2) {
             e2.printStackTrace();
