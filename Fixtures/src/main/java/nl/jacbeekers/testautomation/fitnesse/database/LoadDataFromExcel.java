@@ -326,10 +326,12 @@ public class LoadDataFromExcel {
                     myArea="ExecutingBatch";
                     logMessage = "Batch added. Executing batch...";
                     log(myName, Constants.DEBUG, myArea, logMessage);
-                    int nrRec =preparedStatement.executeUpdate();
+                    int[] nrRec =preparedStatement.executeBatch();
+                    for (int i=0 ; i < nrRec.length ; i++) {
+                        logMessage = "Batch >" + Integer.toString(i) +"< executed for >" + Integer.toString(nrRec[i]) + "< records.";
+                        log(myName, Constants.DEBUG, myArea, logMessage);
+                    }
                     myArea="ClearingBatch";
-                    logMessage = "Batch executed for >" + Integer.toString(nrRec) +"< records. Clearing batch...";
-                    log(myName, Constants.DEBUG, myArea, logMessage);
                     preparedStatement.clearBatch();
                     logMessage = "Batch cleared."; // Close preparedStatement...";
                     log(myName, Constants.DEBUG, myArea, logMessage);

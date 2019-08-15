@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>nl.jacbeekers.testautomtion.fitnesse</groupId>
   <artifactId>DataIntegrationFixtures</artifactId>
-  <version>201907.2</version>
+  <version>201908.0</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -87,35 +87,34 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
+      <version>1.7.28</version>
       <scope>compile</scope>
       <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>3.16</version>
+      <version>4.1.0</version>
       <scope>compile</scope>
       <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml-schemas</artifactId>
-      <version>3.16</version>
+      <version>4.1.0</version>
       <scope>compile</scope>
       <type>jar</type>
     </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-      <version>3.16</version>
-      <scope>compile</scope>
-      <type>jar</type>
-    </dependency>
+      <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi</artifactId>
+          <version>4.1.0</version>
+      </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
-      <version>4.1</version>
+      <version>4.4</version>
       <scope>compile</scope>
       <type>jar</type>
     </dependency>
@@ -130,7 +129,7 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.11</version>
+      <version>1.13</version>
     </dependency>
       <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
       <dependency>
@@ -141,10 +140,10 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20180130</version>
+      <version>20180813</version>
     </dependency>
   </dependencies>
-  <description>FitNesse Testautomation - Fixtures</description>
+  <description>FitNesse Testautomation - Data Integration Fixtures</description>
   <repositories>
       <repository>
           <id>Maven Central</id>

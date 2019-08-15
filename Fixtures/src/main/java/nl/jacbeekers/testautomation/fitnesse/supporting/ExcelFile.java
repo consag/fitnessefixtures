@@ -10,6 +10,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import static org.apache.poi.ss.usermodel.CellType.FORMULA;
+import static org.apache.poi.ss.usermodel.CellType.STRING;
+
 public class ExcelFile {
 
     private List<List<String>> tableExcelFile = new ArrayList<List<String>>();
@@ -134,11 +137,11 @@ public class ExcelFile {
         //For each row, iterate through all the cells
         for (int cn = 0; cn < input_row.getLastCellNum(); cn++) {
             // If the cell is missing from the file, generate a blank one
-            Cell cell = input_row.getCell(cn, Row.CREATE_NULL_AS_BLANK);
+            Cell cell = input_row.getCell(cn, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             //Check the cell type and format accordingly
-            if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) { // In case cell value is the result of a formula
+            if (cell.getCellType() == FORMULA) { // In case cell value is the result of a formula
                 switch (cell.getCachedFormulaResultType()) {
-                case Cell.CELL_TYPE_NUMERIC:
+                case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {
                         if (cell.getDateCellValue() == null) {
                             row.add("");
@@ -149,14 +152,14 @@ public class ExcelFile {
                         row.add(Double.toString(cell.getNumericCellValue()));
                     }
                     break;
-                case Cell.CELL_TYPE_BOOLEAN:
+                case BOOLEAN:
                     if (cell.getBooleanCellValue()) {
                         row.add("TRUE");
                     } else {
                         row.add("FALSE");
                     }
                     break;
-                case Cell.CELL_TYPE_STRING:
+                case STRING:
                     String s = cell.getStringCellValue();
                     if (s.length() == 0) {
                         row.add("");
@@ -176,7 +179,7 @@ public class ExcelFile {
                 }
             } else { // In case cell contains a value.
                 switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_NUMERIC:
+                case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {
                         if (cell.getDateCellValue() == null) {
                             row.add("");
@@ -187,14 +190,14 @@ public class ExcelFile {
                         row.add(Double.toString(cell.getNumericCellValue()));
                     }
                     break;
-                case Cell.CELL_TYPE_BOOLEAN:
+                case BOOLEAN:
                     if (cell.getBooleanCellValue()) {
                         row.add("TRUE");
                     } else {
                         row.add("FALSE");
                     }
                     break;
-                case Cell.CELL_TYPE_STRING:
+                case STRING:
                     String s = cell.getStringCellValue();
                     if (s.length() == 0) {
                         row.add("");
@@ -224,11 +227,12 @@ public class ExcelFile {
         for (int cn = 0; cn < input_row.getLastCellNum(); cn++) {
             Attribute attribute = new Attribute();
             // If the cell is missing from the file, generate a blank one
-            Cell cell = input_row.getCell(cn, Row.CREATE_NULL_AS_BLANK);
+            Cell cell = input_row.getCell(cn, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             //Check the cell type and format accordingly
-            if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) { // In case cell value is the result of a formula
+            if(cell.getCellType() == FORMULA) {
+                    // In case cell value is the result of a formula
                 switch (cell.getCachedFormulaResultType()) {
-                case Cell.CELL_TYPE_NUMERIC:
+                case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {
                         if (cell.getDateCellValue() == null) {
                             attribute.setFormat("STRING");
@@ -243,7 +247,7 @@ public class ExcelFile {
                     }
                     row.add(attribute);
                     break;
-                case Cell.CELL_TYPE_BOOLEAN:
+                case BOOLEAN:
                     attribute.setFormat("BOOLEAN");
                     if (cell.getBooleanCellValue()) {
                         attribute.setText("TRUE");
@@ -252,7 +256,7 @@ public class ExcelFile {
                     }
                     row.add(attribute);
                     break;
-                case Cell.CELL_TYPE_STRING:
+                case STRING:
                     attribute.setFormat("STRING");
                     String s = cell.getStringCellValue();
                     if (s.length() == 0) {
@@ -277,7 +281,7 @@ public class ExcelFile {
                 }
             } else { // In case cell contains a value.
                 switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_NUMERIC:
+                case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {
                         if (cell.getDateCellValue() == null) {
                             attribute.setFormat("STRING");
@@ -292,7 +296,7 @@ public class ExcelFile {
                     }
                     row.add(attribute);
                     break;
-                case Cell.CELL_TYPE_BOOLEAN:
+                case BOOLEAN:
                     attribute.setFormat("BOOLEAN");
                     if (cell.getBooleanCellValue()) {
                         attribute.setText("TRUE");
@@ -301,7 +305,7 @@ public class ExcelFile {
                     }
                     row.add(attribute);
                     break;
-                case Cell.CELL_TYPE_STRING:
+                case STRING:
                     attribute.setFormat("STRING");
                     String s = cell.getStringCellValue();
                     if (s.length() == 0) {
