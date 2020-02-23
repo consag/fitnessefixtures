@@ -25,6 +25,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 
@@ -186,4 +187,13 @@ public class Decrypt {
     private static String getKeystoreFile() {
         return keystoreFile;
     }
+
+
+    public static void main(String[] args) {
+
+        System.out.println("decrypted string: "
+                + decrypt(args[0]) );
+
+    }
+
 }
