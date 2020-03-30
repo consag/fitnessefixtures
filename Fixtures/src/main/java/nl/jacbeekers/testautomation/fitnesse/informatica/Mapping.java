@@ -49,7 +49,10 @@ public class Mapping {
         infaParameters.setLogFilename(getLogFilename());
         infaParameters.setLogLevel(getLogLevel());
         setInfaDIS(infaParameters.getInfaDIS());
-        setInfaOSProfile(infaParameters.getInfaOSProfile());
+        // If already set on Test Page, don't look in properties
+        if(Constants.NOT_PROVIDED.equals(getOSProfile())) {
+            setOSProfile(infaParameters.getInfaOSProfile());
+        }
 
         setLogUrl(GetParameters.GetLogUrl());
     }
@@ -67,8 +70,9 @@ public class Mapping {
         informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNMAPPING));
         String cmdOptions = "-ServiceName " + getInfaDIS() + " -Application " + getApplicationName()
                 + " -Mapping " + getMappingName() + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNMAPPING);
-        if (!Constants.NOT_PROVIDED.equals(getInfaOSProfile())) {
-            cmdOptions += " -osp " + getInfaOSProfile();
+
+        if (!Constants.NOT_FOUND.equals(getOSProfile())) {
+            cmdOptions += " -osp " + getOSProfile();
         }
         informaticaCommand.setCommandLineOptions(cmdOptions);
 
@@ -80,8 +84,8 @@ public class Mapping {
     }
 
     //getters and setters
-    public void setInfaOSProfile(String infaOSProfile) { this.infaOSProfile = infaOSProfile; }
-    public String getInfaOSProfile() { return this.infaOSProfile; }
+    public void setOSProfile(String infaOSProfile) { this.infaOSProfile = infaOSProfile; }
+    public String getOSProfile() { return this.infaOSProfile; }
 
     public void setInfaDIS(String infaDIS) { this.infaDIS = infaDIS; }
     public String getInfaDIS() { return this.infaDIS; }

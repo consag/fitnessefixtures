@@ -54,7 +54,10 @@ public class DataProfiling {
 
         setInfaDIS(infaParameters.getInfaDIS());
         setInfaMRS(infaParameters.getInfaMRS());
-        setInfaOSProfile(infaParameters.getInfaOSProfile());
+        // If already set on Test Page, don't look in properties
+        if(Constants.NOT_PROVIDED.equals(getOSProfile())) {
+            setOSProfile(infaParameters.getInfaOSProfile());
+        }
 
         setLogUrl(GetParameters.GetLogUrl());
     }
@@ -75,11 +78,12 @@ public class DataProfiling {
         } else {
             objectPath = getProjectName() +"/" + getFolderName() +"/"+ getProfileName();
         }
+
         String cmdOptions = " -ObjectType " + "profile" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
                 + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNPROFILE);
 
-        if(!Constants.NOT_PROVIDED.equals(getInfaOSProfile())) {
-            cmdOptions += " -osp " + getInfaOSProfile();
+        if(!Constants.NOT_FOUND.equals(getOSProfile())) {
+            cmdOptions += " -osp " + getOSProfile();
         }
         informaticaCommand.setCommandLineOptions(cmdOptions);
 
@@ -108,8 +112,8 @@ public class DataProfiling {
         }
         String cmdOptions = " -ObjectType " + "scorecard" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
                 + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNSCORECARD);
-        if(! Constants.NOT_PROVIDED.equals(getInfaOSProfile())){
-            cmdOptions += " -osp " + getInfaOSProfile();
+        if(! Constants.NOT_FOUND.equals(getOSProfile())){
+            cmdOptions += " -osp " + getOSProfile();
         }
         informaticaCommand.setCommandLineOptions(cmdOptions);
         informaticaCommand.runInformaticaCommand();
@@ -121,8 +125,8 @@ public class DataProfiling {
     }
 
     //getters and setters
-    public void setInfaOSProfile(String infaOSProfile) { this.infaOSProfile = infaOSProfile; }
-    public String getInfaOSProfile() { return this.infaOSProfile; }
+    public void setOSProfile(String infaOSProfile) { this.infaOSProfile = infaOSProfile; }
+    public String getOSProfile() { return this.infaOSProfile; }
 
     public void setInfaDIS(String infaDIS) { this.infaDIS = infaDIS; }
     public String getInfaDIS() { return this.infaDIS; }
