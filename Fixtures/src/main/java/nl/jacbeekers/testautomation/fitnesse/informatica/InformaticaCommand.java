@@ -11,13 +11,11 @@ package nl.jacbeekers.testautomation.fitnesse.informatica;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import nl.jacbeekers.testautomation.fitnesse.supporting.*;
-
 import nl.jacbeekers.testautomation.fitnesse.scripts.ExecuteScript;
-
 import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.ERRCODE_INFACMD_ERROR;
 
 public class InformaticaCommand {
-    private static final String version = "20190520.0";
+    private static final String version = "20200330.0";
 
     private String className = InformaticaCommand.class.getName()
             .substring(InformaticaCommand.class.getName().lastIndexOf(".")+1);
@@ -44,6 +42,7 @@ public class InformaticaCommand {
     private String infacmd = Constants.NOT_PROVIDED;
     private String infaMRS = Constants.NOT_PROVIDED;
     private String infaDIS = Constants.NOT_PROVIDED;
+    private String infaOSProfile = Constants.NOT_PROVIDED;
     private String commandLineOptions ="";
 
     public InformaticaCommand() {
@@ -178,6 +177,7 @@ public class InformaticaCommand {
         setInfacmd(infaParameters.getInfacmd());
         setInfaMRS(infaParameters.getInfaMRS());
         setInfaDIS(infaParameters.getInfaDIS());
+        setInfaOSProfile(infaParameters.getInfaOSProfile());
 
         setEnvironment(infaParameters);
     }
@@ -187,6 +187,7 @@ public class InformaticaCommand {
         environment.add(infaParameters.PARAM_INFA_DOMAIN_USER + "=" + infaParameters.getInfaDefaultDomainUser());
         environment.add(infaParameters.PARAM_INFA_DOMAIN_PASSWORD + "=" + infaParameters.getInfaDefaultDomainPassword());
     }
+
     public void outParameters(){
         String myName="outParameters";
         String myArea="run";
@@ -226,6 +227,10 @@ public class InformaticaCommand {
 
     public void setInfaDIS(String infaDIS) { this.infaDIS = infaDIS; }
     public String getInfaDIS() { return this.infaDIS; }
+
+    public void setInfaOSProfile(String infaOSProfile) { this.infaOSProfile = infaOSProfile; }
+    public String getInfaOSProfile() { return this.infaOSProfile; }
+
 
 //    public void setFeatureName(String featureName) { this.featureName = featureName; }
 //    public String getFeatureName() { return this.featureName; }

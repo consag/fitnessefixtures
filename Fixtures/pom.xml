@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>nl.jacbeekers.testautomtion.fitnesse</groupId>
   <artifactId>DataIntegrationFixtures</artifactId>
-  <version>201908.0</version>
+  <version>202003.0</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

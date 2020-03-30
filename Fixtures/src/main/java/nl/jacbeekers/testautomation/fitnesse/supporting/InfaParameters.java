@@ -8,6 +8,7 @@ public class InfaParameters {
     public final String PARAM_INFA_DOMAIN ="INFA_DOMAIN";
     public final String PARAM_INFA_MRS ="INFA_MRS";
     public final String PARAM_INFA_DIS ="INFA_DIS";
+    public final String PARAM_INFA_OSPROFILE ="INFA_OSPROFILE";
 
     public final String PARAM_INFA_DEFAULT_DOMAIN ="INFA_DEFAULT_DOMAIN";
     public final String PARAM_INFA_SECURITY_DOMAIN ="INFA_DEFAULT_SECURITY_DOMAIN";
@@ -106,6 +107,12 @@ public class InfaParameters {
         GetParameters.setLogLevel(getLogLevel());
         return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
             , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_KRB5_CONFIG);
+    }
+    public String getInfaOSProfile() {
+        GetParameters.setLogFilename(getLogFilename());
+        GetParameters.setLogLevel(getLogLevel());
+        return GetParameters.getPropertyVal(Constants.INFA_PLATFORM_PROPERTIES
+                , getInfaEnvironment(),getInfaEnvironment() +"." + PARAM_INFA_OSPROFILE);
     }
 
     public void setInfaEnvironment(String infaEnvironment) { this.infaEnvironment = infaEnvironment; }

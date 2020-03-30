@@ -8,7 +8,7 @@ import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA
 import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA_FUNCTION_RUNSCORECARD;
 
 public class DataProfiling {
-    private static final String version = "20190520.1";
+    private static final String version = "20200330.0";
     private String className = DataProfiling.class.getName()
             .substring(DataProfiling.class.getName().lastIndexOf(".")+1);
 
@@ -39,6 +39,8 @@ public class DataProfiling {
     private String infaEnvironment = Constants.NOT_PROVIDED;
     private String infaMRS = Constants.NOT_FOUND;
     private String infaDIS = Constants.NOT_FOUND;
+    private String infaOSProfile = Constants.NOT_PROVIDED;
+
     private String projectName = Constants.NOT_PROVIDED;
     private String folderName = Constants.NOT_PROVIDED;
     private String profileName = Constants.NOT_PROVIDED;
@@ -52,6 +54,7 @@ public class DataProfiling {
 
         setInfaDIS(infaParameters.getInfaDIS());
         setInfaMRS(infaParameters.getInfaMRS());
+        setInfaOSProfile(infaParameters.getInfaOSProfile());
 
         setLogUrl(GetParameters.GetLogUrl());
     }
@@ -72,8 +75,13 @@ public class DataProfiling {
         } else {
             objectPath = getProjectName() +"/" + getFolderName() +"/"+ getProfileName();
         }
-        informaticaCommand.setCommandLineOptions(" -ObjectType " + "profile" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
-                + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNPROFILE));
+        String cmdOptions = " -ObjectType " + "profile" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
+                + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNPROFILE);
+
+        if(!Constants.NOT_PROVIDED.equals(getInfaOSProfile())) {
+            cmdOptions += " -osp " + getInfaOSProfile();
+        }
+        informaticaCommand.setCommandLineOptions(cmdOptions);
 
         informaticaCommand.runInformaticaCommand();
         setResultCode(informaticaCommand.getResultCode());
@@ -98,9 +106,12 @@ public class DataProfiling {
         } else {
             objectPath = getProjectName() +"/" + getFolderName() +"/"+ getScorecardName();
         }
-        informaticaCommand.setCommandLineOptions(" -ObjectType " + "scorecard" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
-                + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNSCORECARD));
-
+        String cmdOptions = " -ObjectType " + "scorecard" + " -MrsServiceName " + getInfaMRS() + " -DsServiceName " + getInfaDIS()
+                + " -ObjectPathAndName " + objectPath + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNSCORECARD);
+        if(! Constants.NOT_PROVIDED.equals(getInfaOSProfile())){
+            cmdOptions += " -osp " + getInfaOSProfile();
+        }
+        informaticaCommand.setCommandLineOptions(cmdOptions);
         informaticaCommand.runInformaticaCommand();
         setResultCode(informaticaCommand.getResultCode());
         setResultMessage(informaticaCommand.getResultMessage());
@@ -110,6 +121,9 @@ public class DataProfiling {
     }
 
     //getters and setters
+    public void setInfaOSProfile(String infaOSProfile) { this.infaOSProfile = infaOSProfile; }
+    public String getInfaOSProfile() { return this.infaOSProfile; }
+
     public void setInfaDIS(String infaDIS) { this.infaDIS = infaDIS; }
     public String getInfaDIS() { return this.infaDIS; }
 

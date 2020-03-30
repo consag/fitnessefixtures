@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import static nl.jacbeekers.testautomation.fitnesse.supporting.InfaCmdTools.INFA_FUNCTION_RUNMAPPING;
 
 public class Mapping {
-    private static final String version = "20190513.0";
+    private static final String version = "20200330.0";
     private String className = Mapping.class.getName()
             .substring(Mapping.class.getName().lastIndexOf(".")+1);
 
@@ -41,6 +41,7 @@ public class Mapping {
     private String folderName = Constants.NOT_PROVIDED;
     private String applicationName = Constants.NOT_PROVIDED;
     private String mappingName = Constants.NOT_PROVIDED;
+    private String infaOSProfile = Constants.NOT_PROVIDED;
 
     public void getParameters() {
         InfaParameters infaParameters = new InfaParameters();
@@ -48,7 +49,7 @@ public class Mapping {
         infaParameters.setLogFilename(getLogFilename());
         infaParameters.setLogLevel(getLogLevel());
         setInfaDIS(infaParameters.getInfaDIS());
-
+        setInfaOSProfile(infaParameters.getInfaOSProfile());
 
         setLogUrl(GetParameters.GetLogUrl());
     }
@@ -64,8 +65,12 @@ public class Mapping {
         informaticaCommand.setInfaEnvironment(getInfaEnvironment());
         informaticaCommand.setInfaTool(InfaCmdTools.getTool(INFA_FUNCTION_RUNMAPPING));
         informaticaCommand.setInfaToolOption(InfaCmdTools.getToolOption(INFA_FUNCTION_RUNMAPPING));
-        informaticaCommand.setCommandLineOptions("-ServiceName " + getInfaDIS() + " -Application " + getApplicationName()
-                + " -Mapping " + getMappingName() + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNMAPPING));
+        String cmdOptions = "-ServiceName " + getInfaDIS() + " -Application " + getApplicationName()
+                + " -Mapping " + getMappingName() + " " + InfaCmdTools.getWaitOption(INFA_FUNCTION_RUNMAPPING);
+        if (!Constants.NOT_PROVIDED.equals(getInfaOSProfile())) {
+            cmdOptions += " -osp " + getInfaOSProfile();
+        }
+        informaticaCommand.setCommandLineOptions(cmdOptions);
 
         informaticaCommand.runInformaticaCommand();
         setResultCode(informaticaCommand.getResultCode());
@@ -75,6 +80,9 @@ public class Mapping {
     }
 
     //getters and setters
+    public void setInfaOSProfile(String infaOSProfile) { this.infaOSProfile = infaOSProfile; }
+    public String getInfaOSProfile() { return this.infaOSProfile; }
+
     public void setInfaDIS(String infaDIS) { this.infaDIS = infaDIS; }
     public String getInfaDIS() { return this.infaDIS; }
 
