@@ -21,13 +21,13 @@ import java.util.*;
 import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 import nl.jacbeekers.testautomation.fitnesse.linux.CheckFile;
 
-import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.ERRCODE_SQLERROR;
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.*;
 
 public class BasicQuery {
     private String className = BasicQuery.class.getName()
             .substring(BasicQuery.class.getName().lastIndexOf(".") + 1);
 
-    private static String version = "20190704.0";
+    private static String version = "20200514.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
@@ -114,25 +114,45 @@ public class BasicQuery {
 
         retrieveDatabaseName(inputTable.get(0)); //read first row in FitNesse table
         readParameterFile();
-        getQuery(inputTable.get(1));         //read second row in FitNesse table
-        getColumnNames(inputTable.get(2));  //read third row in FitNesse table
-
-        List<String> empty_row = new ArrayList<String>();
-        for (int i = 0; i < numberOfTableColumns; ++ i) {    // fill empty row with spaces
-            empty_row.add("");
-        }
-
-        List<List<String>> dbResult= getDatabaseTable(true);
-        if(dbResult == null || Constants.ERROR.equals(getResult())) {
-            for (int i = 0; i < (inputTable.size() - NO_FITNESSE_ROWS_TO_SKIP); ++ i) {    // less rows in database than expected
-                addRowToReturnTable(empty_row);
-            }
+        setQuery(getQueryFromTable(inputTable.get(1)));         //read second row in FitNesse table
+        boolean preCheckResult = true;
+        if (checkQuery(getQuery())) {
+            addRowToReturnTable(inputTable.get(1));
+        } else {
+            log(myName, Constants.ERROR, myArea, "Query is invalid or not allowed. "
+                    + ERRCODE_NOTALLOWED_QUERYSQL + ": " + getQuery() );
+            setError(ERRCODE_NOTALLOWED_QUERYSQL, getMessage(ERRCODE_NOTALLOWED_QUERYSQL));
             List<String> addRow = new ArrayList<String>();
-            addRow.add("fail:" +"SQL Error");
+            addRow.add("fail:" + ERRCODE_NOTALLOWED_QUERYSQL);
             addRow.add("fail:" + getErrorMessage());
             addRowToReturnTable(addRow);
-        } else {
-            CompareExpectedTableWithDatabaseTable(inputTable, dbResult);
+            addRow = new ArrayList<String>();
+            addRow = inputTable.get(1);
+            addRow.add(0, "Fail");
+            addRowToReturnTable(addRow);
+            preCheckResult = false;
+        }
+
+        if(preCheckResult) {
+            getColumnNames(inputTable.get(2));  //read third row in FitNesse table
+
+            List<String> empty_row = new ArrayList<String>();
+            for (int i = 0; i < numberOfTableColumns; ++i) {    // fill empty row with spaces
+                empty_row.add("");
+            }
+
+            List<List<String>> dbResult = getDatabaseTable(true);
+            if (dbResult == null || Constants.ERROR.equals(getResult())) {
+                for (int i = 0; i < (inputTable.size() - NO_FITNESSE_ROWS_TO_SKIP); ++i) {    // less rows in database than expected
+                    addRowToReturnTable(empty_row);
+                }
+                List<String> addRow = new ArrayList<String>();
+                addRow.add("fail:" + "SQL Error");
+                addRow.add("fail:" + getErrorMessage());
+                addRowToReturnTable(addRow);
+            } else {
+                CompareExpectedTableWithDatabaseTable(inputTable, dbResult);
+            }
         }
 
         List<String> addRow = new ArrayList<String>();
@@ -180,18 +200,27 @@ public class BasicQuery {
     /**
      * @param inputRow
      */
-    private void getQuery(List<String> inputRow) {
+    private String getQueryFromTable(List<String> inputRow) {
         //Function to read second row of table and set database table name
         String myName = "getQuery";
         String myArea = "Initialization";
         String logMessage = Constants.NOT_INITIALIZED;
         List<String> return_row = new ArrayList<String>();
 
-        query = inputRow.get(1); //read first row second column
-        logMessage = "Query: " + query;
+        String theQuery = inputRow.get(1); //read first row second column
+        logMessage = "Query: " + theQuery;
         log(myName, Constants.DEBUG, myArea, logMessage);
 
-        addRowToReturnTable(return_row);
+        return theQuery;
+    }
+
+    private boolean checkQuery(String query) {
+
+        String cleansed = query.replaceAll("[\\p{Ps}\\p{Pe}]", "");
+        if(cleansed.indexOf("SELECT") >= 0 || cleansed.indexOf("WITH") >= 0 ) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -681,6 +710,9 @@ public class BasicQuery {
         setResultMessage(msg);
     }
 
+    public String getQuery() {
+        return this.query;
+    }
     public void setQuery(String sqlStatement) {
         query = sqlStatement;
     }

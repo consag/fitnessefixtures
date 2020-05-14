@@ -23,6 +23,7 @@ public class ResultMessages {
     public static final String ERRCODE_SQL_IDAAGETRESULT ="CNSG-DB-0007";
     public static final String ERRCODE_UNSUPPORTED_DATABASE ="CNSG-DB-0008";
     public static final String ERRCODE_SQLERROR ="CNSG-DB-0009";
+    public static final String ERRCODE_NOTALLOWED_QUERYSQL = "CNSG-DB-0010";
 
     //security
     public static final String ERRCODE_DECRYPT ="CNSG-SEC-0001";
@@ -62,6 +63,9 @@ public class ResultMessages {
 
         result.put(ERRCODE_SQLERROR, new MessageStructure(ERRCODE_SQLERROR, ERRCODE_SQLERROR, Constants.ERROR,
                 "An SQL error occurred."));
+        result.put(ERRCODE_NOTALLOWED_QUERYSQL, new MessageStructure(ERRCODE_NOTALLOWED_QUERYSQL, ERRCODE_NOTALLOWED_QUERYSQL, Constants.ERROR,
+                "An invalid SQL was provided. Must start with WITH or SELECT"));
+
         result.put(ERRCODE_PWCCONNECTION, new MessageStructure(ERRCODE_PWCCONNECTION ,ERRCODE_PWCCONNECTION, Constants.FATAL,
                                         "Could not establish connection to PowerCenter."));
 
