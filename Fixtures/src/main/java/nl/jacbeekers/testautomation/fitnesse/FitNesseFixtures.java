@@ -5,18 +5,17 @@
 
 package nl.jacbeekers.testautomation.fitnesse;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.FilenameFilter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
-import java.util.Date;
-
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -30,11 +29,15 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.Encrypt;
 
 public class FitNesseFixtures {
     private static final String className="FitNesseFixtures";
-    private static final String version = "20190704.1";
+    private static String jarPrefix = "DataIntegrationFixtures";
+    private static final String version = "20200515.0";
     private static int logLevel = 3;
     private static int logEntries = 0;
     private static boolean noClassFilter =true;
     private static String keystoreFile = Constants.NOT_PROVIDED;
+
+    private static String pathName =".";
+    private static String jarExtension = "jar";
 
     /**
      * @param args
@@ -51,9 +54,10 @@ public class FitNesseFixtures {
             .addOption("noclassfilter")
             .addOption("loglevel", Options.Separator.BLANK)
             .addOption("fixtureversion", Options.Separator.BLANK)
-                .addOption("encrypt", Options.Separator.BLANK)
-        .addOption("keystorefile", Options.Separator.BLANK)
-            ;
+            .addOption("encrypt", Options.Separator.BLANK)
+            .addOption("keystorefile", Options.Separator.BLANK)
+            .addOption("jarlibpath", Options.Separator.BLANK)
+             ;
         
         if(!opt.check(false, false)) {
             errMsg("Invalid arguments specified. Found >" + Integer.toString(args.length) +"< command line argument(s).");
@@ -62,7 +66,11 @@ public class FitNesseFixtures {
             usage();
             System.exit(1);
         }
-        
+
+        if(opt.getSet().isSet("jarlibpath")) {
+            setPathName(opt.getSet().getOption("jarlibpath").getResultValue(0));
+        }
+
         if(opt.getSet().isSet("version")) {
             outMsg("Version: " +getVersion());
         }
@@ -148,10 +156,29 @@ public class FitNesseFixtures {
     private static void errMsg(String msg) {
         System.err.println(msg);
     }
+
     private static List<String> getFixtureList(String prefixFilter) {
 
         List<String> resultList = new ArrayList<String>();
-        String jarFilename="FitNesseFixtures.jar";
+        File dir = new File(getPathName());
+
+        File[] matches = dir.listFiles(new FilenameFilter()
+        {
+            public boolean accept(File dir, String name)
+            {
+                return name.startsWith(getJarPrefix()) && name.endsWith("." + getJarExtension());
+            }
+        });
+        File jarFilename = null;
+        if(matches != null && matches.length > 0) {
+            Arrays.sort(matches);
+            // Take the last entry
+            jarFilename = matches[matches.length - 1];
+        } else {
+            log(Constants.ERROR, "Could not find any DataIntegrationFixtures jar file in directory >" + getPathName() + "< being >" +
+                    Paths.get(getPathName()).toAbsolutePath().normalize().toString() + "<.");
+            return resultList;
+        }
         
         try {
             JarFile jar = new JarFile(jarFilename);
@@ -235,5 +262,29 @@ public class FitNesseFixtures {
             outMsg(fixture);
         }
         
+    }
+
+    public static String getPathName() {
+        return pathName;
+    }
+
+    public static void setPathName(String pathName) {
+        FitNesseFixtures.pathName = pathName;
+    }
+
+    public static String getJarPrefix() {
+        return jarPrefix;
+    }
+
+    public static void setJarPrefix(String jarPrefix) {
+        FitNesseFixtures.jarPrefix = jarPrefix;
+    }
+
+    public static String getJarExtension() {
+        return jarExtension;
+    }
+
+    public static void setJarExtension(String jarExtension) {
+        FitNesseFixtures.jarExtension = jarExtension;
     }
 }

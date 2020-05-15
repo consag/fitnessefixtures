@@ -61,7 +61,10 @@ public class DataIntegrationService
           "Failed to create wsdlLocationURL using http://localhost:7333/wsh/services/BatchServices/DataIntegration?WSDL",
           e);
     }
-    String m_wsdlurl=wsdlLocationURL.toString();
+    String m_wsdlurl = null;
+    if(wsdlLocationURL != null) {
+      m_wsdlurl = wsdlLocationURL.toString();
+    }
 
  //   System.out.println("wsdl url =>" + m_wsdlurl + "<.");
 

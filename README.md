@@ -1,15 +1,39 @@
-# fitnessefixtures
+# Data Integeration FitNesse Fixtures
 The FitNesse Fixtures are created as part of an overall solution for automating the test cycle.
 
 ## Linux installation ReadMe
 The readme for Linux can be found in the directory 'linuxscripts', here on github: https://github.com/consag/fitnessefixtures/tree/master/linuxscripts
-
 
 ## Download
 You can download the jar with all compiled fixtures from the release tab.
 
 ## Fixture documentation
 Check the properties files, [Properties files on gist](https://gist.github.com/jacbeekers), here on github with examples for the fixture.properties, application.properties and other important properties files.
+
+### Examples
+#### Command Line
+*   Get current version
+
+    ```sh
+    java -jar DataIntegrationFixtures.jar -version
+    ```
+
+*   Get fixtures list
+    ```sh
+    java -jar DataIntegrationFixtures.jar -listfixtures -jarlibpath Fixtures/target
+    ```
+    The example uses the option -jarlibpath to specify the location of the DataIntegrationFixtures jar to be used.
+
+*   Get fixtures version numbers
+    You can get the version of a specific fixture by specifiying its name. The example below lists the version numbers of all fixtures.
+    
+    ```sh
+    java -jar DataIntegrationFixtures.jar -fixtureversions All -jarlibpath Fixtures/target
+    ```
+    The example uses the option -jarlibpath to specify the location of the DataIntegrationFixtures jar to be used.
+    
+#### Test Pages
+Example test pages can be found in [resources/FrontPage](https://github.com/consag/fitnessefixtures/tree/master/Fixtures/src/main/resources/FrontPage "GitHub")
 
 ## FitNesse Configuration
 Fixtures rely on various parameters that need to be set up in properties files. Not all fixtures use all properties files.

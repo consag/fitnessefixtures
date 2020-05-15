@@ -141,6 +141,7 @@ public class BasicQuery {
                 empty_row.add("");
             }
 
+            String result = Constants.OK;
             List<List<String>> dbResult = getDatabaseTable(true);
             if (dbResult == null || Constants.ERROR.equals(getResult())) {
                 for (int i = 0; i < (inputTable.size() - NO_FITNESSE_ROWS_TO_SKIP); ++i) {    // less rows in database than expected
@@ -150,8 +151,10 @@ public class BasicQuery {
                 addRow.add("fail:" + "SQL Error");
                 addRow.add("fail:" + getErrorMessage());
                 addRowToReturnTable(addRow);
+                setResult(ERRCODE_SQLERROR, getErrorMessage());
             } else {
-                CompareExpectedTableWithDatabaseTable(inputTable, dbResult);
+                result = CompareExpectedTableWithDatabaseTable(inputTable, dbResult);
+                setResult(result);
             }
         }
 
@@ -216,7 +219,7 @@ public class BasicQuery {
 
     private boolean checkQuery(String query) {
 
-        String cleansed = query.replaceAll("[\\p{Ps}\\p{Pe}]", "");
+        String cleansed = query.replaceAll("[\\p{Ps}\\p{Pe}]", "").toUpperCase();
         if(cleansed.indexOf("SELECT") >= 0 || cleansed.indexOf("WITH") >= 0 ) {
             return true;
         }
@@ -248,7 +251,7 @@ public class BasicQuery {
         addRowToReturnTable(return_row); //return row with outcomes; pass/fail
     }
 
-    private void CompareExpectedTableWithDatabaseTable(List<List<String>> expected_table, List<List<String>> databaseTable) {
+    private String CompareExpectedTableWithDatabaseTable(List<List<String>> expected_table, List<List<String>> databaseTable) {
         //Function to compare input table with database table
         String myName = "CompareExpectedTableWithDatabaseTable";
         String myArea = "Start";
@@ -262,18 +265,25 @@ public class BasicQuery {
         log(myName, Constants.VERBOSE, myArea, logMessage);
 
         myArea = "Comparing input with db";
+        String overallResult = Constants.OK;
         if ((expected_table.size() - NO_FITNESSE_ROWS_TO_SKIP) >= databaseTable.size()) {
             logMessage = "more or equal number of rows expected compared to database rows.";
             log(myName, Constants.DEBUG, myArea, logMessage);
             myArea = "Processing expectedrows>=dbrows";
             for (int i = 0; i < (expected_table.size() - NO_FITNESSE_ROWS_TO_SKIP); ++ i) {    // less rows in database than expected
+                String rc = Constants.OK;
                 if (i < databaseTable.size()) {
-                    CompareExpectedRowWithDatabaseRow(expected_table.get(i + NO_FITNESSE_ROWS_TO_SKIP), databaseTable.get(i));
+                    rc = CompareExpectedRowWithDatabaseRow(expected_table.get(i + NO_FITNESSE_ROWS_TO_SKIP), databaseTable.get(i));
                 } else {
+                    rc = Constants.ERROR; // too many rows
                     CompareExpectedRowWithDatabaseRow(expected_table.get(i + NO_FITNESSE_ROWS_TO_SKIP), empty_row);
+                }
+                if(!Constants.OK.equals(rc)) {
+                    overallResult = rc;
                 }
             }
         } else {
+            overallResult = Constants.ERROR; // too may rows in db result
             logMessage = "more number of rows in db than expected.";
             log(myName, "debug", myArea, logMessage);
             myArea = "Processing dbrows>expectedrows";
@@ -289,9 +299,10 @@ public class BasicQuery {
                 }
             }
         }
+        return overallResult;
     }
 
-    private void CompareExpectedRowWithDatabaseRow(List<String> expected_row, List<String> database_row) {
+    private String CompareExpectedRowWithDatabaseRow(List<String> expected_row, List<String> database_row) {
         //Function to compare input row with database row
         List<String> return_row = new ArrayList<String>();
         String myName = "CompareExpectedRowWithDatabaseRow";
@@ -340,6 +351,11 @@ public class BasicQuery {
         }
 
         addRowToReturnTable(return_row); //return row with outcomes; pass/fail
+        if( rowUnequalValues > 0) {
+            return Constants.ERROR;
+        } else {
+            return Constants.OK;
+        }
     }
 
     public String countRecords() {
