@@ -2,18 +2,21 @@ package nl.jacbeekers.testautomation.fitnesse.database;
 
 import nl.jacbeekers.testautomation.fitnesse.supporting.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
+import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.ERRCODE_DECRYPT;
 import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.propFileErrors;
 
 public class ConnectionProperties {
 
     private String className = "ConnectionProperties";
-    private static String version = "20190704.1";
+    private static String version = "20200516.0";
 
     private int logLevel =3;
     private boolean firstTime=true;
@@ -102,6 +105,18 @@ public class ConnectionProperties {
         String logMessage = Constants.NOT_INITIALIZED;
         String result = Constants.NOT_FOUND;
 
+        File file = new File(Constants.CONNECTION_PROPERTIES);
+        try {
+            log(myName, Constants.DEBUG, myArea, "Properties file is >" + Constants.CONNECTION_PROPERTIES
+                    + "< which is >" + file.getCanonicalPath() + "<.");
+        } catch (IOException e) {
+            log(myName, Constants.DEBUG, myArea, "Properties file is >" + Constants.CONNECTION_PROPERTIES
+                    + "< which is >" + file.getAbsolutePath() + "<.");
+        }
+        if(! file.exists()) {
+            log(myName, Constants.ERROR, myArea, "Properties file does not exist.");
+            return false;
+        }
         log(myName, Constants.DEBUG, myArea, "Using fitnesseDatabaseName >" + fitnesseDatabaseName +"<.");
         setDatabaseConnection(fitnesseDatabaseName);
         log(myName, Constants.DEBUG, myArea, "databaseConnection has been set to >" + getDatabaseConnection() +"<.");
@@ -307,11 +322,14 @@ public class ConnectionProperties {
         Decrypt decrypt = new Decrypt();
         String result = Decrypt.decrypt(databaseTableOwnerPassword);
         if(Constants.OK.equals(decrypt.getErrorCode())) {
-            log(myName, Constants.DEBUG, myLocation, "Password decryption successful.");
+            setErrorIndicator(false);
+            log(myName, Constants.DEBUG, myLocation, "Owner password decryption successful.");
         }
         else {
-            setError(result, ResultMessages.ERRCODE_DECRYPT);
-            log(myName, Constants.ERROR, myLocation, "Password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.");
+            setErrorIndicator(true);
+            String logMessage = "Owner password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.";
+            setError(ERRCODE_DECRYPT, logMessage);
+            log(myName, Constants.ERROR, myLocation, logMessage);
         }
         return result;
 
@@ -329,11 +347,14 @@ public class ConnectionProperties {
         Decrypt decrypt = new Decrypt();
         String result = Decrypt.decrypt(databaseUsernamePassword);
         if(Constants.OK.equals(decrypt.getErrorCode())) {
-            log(myName, Constants.DEBUG, myLocation, "Password decryption successful.");
+            setErrorIndicator(false);
+            log(myName, Constants.DEBUG, myLocation, "User password decryption successful.");
         }
         else {
-            setError(result,ResultMessages.ERRCODE_DECRYPT);
-            log(myName, Constants.ERROR, myLocation, "Password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.");
+            setErrorIndicator(true);
+            String logMessage = "User password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.";
+            setError(ERRCODE_DECRYPT, logMessage);
+            log(myName, Constants.ERROR, myLocation, logMessage);
         }
         return result;
 
@@ -479,10 +500,23 @@ public class ConnectionProperties {
     }
 
     public Connection getUserConnection() throws SQLException {
-        return getConnection(getDatabaseUsername(),getDatabaseUsernamePassword());
+        String myName = "getUserConnection";
+        String myArea = "decrypt";
+        String password = getDatabaseUsernamePassword();
+        if(getErrorIndicator()) {
+            log(myName, Constants.ERROR, myArea, getErrorMessage());
+            return null;
+        } else {
+            myArea = "connection";
+            return getConnection(getDatabaseUsername(), password);
+        }
     }
 
     public Connection getOwnerConnection() throws SQLException {
-        return getConnection(getDatabaseTableOwner(),getDatabaseTableOwnerPassword());
+        if(getErrorIndicator()) {
+            return null;
+        } else {
+            return getConnection(getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
+        }
     }
 }

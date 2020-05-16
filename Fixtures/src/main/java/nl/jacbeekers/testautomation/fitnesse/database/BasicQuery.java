@@ -388,15 +388,20 @@ public class BasicQuery {
         try {
             myArea = "readParameterFile";
             readParameterFile();
+            if(!Constants.OK.equals(getResult())) {
+                log(myName, Constants.DEBUG, myArea, "An error occurred reading properties. See error above.");
+                return null;
+            }
             log(myName, Constants.DEBUG, myArea, "Setting logFileName to >" + logFileName + "<.");
             connectionProperties.setLogFilename(logFileName);
             connectionProperties.setLogLevel(getIntLogLevel());
             connection = connectionProperties.getUserConnection();
+            if(connection == null) {
+                setError(connectionProperties.getErrorCode(), "Could not create connection. Error: " + connectionProperties.getErrorMessage());
+                return null;
+            }
 
-            // Load the JDBC driver or oracle.jdbc.driver.OracleDriver or sun.jdbc.odbc.JdbcOdbcDriver
-//			    Class.forName(driver);
-            // Create a connection to the database
-//		    connection = DriverManager.getConnection(url, userId, password);
+
             // createStatement() is used for create statement object that is used for sending sql statements to the specified database.
             statement = connection.createStatement();
             // sql query of string type to read database
@@ -462,6 +467,10 @@ public class BasicQuery {
         connectionProperties.setLogLevel(getIntLogLevel());
         connectionProperties.setDatabaseName(getDatabaseName());
         connectionProperties.refreshConnectionProperties(getDatabaseName());
+        if(!Constants.OK.equals(connectionProperties.getErrorCode())) {
+            log(myName, Constants.ERROR, myArea, connectionProperties.getErrorMessage());
+            setResult(connectionProperties.getErrorCode(), connectionProperties.getErrorMessage());
+        }
 
         setLogUrl(GetParameters.GetLogUrl());
 
@@ -606,6 +615,10 @@ public class BasicQuery {
 
         log(myName, Constants.DEBUG, myArea, "reading parameter file...");
         readParameterFile();
+        if(!Constants.OK.equals(getResult())) {
+            log(myName, Constants.DEBUG, myArea, "An error occurred reading properties. See error above.");
+            return getResult();
+        }
         log(myName, Constants.DEBUG, myArea, "Done.");
 
         log(myName, Constants.DEBUG, myArea, "determining sql statement...");

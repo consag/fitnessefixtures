@@ -3,6 +3,7 @@
 ---
 ## Release 202005.1
 ### Major changes since 202005.0
+#### Updated dependencies
 | Component | Old Version | New Version | Compatible? | Download URL |
 | --------- | ----------- | ----------- | ----------- | --- |
 | org.commons.commons:commons--codec | 1.13 | 1.14 | Yes | https://mvnrepository.com/artifact/commons-codec/commons-codec|
@@ -12,6 +13,9 @@
 | org.apache.poi:poi-ooxml | 4.1.0 | 4.1.2 | Yes | https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml |
 | org.apache.poi:poi-ooxml-schemas | 4.1.0 | 4.1.2 | Yes | https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas |
 | org.json:json | 20180813 | 20190722 | Yes | https://mvnrepository.com/artifact/org.json/json |
+
+#### 
+
 
 ---
 ## Release 202005.0

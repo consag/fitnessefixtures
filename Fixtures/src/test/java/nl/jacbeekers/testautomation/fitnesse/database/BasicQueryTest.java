@@ -54,6 +54,7 @@ class BasicQueryTest {
     @Test
     private String executeBasicQueryTest() {
         BasicQuery basicQuery = new BasicQuery();
+        basicQuery.setLogLevel(Constants.DEBUG);
         String testfilename = getFitnesseFrontPage() + "/UnitTests/ExamplesBasicFixtures/ExampleBasicQuery.wiki";
         List<List<String>> inputTable = createTestTableNoContext(testfilename);
         assumingThat(inputTable != null && inputTable.size() > 0
