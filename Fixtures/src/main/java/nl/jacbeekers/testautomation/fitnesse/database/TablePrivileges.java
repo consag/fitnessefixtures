@@ -18,7 +18,7 @@ import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
 public class TablePrivileges {
     private String className = "TablePrivileges";
 
-    private static String version = "20190704.0";
+    private static String version = "20200516.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
@@ -99,13 +99,13 @@ public class TablePrivileges {
 
         log(myName, Constants.INFO, myArea, "Number of objects in list is >" + objectList.size() + "<.");
 
-        Iterator objectIterator = objectList.iterator();
+        Iterator<List<String>> objectIterator = objectList.iterator();
         List<String> object = new ArrayList<String>();
         boolean privGranted = true;
         int grantsOk = 0;
         int grantsNotOk = 0;
         while (objectIterator.hasNext()) {
-            object = (List<String>) objectIterator.next();
+            object = objectIterator.next();
             logMessage = "Granting >" + privilege + "< on object >" + object.get(0) + "< to user >" + userName + "<.";
             log(myName, Constants.INFO, myArea, logMessage);
             privGranted = userHasPrivilegeOnObjectIn(userName, privilege, object.get(0), database);

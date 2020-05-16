@@ -1,6 +1,2 @@
-The following dependencies in Dependencies have newer versions:
-  org.apache.pdfbox:pdfbox ............................. 1.8.13 -> 2.0.8
-  org.apache.poi:poi ...................................... 3.16 -> 3.17
-  org.apache.poi:poi-ooxml ................................ 3.16 -> 3.17
-  org.apache.poi:poi-ooxml-schemas ........................ 3.16 -> 3.17
+No dependencies in Dependencies have newer versions.
 

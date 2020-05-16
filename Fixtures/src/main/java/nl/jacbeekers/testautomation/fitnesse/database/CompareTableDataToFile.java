@@ -82,7 +82,7 @@ public class CompareTableDataToFile {
     private ArrayList<String> listMapCols = new ArrayList<String>();
     private ArrayList<String> listMappedToCols = new ArrayList<String>();
     //private List<int> ListExcludedColIds = new List<int>();
-    private ArrayList listExcludedColIds = new ArrayList();
+    private ArrayList<Integer> listExcludedColIds = new ArrayList<>();
     private ArrayList<Integer> listMappedColIds = new ArrayList<Integer>();
 
     private String srcTable = Constants.NOT_INITIALIZED;
@@ -1018,12 +1018,12 @@ public class CompareTableDataToFile {
               //get ids for columns to be excluded. this way, in the data string concatenation, they can be excluded
               for (int i = 1; i <= (numColumnsInResultSet); ++i) {
                   if (listExcludeCols.contains(dbResultMetaSet.getColumnName(i))) {
-                      listExcludedColIds.add(new Integer(i - 1));
+                      listExcludedColIds.add(i - 1);
                   }
                   //some columns are named differently in the target
                   if (listMapCols.contains(dbResultMetaSet.getColumnName(i))) {
                       logMessage="Column name >" + dbResultMetaSet.getColumnName(i) + "< is a mapped column. Adding as >" + Integer.toString(i-1) +"<.";
-                      listMappedColIds.add(new Integer(i - 1));
+                      listMappedColIds.add(i - 1);
                   }
               }
         if(verbose) { logMessage="excluded column and mapped column lists were built.";               log(myName, Constants.DEBUG, myArea, logMessage); }

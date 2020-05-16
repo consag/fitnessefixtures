@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.jacbeekers.testautomtion.fitnesse</groupId>
     <artifactId>DataIntegrationFixtures</artifactId>
-    <version>202005.0</version>
+    <version>202005.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.jupiter.version>5.6.2</junit.jupiter.version>
@@ -17,6 +17,7 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
                 <groupId>org.apache.maven.plugins</groupId>
             </plugin>
@@ -45,7 +46,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <inherited>false</inherited>
-                <version>2.5</version>
+                <version>2.7</version>
                 <configuration>
                     <outputFile>outdated-dependencies.txt</outputFile>
                     <rulesUri>file://${project.basedir}/maven-version-rules.xml</rulesUri>
@@ -64,50 +65,42 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
-        <dependency>
+<!--        <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
             <version>5.0.1.201806211838-r</version>
         </dependency>
-
+-->
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.62</version>
+            <version>1.65</version>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>versions-maven-plugin</artifactId>
-            <version>2.5</version>
+            <version>2.7</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>3.10</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
-        <!--    <dependency>
-              <groupId>org.slf4j</groupId>
-              <artifactId>slf4j-api</artifactId>
-              <version>1.7.28</version>
-              <scope>compile</scope>
-              <type>jar</type>
-            </dependency>
-        -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>4.1.0</version>
+            <version>4.1.2</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-schemas</artifactId>
-            <version>4.1.0</version>
+            <version>4.1.2</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
@@ -115,7 +108,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>4.1.0</version>
+            <version>4.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -132,21 +125,23 @@
             <type>jar</type>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.13</version>
+            <version>1.14</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>2.0.16</version>
+            <version>2.0.19</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20180813</version>
+            <version>20190722</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -169,6 +164,11 @@
         </repository>
     </repositories>
     <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub consag packages</name>
+            <url>https://maven.pkg.github.com/consag/fitnessefixtures</url>
+        </repository>
     </distributionManagement>
 
 </project>
