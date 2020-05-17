@@ -91,7 +91,25 @@ public class Encrypt {
             inFile = new File(getKeystoreFile());
         } else {
             inFile = new File(u.getFile());
-
+        }
+        if( inFile.exists()) {
+            try (Scanner scanner = new Scanner(inFile)) {
+                theKeyAsString = scanner.nextLine();
+            } catch (IOException i) {
+                File file = new File(getKeystoreFile());
+                try {
+                    setErrorMessage("Error reading key from keystore >" + getKeystoreFile() + "< being >" + file.getCanonicalPath() + "<.");
+                } catch (IOException e) {
+                    setErrorMessage("Error reading key from keystore >" + getKeystoreFile() + "< being >" + file.getAbsolutePath() + "<.");
+                }
+                return Constants.ERROR.toCharArray();
+            }
+        } else {
+            try {
+                setErrorMessage("Error reading key from keystore >" + getKeystoreFile() + "< being >" + inFile.getCanonicalPath() + "<. File does not exist.");
+            } catch (IOException e) {
+                setErrorMessage("Error reading key from keystore >" + getKeystoreFile() + "< being >" + inFile.getAbsolutePath() + "<. File does not exist.");
+            }
         }
 
         try (Scanner scanner = new Scanner(inFile)) {

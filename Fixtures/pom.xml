@@ -149,6 +149,13 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc</artifactId>
+            <version>8</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/ojdbc8.jar</systemPath>
+        </dependency>
     </dependencies>
     <description>FitNesse Testautomation - Data Integration Fixtures</description>
     <repositories>
@@ -170,5 +177,10 @@
             <url>https://maven.pkg.github.com/consag/fitnessefixtures</url>
         </repository>
     </distributionManagement>
-
+    <pluginRepositories>
+    <pluginRepository>
+        <id>maven.oracle.com</id>
+        <url>https://maven.oracle.com</url>
+    </pluginRepository>
+    </pluginRepositories>
 </project>

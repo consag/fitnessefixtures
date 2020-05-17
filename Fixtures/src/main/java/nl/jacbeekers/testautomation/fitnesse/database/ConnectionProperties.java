@@ -327,7 +327,7 @@ public class ConnectionProperties {
         }
         else {
             setErrorIndicator(true);
-            String logMessage = "Owner password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.";
+            String logMessage = "Owner password decryption failed. Error: " + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage();
             setError(ERRCODE_DECRYPT, logMessage);
             log(myName, Constants.ERROR, myLocation, logMessage);
         }
@@ -352,7 +352,7 @@ public class ConnectionProperties {
         }
         else {
             setErrorIndicator(true);
-            String logMessage = "User password decryption failed >" + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage() + "<.";
+            String logMessage = "User password decryption failed. Error: " + decrypt.getErrorCode() + " - " + decrypt.getErrorMessage();
             setError(ERRCODE_DECRYPT, logMessage);
             log(myName, Constants.ERROR, myLocation, logMessage);
         }
