@@ -1,4 +1,4 @@
-# Data Integeration FitNesse Fixtures
+# Data Integration FitNesse Fixtures
 The FitNesse Fixtures are created as part of an overall solution for automating the test cycle.
 
 ## Linux installation ReadMe
