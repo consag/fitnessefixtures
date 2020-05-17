@@ -39,19 +39,6 @@ class BasicQueryTest {
         executeBasicQueryTest();
     }
 
-    @Test
-    void testColumnsOk() {
-        setMethod("testColumnsOk");
-        setLogger(Logger.getLogger(getClass().getName() + "-" + getMethod()));
-    }
-
-    @Test
-    void testGetResult() {
-        setMethod("testGetResult");
-        setLogger(Logger.getLogger(getClass().getName() + "-" + getMethod()));
-    }
-
-    @Test
     private String executeBasicQueryTest() {
         BasicQuery basicQuery = new BasicQuery();
         basicQuery.setLogLevel(Constants.DEBUG);
