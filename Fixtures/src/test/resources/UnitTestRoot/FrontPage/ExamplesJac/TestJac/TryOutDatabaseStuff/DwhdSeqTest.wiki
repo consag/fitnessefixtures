@@ -1,0 +1,22 @@
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+--path /u01/app/ibm/db2c/db2inst/sqllib/java/db2jcc.jar
+!path /u01/app/ibm/db2c/db2inst/sqllib/java/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+
+|oracle sequence                            |
+|database name|sequence      |next value?   |
+|DWHD_DATA|seq_cust_hub|$varNextValue=|
+
+|oracle sequence                            |
+|database name|sequence      |resetValue?|next value?   |
+|DWHD_DATA|seq_cust_hub|OK|$varNextValue=|
+

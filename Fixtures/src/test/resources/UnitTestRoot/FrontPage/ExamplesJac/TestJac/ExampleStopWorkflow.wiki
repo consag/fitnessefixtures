@@ -1,0 +1,44 @@
+!1 Example how to stop a workflow with various options
+----
+
+!define app {SDQ2}
+!define folder {IDQ_Sandbox_Jac}
+!define wf {wf_FixtureTest01}
+
+!3 Basic call
+|stop workflow|basic_stopcall_wf                                                    |
+|application  |folder   |workflow name|Report error if not running|workflow stopped?|
+|${app}       |${folder}|${wf}        |No                         |Yes              |
+
+!define instance {myInstanceName}
+
+!3 Stop specific workflow instance 
+* Stops a workflow instance. Run this if a workflow can be invoked in parallel, using instance names
+* Default for 'Report error if not running' = No
+|stop workflow|wf_stopinstance_call_with_abort                                              |
+|application  |folder   |workflow name|instance   |abort on error|workflow instance stopped?|
+|${app}       |${folder}|${wf}        |${instance}|No            |Yes                       |
+
+!3 Extension - check error msg (if any)
+* Default for 'Report error if not running' = No
+* Default for 'Abort on error' = No for application IDQ (you might want to check the infaprocess.properties on this one)
+|stop workflow|wf_stopcall_with_error_retrieval                |
+|application  |folder   |workflow name|workflow stopped?|error?|
+|${app}       |${folder}|${wf}        |Yes              |      |
+
+!3 Basic call - Stop Test page execution in case stop fails
+* Default for 'Report error if not running' = No
+* Abort test page if the stopping workflow fails
+|stop workflow|wf_stopcall_with_abort                                  |
+|application  |folder   |workflow name|abort on error|workflow stopped?|
+|${app}       |${folder}|${wf}        |Yes           |Yes              |
+
+!define wf {wf_FixtureTest011}
+!define instance {RUNINSTANCE1}
+
+!3 Stop a workflow instance. If it's not running, report it as error. If stopping it fails, report an error so remaining tests do not execute
+* All parameters provided explicitely
+|stop workflow|stopcall_wf_instance_do_not_ignore_errors                                                                               |
+|application  |folder   |workflow name|instance   |Report error if not running|abort on error|log level|workflow stopped?|
+|${app}       |${folder}|${wf}        |${instance}|Yes                        |Yes           |DEBUG|Yes              |
+

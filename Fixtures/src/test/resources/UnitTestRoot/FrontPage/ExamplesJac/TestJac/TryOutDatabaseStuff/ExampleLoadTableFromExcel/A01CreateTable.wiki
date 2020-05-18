@@ -1,0 +1,24 @@
+---
+Test
+---
+!3 Limitations
+By design, the create table will only accept an indication for the table. All table names will be prefixed.
+
+|script                 |create table  |crttab                  |
+|set database connection|${dbconnection}                        |
+|set table name         |${tablename}                           |
+|set database           |${database}                            |
+|add column             |COL1          |data type   |VARCHAR(50)|
+|add column             |COL2          |data type   |VARCHAR(50)|
+|ensure                 |create table  |${tablename}|is   |OK   |
+|check                  |error message |No errors encountered   |
+|show                   |table name for|${tablename}            |
+|ensure                 |table         |${tablename}|exists     |
+|check                  |error message |No errors encountered   |
+|show                   |get version                            |
+
+
+#|set accelerator        |${accelerator}                         |
+
+
+!lastmodified

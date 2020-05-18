@@ -1,0 +1,32 @@
+---
+Suites: KDE
+Test
+---
+# KDE job to run multiple profiles, scorecards and/or mappings
+# Check the sample job for comments on the key words and structure of job definition files
+# @Since: 09-NOV-2016
+# @Version: 20161109.0  #- Initial version
+# @Author: Jac. Beekers
+#
+# Note: The following structure will also work in FitNesse. Therefore, the first line starts with Table:
+|Table:Job Definition                                                                                                                                                                                   |
+|KDE|KDE Profile Job                       |Version=20161118.0|Persistence=Yes|Max Concurrent=2               |IDQConfig=/rabo/sserole/tws/config/idq.cfg|PWCConfig=/rabo/sserole/tws/config/pwc_idq.cfg|
+|Steps                                                                                                                                                                                                  |
+|10 |Run Profile NPSBLKDE                  |Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_NP_SBL_KDE                 |result=OK    |On Error=CONTINUE    |Wait=No   |
+|20 |Run Profile_ldo_NP_DMC_KDE_CHK        |Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_DMC_KDE_CHK         |result=OK    |On Error=CONTINUE    |Wait=No   |
+|30 |Run Profile_ldo_NP_DMC_KlantStatus_CHK|Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_DMC_KlantStatus_CHK |result=OK    |On Error=CONTINUE    |Wait=No   |
+|40 |Run Profile_ldo_NP_RDV_KDE_CHK        |Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_RDV_KDE_CHK         |result=OK    |On Error=CONTINUE    |Wait=No   |
+|50 |Run Profile_ldo_NP_RDV_KlantStatus_CHK|Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_RDV_KlantStatus_CHK |result=OK    |On Error=CONTINUE    |Wait=No   |
+|60 |Run Profile_ldo_NP_STI_KDE_CHK        |Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_STI_KDE_CHK         |result=OK    |On Error=CONTINUE    |Wait=No   |
+|70 |Run Profile_ldo_NP_STI_KlantStatus_CHK|Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_STI_KlantStatus_CHK |result=OK    |On Error=CONTINUE    |Wait=No   |
+|80 |Run Profile_ldo_NP_STO_KDE_CHK        |Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_STO_KDE_CHK         |result=OK    |On Error=CONTINUE    |Wait=No   |
+|90 |Run Profile_ldo_NP_STO_KlantStatus_CHK|Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_STO_KlantStatus_CHK |result=OK    |On Error=CONTINUE    |Wait=No   |
+|100|Run Profile_ldo_NP_SBL_KDE_CHK        |Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_SBL_KDE_CHK         |result=OK    |On Error=CONTINUE    |Wait=No   |
+|110|Run Profile_ldo_NP_SBL_KlantStatus_CHK|Run IDQ           |profile        |project=KDE_5_Profile_Scorecard|object=Profile_ldo_NP_SBL_KlantStatus_CHK |result=OK    |On Error=CONTINUE    |Wait=No   |
+
+|Table:Job Definition                                                                                                                                                                            |
+|KDE|KDE Scorecard Job              |Version=20161113.0|Persistence=Yes|Max Concurrent=2               |IDQConfig=/rabo/sserole/tws/config/idq.cfg|PWCConfig=/rabo/sserole/tws/config/pwc_idq.cfg|
+|Steps                                                                                                                                                                                           |
+|10 |Run scDWHDKeyDataElementen     |Run IDQ           |scorecard      |project=KDE_5_Profile_Scorecard|object=scDWHDKeyDataElementen             |result=OK    |On Error=CONTINUE    |Wait=No   |
+|20 |Run sc_SBL_ORG_KeyDataElementen|Run IDQ           |scorecard      |project=KDE_5_Profile_Scorecard|object=sc_SBL_ORG_KeyDataElementen        |result=OK    |On Error=CONTINUE    |Wait=No   |
+|30 |Run ..FrontPage.ExamplesJac.TestJac.KDERuns.ScKeyDataElementen         |Run IDQ           |scorecard      |project=KDE_5_Profile_Scorecard|object=ScKeyDataElementen                 |result=OK    |On Error=CONTINUE    |Wait=No   |

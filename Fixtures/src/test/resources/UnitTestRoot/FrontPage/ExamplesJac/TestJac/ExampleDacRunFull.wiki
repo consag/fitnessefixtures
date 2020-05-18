@@ -1,0 +1,63 @@
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/lib/*.jar
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path /u01/app/ibm/db2c/db2inst/sqllib/java/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm
+!path ../fitnesse/dac/DAWSystem.jar
+!path ../fitnesse/config
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+
+!define app {EB2}
+!define plan {RB CRM Product Line}
+
+!2 Checks before you run an execution plan
+Run the following checks before you execute an execution plan. For example, right after a deployment.
+
+!3 How many tasks are defined in the execution plan?
+This checks the number of tasks in an execution plan. It can be used before running an execution plan.
+It checks the number of DEFINED tasks. This may be different from the number of tasks executed during a run. See further below on how that number can be verified.
+
+|script|Check Exec Plan        |${app}|${plan}|example_check_plan|
+|check |number of tasks defined|6                                |
+
+!2 Run your execution plan - Full
+!3 Start the execution plan
+
+In this example a full load is done.
+Be aware that running a Full mode execution plan will first set all refresh dates to NULL.
+If the DAC execution plan is a Micro-ETL, it will set the refresh dates for this specific plan only
+If the execution plan is not a Micro-ETL, the refresh date for all tables of the execution plan will be set to NULL
+|Run Exec Plan|example_start                                                                                          |
+|Env          |exec Plan Name|run mode|start Plan successful?|get log filename?|get error message?|get result message?|
+|${app}       |${plan}       |Full    |Success               |                 |                  |                   |
+
+
+!3 Wait on the completion of the execution plan
+As soon as you see this and are waiting, why not open another browser window/tab and monitor the progress using the Monitor fixture?
+Check the example on http://oesv7022.rabobank.nl:9010/TestJac.ExampleDacRunMonitor
+
+|Run Exec Plan|example_wait                                           |
+|Env          |exec Plan Name|Stop on Errors|Result?|get log filename?|
+|${app}       |${plan}       |Yes           |Success|                 |
+
+
+!2 Check the execution plan results
+The following tests can be defined to verify the outcome of the execution plan and its tasks.
+
+!3 Check the amount of records processed
+For each task you can request the number of records processed.
+
+|script|Check Exec Plan               |${app}                        |${plan}          |LATEST|
+|check |total number of executed tasks|6                                                      |
+|check |failed tasks                  |0                                                      |
+|check |successful tasks              |6                                                      |
+|check |task or task detail           |Change Capture For Siebel OLTP|number of records|36    |
+
+

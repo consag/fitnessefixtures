@@ -1,0 +1,19 @@
+!define demotab {S_LST_OF_VAL_CPY}
+!define oradb {SDQ_DATA}
+!define db2db {SIEBDA}
+
+!3 Drop synonym (Oracle)
+
+|script              |drop synonym |drpsynoracle                                  |
+|ignore error on drop|Yes                                                         |
+|ensure              |synonym      |${demotab}|does not exist in database|${oradb}|
+|check               |error message|No errors                                     |
+
+!3 Drop synonym (DB2)
+
+|script              |drop synonym |drpsyndb2                                     |
+|ignore error on drop|Yes                                                         |
+|ensure              |synonym      |${demotab}|does not exist in database|${db2db}|
+|check               |error message|No errors                                     |
+
+!lastmodified

@@ -1,0 +1,24 @@
+---
+Test
+---
+!contents -h
+!1 Test script to check if browser times out.
+----
+ 
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+
+!3 Basic call
+|do workflows                                                                       |
+|application|folder    |workflow name|abort on error|workflow successful?|duration?|
+|EB2       |Dev_Jac|timeouttest|No|Success||
+

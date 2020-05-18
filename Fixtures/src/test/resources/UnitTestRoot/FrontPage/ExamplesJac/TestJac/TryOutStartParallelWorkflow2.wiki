@@ -1,0 +1,39 @@
+---
+Test
+---
+!1 Example how to start a workflow with various options - Parallel proposal
+----
+!2 This example shows the combination of Yes and No in the Parallel column.
+ 
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+
+
+!3 example running in parallel - option 1 - with each workflow specify Yes or No
+|table:do workflows|wf_FixtureTest0_call_parallel_per_wf                                                                                                                                                                                                                                                                       |
+|application       |folder         |workflow name   |abort on error|parallel|workflow successful?|error?               |start time?|end time?|duration?|duration less than?|duration in minutes less than?|source rows?|target rows?|target success rows?|source failed rows?|target failed rows?|error code?|get log filename?|
+|SDQ               |IDQ_Sandbox_Jac|wf_FixtureTest01|No            |Yes     |Success             |No errors encountered|           |         |         |310                |6                             |            |            |                    |                   |                   |           |                 |
+|SDQ               |IDQ_Sandbox_Jac|wf_FixtureTest02|No            |Yes     |                    |                     |           |         |         |122                |2                             |1           |1           |1                   |0                  |0                  |0          |                 |
+|SDQ               |IDQ_Sandbox_Jac|wf_FixtureTest03|No            |No      |Success             |No errors encountered|           |         |         |122                |2                             |            |            |                    |                   |                   |           |                 |
+|SDQ               |IDQ_Sandbox_Jac|wf_FixtureTest04|No            |Yes     |Success             |No errors encountered|           |         |         |122                |2                             |            |            |                    |                   |                   |           |                 |
+|SDQ               |IDQ_Sandbox_Jac|wf_FixtureTest05|No            |Yes     |Success             |No errors encountered|           |         |         |62                 |2                             |            |            |                    |                   |                   |           |                 |
+
+!3 example running in parallel - option 2 - additional parameter for fixture
+|table:do workflows|wf_FixtureTest0_call_parallel_fixturelevel|parallel                                                                                                |
+|application       |folder                                    |workflow name   |abort on error|workflow successful?|error code?|error?               |get log filename?|
+|SDQ               |IDQ_Sandbox_Jac                           |wf_FixtureTest06|No            |Success             |           |No errors encountered|                 |
+
+!3 example running serially (as always)
+|do workflows|wf_FixtureTest0_call_serial                                                                                                                                                                                                        |
+|application |folder         |workflow name   |workflow successful?|error?               |get log filename?|start time?|end time?|duration?|source rows?|target rows?|target success rows?|target failed rows?|num tables?|transformation errors?|
+|SDQ         |IDQ_Sandbox_Jac|wf_FixtureTest07|Success             |No errors encountered|                 |           |         |         |0           |0           |0                   |0                  |           |0                     |
+|SDQ         |IDQ_Sandbox_Jac|wf_FixtureTest09|Success             |No errors encountered|                 |           |         |         |1           |1           |1                   |0                  |           |0                     |

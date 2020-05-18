@@ -1,0 +1,18 @@
+---
+Test
+---
+# DRE SEL EIM Opportunity Step 1
+# @Since: 02-FEB-2018
+# @Version: 20180202.0  #- Initial version
+# @Version: 20180531.0  #- GB: Truncate & Sync Stap voor RESULT tabel toegevoegd, hist, delta & full uitgecommentarieerd
+# @Author Victor Moelands
+#
+# Note: The following structure will also work in FitNesse. Therefore, the first line starts with Table:
+!|Table:Job Definition|
+|DRE|DRE SEL EIM Opportunity Step 1|Version=20180531.0|Persistence=Yes|Max Concurrent=2|IDQConfig=/rabo/sserole/tws/config/idq.cfg|PWCConfig=/rabo/sserole/tws/config/pwc_idq.cfg|DB2Config=/rabo/sserole/tws/config/rundb2sql.cfg|
+|Steps|
+|10 |Truncate DRE_SEL_OPPORTUNITY_RESULT |Run DB2|SQL     |connection=SIEBIDQ        |SQL=TRUNCATE TABLE DRE_SEL_OPPORTUNITY_RESULT                                                    |Wait=Yes|
+|20 |IDAA Sync DRE_SEL_OPPORTUNITY_RESULT|Run DB2|SQL     |connection=SIEBIDQ        |SQL=call CYKDBA.RUN_IDAA_CMD('IDAASYNC DRE_SEL_OPPORTUNITY_RESULT')                              |Wait=Yes|
+|30 |AGG Load DQ SEL Opportunity PWC IDAA|Run PWC|workflow|folder=RB_IDAA            |workflow=wf_LOAD_AGG_DQ_SEL_OPPORTUNITY_IDAA|result=OK|pf=param_wf_DRE_SEL_EIM_Opportunity.txt|Wait=Yes|
+|40 |DRE Select Opportunity              |Run IDQ|mapping |project=DRE_SEL_4_Mappings|application=appl_DRE_SEL_MARK_OBJECTS   |mapping=map_DRE_SEL_Opportunity        |result=OK|Wait=Yes|
+|999|Wait on Job Completion|Wait|Waiting|

@@ -1,0 +1,24 @@
+---
+Test
+---
+!contents
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+
+|import                    |
+|generic.fixtures.Global   |
+|generic.fixtures.DBFixture|
+
+!define variable {nrTables}
+
+|script|Check Content Dac Tables|EB2|DAC5|RB CRM Distribution|
+|check     |content of dac tables  |W%D|on records with|row_wid=0|expect                     |1  |OK                            |
+|$nrTables=|number of tables found                                                                                              |
+|show      |non conforming tables                                                                                               |
+|ensure    |number of records found|$nrTables                                                                                   |
+|show      |number of records found                                                                                             |
+|check     |content of dac tables  |W%D|on records with|row_wid>0|allow same value percentage|100|in column|datasource_num_id|OK|
+|show      |non conforming tables                                                                                               |
+
+----

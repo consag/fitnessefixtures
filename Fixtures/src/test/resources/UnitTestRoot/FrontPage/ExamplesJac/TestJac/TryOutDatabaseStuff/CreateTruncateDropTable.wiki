@@ -1,0 +1,23 @@
+---
+Suite
+Suites: DDL
+---
+!1 Test suite Creating, Truncating, Dropping a table
+
+!style_indigo {'''Target'''}
+!define targetdatabase {DWHDSTISTUB}
+!define targetschema {OWNER_QS1}
+!define targettable {FITNESSE_TRYOUT_CLONED}
+
+!style_indigo {'''Source'''}
+!define sourcedatabase {DQDATA}
+!define sourceschema {OWNER_QQ2}
+!define sourcetable {FITNESSE_TRYOUT}
+
+
+!style_indigo {'''Username and password to create synonyms (if needed)'''}
+!define targetdatabase_user {SELECT_QQ2}
+!define targetdatabase_user_connection {USERDQDATA}
+
+
+!contents -R2 -g -p -f -h

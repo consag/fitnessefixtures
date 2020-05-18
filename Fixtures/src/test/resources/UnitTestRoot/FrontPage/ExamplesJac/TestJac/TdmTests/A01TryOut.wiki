@@ -1,0 +1,46 @@
+---
+Test
+---
+
+!define variable {var_num_con}
+!define variable {myTableList}
+
+
+|get query result|con_count                                                  |
+|database name   |query                                        |get column ? |
+|${TARGETDB}     |select count(*) from siebel.s_contact with ur|$var_num_con=|
+
+
+!3 Function: !-GetList-!
+Purpose: Retrieve one single string that consists of all values of the first column in a query, separated by a semicolon (and a space)
+Input:
+database_name: The logical database entry ..FrontPage.ExamplesJac.TestJac.TdmTests.FitNesse should use
+query: The database query, that retrieves one single column only, but can retrieve multiple rows
+get list: The method in the fixture, the retrieves the specified column from all records and transforms it into a comma separated list
+get log filename: A link to the log file with fixture processing steps
+
+!|get query result|getlist                                                                                         |
+|database name    |query                                                           |get list?    |get log filename?|
+|${TARGETDB}      |select c.tbname from sysibm.syscolumns c inner join sysibm.systables t on c.tbname = t.name where t.type='T' and t.creator='SIEBEL' and c.tbcreator='SIEBEL' and c.name='ROW_ID' with ur|$myTableList=|                 |
+
+
+!3 Function: !-SelectQuery with a list of variable values-!
+Purpose: Execute a query multiple times, substituting the string #VAR01# by a value from a specified list
+the_query: The query that must contain at least one occurrence of #VAR01# at any location
+The expected and actual results are presented in table form:
+nr_cols_ok: reserved column heading for the first columns. The fixture will report for each row how many column values were corrected. Specify how many columns values you expect to be correct.
+all other column headings: column headings as they appear in the specified SQL statement.
+
+
+!|table:select query|multi_exec                                                                                           |
+|database name      |${TARGETDB}                                                                                          |
+|the_query          |SELECT '#VAR01#' table_name, COUNT(*) nr_recs FROM #VAR01# WHERE db_last_upd_src <>'TDM'|$myTableList|
+|nr_cols_ok         |table_name                                                                              |nr_recs     |
+|2                  |#VAR01#                                                                                 |0           |
+
+
+|table:select query|cnt                                         |
+|database name     |${TARGETDB}                                 |
+|sql statement     |select count(*) cnt from siebel.s_bu with ur|
+|correct values    |cnt                                         |
+|1                 |03                                          |

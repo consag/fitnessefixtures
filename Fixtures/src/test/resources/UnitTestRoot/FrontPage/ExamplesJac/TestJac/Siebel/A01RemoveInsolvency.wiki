@@ -1,0 +1,33 @@
+---
+Help
+Suites
+Test
+---
+!*> imports
+!define TEST_SYSTEM {slim}
+!path ./lib/*.jar
+!path ./fixtures/bin
+!path ./fixtures/bin/dbdrivers/*.jar
+
+|import    |
+|supporting|
+|database  |
+|siebel    |
+
+*!
+
+
+|script             |remove siebel data using Excel|idaatestjac_insolv_delete|
+|source directory   |base|
+|excel file name    |${EXCELFILENAME}                                    |
+|excel sheet name   |Insolvency                                              |
+|siebel connection  |${ENVIRONMENT}                                          |
+|set user id        |${USERID}                                               |
+|set log level      |VERBOSE                                                 |
+|business object    |Contact                                                 |
+|business component |RB Insolvency Contact AB                                |
+|use field as filter|RB Name                                          |
+|check              |removal                       |OK                       |
+|ensure             |number of records removed     |1                        |
+|show               |result                                                  |
+|show               |get error message                                       |

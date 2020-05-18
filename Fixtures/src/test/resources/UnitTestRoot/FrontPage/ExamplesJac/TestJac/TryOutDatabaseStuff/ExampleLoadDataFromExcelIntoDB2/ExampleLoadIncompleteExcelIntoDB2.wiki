@@ -1,0 +1,70 @@
+Use the following statement to create the table in db2
+create table fitnessetest_incompleteexcel_db2
+(recid numeric(15)
+,textcol varchar(10)
+,datecol timestamp(6)
+,numcol numeric(15)
+)
+ in database siebidq
+ ;
+
+Use the following statement to create the table in IDAA
+create table fitnessetest_incompleteexcel_aot
+(recid numeric(15)
+,textcol varchar(10)
+,datecol timestamp(6)
+,numcol numeric(15)
+)
+ in database siebidq
+ in accelerator idaabx02
+ ;
+
+The Excel contains the following rows:
+recid	textcol	datecol	numcol
+1	abc1	1-1-2017	1
+2	abc2	2-2-2017	#NULL#
+3	abc3	#NULL#	#NULL#
+4	#NULL#	4-4-2017	4
+5	#NULL#	5-5-2017	#NULL#
+6	#NULL#	#NULL#	6
+7	abc7	#NULL#	7
+8	#NULL#	#NULL#	#NULL#
+9	abc9	9-9-2017	9
+10	abc10	10-10-2017	
+11	abc11		
+12		2-2-2018	12
+13		3-3-2018	
+14			14
+15	abc15		15
+16			
+17			17
+18	abc18		18
+
+!4 Be aware that the fixture currently does NOT support Array Inserts. Loading will be slow.
+
+!define location {files}
+!define excelFile {!-testdata/fitnesse-loadincompleteexcel.xlsx-!}
+!define excelSheet {Sheet1}
+!define dbconnection {SIEBDA}
+
+Context, ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleLoadDataFromExcelIntoDB2.LogLevel and ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleLoadDataFromExcelIntoDB2.AppName are optional.
+In the examples below:
+- Context is set to load_<tablename>. This determines the log filename
+- ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleLoadDataFromExcelIntoDB2.LogLevel. Can be set to FATAL, ERROR, WARNING, INFO, DEBUG, VERBOSE
+- ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleLoadDataFromExcelIntoDB2.AppName is set to ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleLoadDataFromExcelIntoDB2.FixtureTest. Typically the application your testing, i.e. DRE, SDQ, DQReporting, HHB, EB2, ...
+
+!3 Load incomplete Excel into DB2
+
+!define tablename {FITNESSETEST_INCOMPLETEEXCEL_DB2}
+
+!|load data from excel|load_${tablename}|DEBUG                   |FixtureTest                              |
+|database name       |table name       |input file              |worksheet name|result?|get error message?|
+|${dbconnection}     |${tablename}     |${location} ${excelFile}|${excelSheet} |OK     |                  |
+
+!3 Load incomplete Excel into IDAA as AOT
+
+!define tablename {FITNESSETEST_INCOMPLETEEXCEL_AOT}
+
+!|load data from excel|load_${tablename}|DEBUG                   |FixtureTest                              |
+|database name       |table name       |input file              |worksheet name|result?|get error message?|
+|${dbconnection}     |${tablename}     |${location} ${excelFile}|${excelSheet} |OK     |                  |

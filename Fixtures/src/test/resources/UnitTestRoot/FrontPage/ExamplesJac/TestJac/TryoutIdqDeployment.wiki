@@ -1,0 +1,8 @@
+---
+Help: Start this FitNesse suite from Jenkins
+Suite
+Suites
+---
+!1 Tryout Automating IDQ Deployment
+
+!contents -R2 -g -p -f -h

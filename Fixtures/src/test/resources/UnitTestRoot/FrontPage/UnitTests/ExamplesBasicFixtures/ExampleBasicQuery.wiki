@@ -1,0 +1,5 @@
+|table:basic query|
+|database name|oracleTestDB|
+|sql statement|select 'something' as db_output from dual|
+|nr_cols_ok   |db_output|
+|1            |something|

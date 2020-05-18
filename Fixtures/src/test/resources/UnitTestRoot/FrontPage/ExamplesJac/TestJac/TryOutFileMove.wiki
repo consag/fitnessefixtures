@@ -1,0 +1,22 @@
+---
+Test
+---
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+
+|import                       |
+|generic.fixtures.Global      |
+|generic.fixtures.LinuxFixture|
+
+
+|script|file operation   |EB2                                                             |
+|check |directory        |base eb2|contains file  |test.out|Yes              |
+|copy  |test.out|from directory |base eb2|to directory     |outgoing EB2|
+|move  |test1.out|from directory |base eb2|to directory     |outgoing EB2|
+|check |directory        |outgoing EB2|contains file  |test.out|Yes              |
+|check |directory        |base eb2|contains file  |test.out|No              |
+|move  |test.out|from directory |outgoing EB2|to directory     |base eb2|
+|check |directory        |base eb2|contains file  |test.out|Yes              |
+|check |directory        |outgoing EB2|contains file  |test.out|No              |
+
+

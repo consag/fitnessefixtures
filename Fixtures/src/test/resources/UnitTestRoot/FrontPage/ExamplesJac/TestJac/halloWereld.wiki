@@ -1,0 +1,8 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+Hello, I'm on .${RUNNING_PAGE_PATH}/${RUNNING_PAGE_NAME}
+
+${PAGE_PATH}

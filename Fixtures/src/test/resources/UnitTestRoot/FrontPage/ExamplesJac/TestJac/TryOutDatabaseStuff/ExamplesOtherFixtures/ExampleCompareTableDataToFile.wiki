@@ -1,0 +1,38 @@
+!define sourceDB {DWHD_DATA}
+!define srcTable {FIXTURETEST}
+!define fileName {fixturetest.txt}
+
+!3 Data used in the examples below
+|Comment          |
+|File: fixture.txt|
+|42021;Renesse    |
+|1182;Renesse     |
+
+|Comment                    |
+|Database table: FIXTURETEST|
+|CUST_ID     |CUST_CITY     |
+|1182        |Renesse       |
+|42021       |Renesse       |
+|1           |Amsterdam     |
+|2           |Berlin        |
+
+
+!2 Compare table to file using default method
+The following example compares table records to a file. The records are filtered out of the table FIXTURETEST using a filter on CUST_CITY and CUST_ID.
+The fixture will create a temporary file for the table data, using the provided delimiter (semicolon in the example below)
+The result of 'Same Data?' is 'No', because the fixture issues a SQL statement with an ORDER BY the provided 'unique identifier', CUST_ID.
+
+|compare table data to file|comparetesttablw                                                                                                                                                                                 |
+|log level                 |source database name|source table|unique identifier|source filter                                   |file name            |delimiter|same data?|get differences?|log filename?|temp file removal?|
+|DEBUG                     |${sourceDB}         |${srcTable} |CUST_ID          |CUST_CITY ='Renesse' AND cust_id in (1182,42021)|base DWHD/${fileName}|;        |No        |                |             |OK                |
+
+!2 Compare table to file using provided SQL
+In this example the same source table and target file are used. This time however, a specific SQL is used. This SQL filters and sorts the data. The ORDER BY uses a DESCending clause. This way, the data as retrieved by the SQL is in the same order as the data in the file.
+As a result, the comparison does not result in any differences.
+ 
+|compare table data to file|comparetestsql                                                                                                                                                                                                                           |
+|log level                 |file name            |delimiter|source database name|source sql                                                                                                             |same data?|get differences?|log filename?|temp file removal?|
+|DEBUG                     |base DWHD/${fileName}|;        |${sourceDB}         |SELECT cust_id, cust_city FROM ${srcTable} WHERE cust_city ='Renesse' AND cust_id in (1182,42021) ORDER BY cust_id DESC|Yes       |No differences  |             |OK                |
+
+
+!lastmodified

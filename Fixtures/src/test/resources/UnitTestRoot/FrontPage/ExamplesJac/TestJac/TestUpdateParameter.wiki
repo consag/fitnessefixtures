@@ -1,0 +1,6 @@
+---
+Help
+Suites
+---
+|script|file operation                       |DKV                                                                                                        |
+|copy  |DKVNG_SI_RELATE_IP_CST_TO_CHUNK.param|from directory|base DKVNG/Changed|to directory|/rabo/integration/powercenter/901DKVII/infa_shared/ParamFiles|

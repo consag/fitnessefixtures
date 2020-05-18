@@ -20,7 +20,7 @@ class BasicQueryTest {
     private Logger logger;
     private String method;
     // FitNesse pages
-    private String fitnesseFrontPage="src/test/resources/FitNesseRoot/FrontPage";
+    private String fitnesseFrontPage="src/test/resources/UnitTestRoot/FrontPage";
     // Testing
     private String result = Constants.OK;
 

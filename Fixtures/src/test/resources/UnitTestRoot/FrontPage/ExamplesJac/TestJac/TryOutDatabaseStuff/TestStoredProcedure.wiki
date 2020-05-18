@@ -1,0 +1,16 @@
+
+!define variable {arg3}
+
+|oracle sequence                         |
+|database name|sequence      |next value?|
+|SDQ_DATA          |wc_row_wid_seq|$arg3=     |
+
+|call stored procedure                                  |
+|database name|stored procedure       |query successful?|
+|SDQ_DATA          |blabla('1','2','$arg3')|OK               |
+
+|table: select query                                               |
+|database name  |SDQ_DATA                                               |
+|select query   |SELECT calculate(1,'+',1) calc from dual where 1=1|
+|nr of cols okay|calc                                              |
+|1              |2                                                 |

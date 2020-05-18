@@ -1,0 +1,37 @@
+!contents -h
+----
+
+
+!3 Ignore 0 records deleted "error"
+|script: basic delete|
+|database name|SIEBDA|
+|table name|FITNESSETEST_SPECCOLUMNS_AOT|
+|set log level       |DEBUG                        |
+|set ignore 0 records|Yes                          |
+|set delete filter   |RECID=1                          |
+|ensure              |result          |OK          |
+|show                |get error message            |
+|show                |get number of records deleted|
+
+!3 Standard behaviour
+|script: basic delete|
+|database name|SIEBDA|
+|table name|FITNESSETEST_SPECCOLUMNS_AOT|
+|set log level       |DEBUG                        |
+|set ignore 0 records|Yes                          |
+|set delete filter   |RECID IN (1,2,3)                          |
+|ensure              |result          |OK          |
+|show                |get error message            |
+|show                |get number of records deleted|
+
+!3 Syntax fout
+|script: basic delete|
+|database name|SIEBDA|
+|table name|FITNESSETEST_SPECCOLUMNS_AOT|
+|set log level       |DEBUG                        |
+|set ignore 0 records|Yes                          |
+|set delete filter   |COL_DOES_NOT_EXIST IN ('SAMPLE')                          |
+|ensure              |result          |ERROR          |
+|show                |get error message            |
+|show                |get number of records deleted|
+

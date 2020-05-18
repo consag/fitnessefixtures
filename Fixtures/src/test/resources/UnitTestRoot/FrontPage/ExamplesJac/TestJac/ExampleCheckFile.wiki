@@ -1,0 +1,87 @@
+
+!define var_filename {tryout.txt}
+
+
+!3 Result is OK
+|table:check file|tryout_check_file|DEBUG                          |
+|file name       |${var_filename}  |base eb2      |!-Delimiter=;|-!|
+|filter          |OID=1195791                                      |
+|OID             |PROPOSAL_OID     |BASE_AGRMT_OID|AGRMT_CODE      |
+|1195791         |test1            |              |VERP            |
+
+!3 Result: File/directory not found 
+|table:check file|tryout_check_file_filenotfound|DEBUG                          |
+|file name       |${var_filename}               |base eeb2     |!-Delimiter=;|-!|
+|filter          |OID=1195791                                                   |
+|OID             |PROPOSAL_OID                  |BASE_AGRMT_OID|AGRMT_CODE      |
+|1195791         |test1                         |              |VERP            |
+
+!4 Result: File/directory not found - but now expect the error
+|table:check file|tryout_check_file_filenotfound|DEBUG         |ERROR           |
+|file name       |${var_filename}               |base eeb2     |!-Delimiter=;|-!|
+|filter          |OID=1195791                                                   |
+|OID             |PROPOSAL_OID                  |BASE_AGRMT_OID|AGRMT_CODE      |
+|1195791         |test1                         |              |VERP            |
+
+!3 Result: Wrong delimiter not found
+|table:check file|tryout_check_file_wrongdelim|DEBUG                          |
+|file name       |${var_filename}             |base eb2      |!-Delimiter=||-!|
+|filter          |OID=1195791                                                 |
+|OID             |PROPOSAL_OID                |BASE_AGRMT_OID|AGRMT_CODE      |
+|1195791         |test1                       |              |VERP            |
+
+
+!3 Result: No records found
+|table:check file|tryout_check_file_norecs|DEBUG                          |
+|file name       |${var_filename}         |base eb2      |!-Delimiter=;|-!|
+|filter          |OID=1234                                                |
+|OID             |PROPOSAL_OID            |BASE_AGRMT_OID|AGRMT_CODE      |
+|1195791         |test1                   |              |VERP            |
+
+!3 Multiple rows in file match filter
+This is a limitation in the current fixture: The ..FrontPage.ExamplesJac.TestJac.FitNesse table can only contain ONE row. If multiple records in the file match the filter, all values must match
+|table:check file|tryout_check_file_multirws|DEBUG                          |
+|file name       |${var_filename}           |base eb2      |!-Delimiter=;|-!|
+|filter          |AGRMT_CODE=VERP                                           |
+|OID             |PROPOSAL_OID              |BASE_AGRMT_OID|AGRMT_CODE      |
+|1195791         |test1                     |              |VERP            |
+
+!2 Multiple filters - introduced 11 August 2015
+!define fileName {fixturetest_with_headers.txt}
+
+Content of file:{{{
+CUST_ID;CUST_CITY
+42021;|Renesse  
+42021;Renesse    
+1182;Renesse     
+42021;Amsterdam  
+}}}
+
+!3 a. Positive test single delimiter char
+|table:check file|tryoutcheckfile_positive|DEBUG                    |
+|file name       |${fileName}             |base dwhd|!-Delimiter=;-!|
+|filter          |CUST_ID=42021 #AND# CUST_CITY=Renesse             |
+|CUST_ID         |CUST_CITY                                         |
+|42021           |Renesse                                           |
+
+!3 b. Positive test multi char delimiter 
+|table:check file|tryoutcheckfile_positive                |DEBUG                     |
+|file name       |fixturetest_with_multichar_delimiter.txt|base dwhd|!-Delimiter=;|-!|
+|filter          |CUST_ID=42021 #AND# CUST_CITY=Renesse                              |
+|CUST_ID         |CUST_CITY                                                          |
+|42021           |Renesse                                                            |
+
+!3 Negative test
+|table:check file|tryoutcheckfile_negative|DEBUG    |ERROR          |
+|file name       |${fileName}             |base dwhd|!-Delimiter=;-!|
+|filter          |CUST_ID=1182 #AND# CUST_CITY=Amsterdam            |
+|CUST_ID         |CUST_CITY                                         |
+|1182            |Amsterdam                                         |
+
+!3 Regression test on single field filter
+|table:check file|tryoutcheckfile_regress|DEBUG                    |
+|file name       |${fileName}            |base dwhd|!-Delimiter=;-!|
+|filter          |CUST_ID=1182                                     |
+|CUST_ID         |CUST_CITY                                        |
+|1182            |Renesse                                          |
+

@@ -1,0 +1,7 @@
+!1 ..FrontPage.ExamplesJac.TestJac.FitNesse Data Management fixtures for Oracle Siebel CRM
+
+!define ENVIRONMENT {TMP5}
+!define USERID {7000003550}
+!define EXCELFILENAME {!-testdata/JacTest2SiebelData.xlsx-!}
+
+!contents -R2 -g -p -f -h

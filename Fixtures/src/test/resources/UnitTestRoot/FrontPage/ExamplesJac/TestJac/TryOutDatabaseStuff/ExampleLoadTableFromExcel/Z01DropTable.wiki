@@ -1,0 +1,8 @@
+---
+Test
+---
+|script      |drop table    |drptab                                             |
+|ignore error|Yes                                                               |
+|ensure      |table         |${tablename}|does not exist in database|${dbconnection}|
+|show        |table name for|${tablename}                                       |
+|check       |error message |No errors                                          |

@@ -1,0 +1,79 @@
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/sqldeveloper/jdbc/lib/ojdbc6.jar
+!path ../fitnesse/ibm/db2jcc_license_cisuz.jar
+!path ../fitnesse/ibm/db2jcc.jar
+!path ../fitnesse/netezza/nzjdbc.jar
+!path ../fitnesse/hpnonstop/t4sqlmx.jar
+!path ../fitnesse/ms/sqljdbc4.jar
+!path ../fitnesse/java_workspace/fixtures/generic/fixtures/PowerCenterWS
+
+!|import                      |
+|generic.fixtures.Global      |
+|generic.fixtures.PWCFixture  |
+|generic.fixtures.LinuxFixture|
+|generic.fixtures.DBFixture   |
+|generic.fixtures.DACFixture  |
+!define variable {myVars}
+
+!define var_delivery_sqn {0}
+
+!define var_db_name_DWD {DWHD_IN}
+!define var_db_name_RDV {DWHD_DATA}
+
+!define var_RH_table {RH_BBS_SRO}
+!define var_interface_code {STI_BFS_SCENARIO}
+
+|get query result                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|database name     |query                                                                                                                                                                                                                                                                                                                                                                                           |get column ?      |
+|${var_db_name_DWD}|select delivery_sqn from (select a.delivery_sqn from MRV_DATA_DELIVERY a where  a.interface_code =  '${var_interface_code}' and exists (select 1 from mrv_data_delivery_detail where delivery_sqn = a.delivery_sqn and status = '2') and not exists (select 1 from mrv_data_delivery_detail where delivery_sqn = a.delivery_sqn and status = '6') order by a.delivery_sqn desc) where rownum = 1|$var_delivery_sqn=|
+
+|get query result                                                                                             |
+|database name     |query                                                                      |get column ?  |
+|${var_db_name_RDV}|select count(*) from ${var_RH_table} where delivery_sqn = $var_delivery_sqn|$var_count_RH=|
+
+|table:select query                                                                                                                                                                                     |
+|database name |${var_db_name_DWD}                                                                                                                                                                      |
+|sql statement |select count(*) as count_6 from mrv_data_delivery_detail mddd, mrv_data_delivery mdd where mddd.delivery_sqn = mdd.delivery_sqn and mddd.delivery_sqn = $var_delivery_sqn and status = 6|
+|correct values|count_6                                                                                                                                                                                 |
+|1             |0                                                                                                                                                                                       |
+
+''Hub table will not be Rollbacked, count must be equal as before running Rollback workflow''
+|table:select query                                                                                    |
+|database name |${var_db_name_RDV}                                                                     |
+|sql statement |select count(*) as count_RH from ${var_RH_table} where delivery_sqn = $var_delivery_sqn|
+|correct values|count_RH                                                                               |
+|1             |$var_count_RH                                                                          |
+
+
+
+!3 Function: !-GetList-!
+Purpose: Retrieve one single string that consists of all values of the first column in a query, separated by a semicolon (and a space)
+Input:
+database_name: The logical database entry ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.FitNesse should use
+query: The database query, that retrieves one single column only, but can retrieve multiple rows
+get list: The method in the fixture, the retrieves the specified column from all records and transforms it into a comma separated list
+get log filename: A link to the log file with fixture processing steps
+
+Do a complex query to retrieve the table list....
+
+!|get query result|tryout_getlist                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|database name    |query                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |get list?|get log filename?|
+|DWHD_IN        |select 'STI_WC_LST_OF_VAL_G' from dual union all select 'STI_WC_PARTY_G' from dual|$myVars= |                 |
+
+!3 Function: !-SelectQuery with a list of variable values-!
+Purpose: Execute a query multiple times, substituting the string #VAR01# by a value from a specified list
+the_query: The query that must contain at least one occurrence of #VAR01# at any location
+The expected and actual results are presented in table form:
+nr_cols_ok: reserved column heading for the first columns. The fixture will report for each row how many column values were corrected. Specify how many columns values you expect to be correct.
+all other column headings: column headings as they appear in the specified SQL statement.
+
+Do a complex query for all tables in the generated list
+
+!|table:select query|tryout_multi_exec                                                                                      |
+|database name      |DWHD_IN                                                                                              |
+|the_query          |SELECT '#VAR01#' table_name, COUNT(*) nr_recs FROM #VAR01#|$myVars|
+|nr_cols_ok         |table_name                                                                                     |nr_recs|
+|2                  |#VAR01#                                                                                        |0      |
+

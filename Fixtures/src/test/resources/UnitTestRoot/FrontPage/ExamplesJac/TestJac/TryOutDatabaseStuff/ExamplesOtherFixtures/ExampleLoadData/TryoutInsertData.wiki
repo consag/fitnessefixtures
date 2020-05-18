@@ -1,0 +1,64 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+
+!define variable {varCreatedDate1}
+!define variable {varCreatedDate2}
+
+!4 Insert testdata into s_contact_cpy
+!|table: insert data |tryout_insert_data|
+|log level|DEBUG|
+|database name|SDQ_DATA |
+|table name|s_contact_cpy|
+|column names|PERSON_UID|x_part_key|ROW_ID|X_OLI_CREATED_DT|CREATED|X_STATUS|EMP_FLG|PRIV_FLG|ACTIVE_FLG|X_IK_NUMBER|X_status_memb_cd|BU_ID|PAR_ROW_ID|X_LEGAL_NAME|BIRTH_DT |X_PR_PHONE_ID|
+|OK|700000000000500|3118|7-NP-0500|!-$varCreatedDate1-!||C|N|N|Y|7-NP-0500||7-NPBU-0001|7-NPPA-0001|Natural Person 500|01-JAN-1980||
+|OK|700000000000501|3118|7-NP-0501|!-$varCreatedDate1-!||C|N|N|Y|7-NP-0501||7-NPBU-0001|7-NPPA-0001|Natural Person 501|01-JAN-1980|7-NPTEL-501|
+|OK|700000000000502|3118|7-NP-0502|!-$varCreatedDate1-!||C|N|N|Y|7-NP-0502||7-NPBU-0001|7-NPPA-0001|Natural Person 502|01-JAN-1980|7-NPTEL-502|
+|OK|700000000000503|3118|7-NP-0503|!-$varCreatedDate1-!||C|N|N|Y|7-NP-0502||7-NPBU-0001|7-NPPA-0001|Natural Person 503|01-JAN-1980|7-NPTEL-503|
+|OK|700000000000504|3118|7-NP-0504|!-$varCreatedDate1-!||C|N|N|Y|7-NP-0504||7-NPBU-0001|7-NPPA-0001|Natural Person 504|01-JAN-1980|7-NPTEL-504|
+|OK|700000000000505|3118|7-NP-0505|!-$varCreatedDate1-!||C|N|N|Y|7-NP-0505||7-NPBU-0001|7-NPPA-0001|Natural Person 505|01-JAN-1980|7-NPTEL-505|
+
+
+
+
+!Insert testdate into S_bu_cpy
+|comment|
+|table: insert data |
+|database name|SDQ_DATA |
+|table name|s_bu_cpy|
+|column names|ROW_ID|NAME|
+|OK|7-NPBU-0001|3118|
+
+!Insert testdate into S_PARTY_CPY
+|comment|
+|table: insert data |
+|database name|SDQ_DATA |
+|table name|S_PARTY_CPY|
+|column names|ROW_ID|PARTY_TYPE_CD|
+|OK|7-NPPA-0001|Person|
+
+!Insert testdate into S_CON_ADDR_CPY
+|comment|
+|table: insert data |
+|database name|SDQ_DATA |
+|table name|S_CON_ADDR_CPY|
+|column names|ROW_ID|CONTACT_ID|ADDR_PER_ID|
+|OK|7-CONTEL-501|7-NP-0501|7-NPTEL-501|
+|OK|7-CONTEL-502|7-NP-0502|7-NPTEL-502|
+|OK|7-CONTEL-503|7-NP-0503|7-NPTEL-503|
+|OK|7-CONTEL-504|7-NP-0504|7-NPTEL-504|
+|OK|7-CONTEL-505|7-NP-0505|7-NPTEL-505|
+
+!Insert testdate into S_ADDR_PER_CPY
+|comment|
+|table: insert data |
+|database name|SDQ_DATA |
+|table name|S_ADDR_PER_CPY|
+|column names|ROW_ID|ADDR|X_TYPE|
+|OK|7-NPTEL-501|0610000501|Phone|
+|OK|7-NPTEL-502|0610000502|Phone|
+|OK|7-NPTEL-503|0610000502|Phone|
+|OK|7-NPTEL-504|0610000504|Phone|
+|OK|7-NPTEL-505|0610000504|Phone|
+

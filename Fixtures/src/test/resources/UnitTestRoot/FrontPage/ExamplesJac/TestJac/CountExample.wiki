@@ -1,0 +1,42 @@
+
+!2 Example to COUNT records and columns in a table
+|count query                                                               |
+|databaseName|tableName     |count Records?|
+|CIV|udtb903_clone |18161             |
+
+
+!2 Example to COUNT records and columns in a table
+|count query                                                               |
+|databaseName|tableName     |count Records?|
+|CIV|udtb903_clone |18161             |
+
+
+!2 Example to COUNT records and columns in a table
+|count query                                                               |
+|databaseName|tableName     |count Records?|
+|CIV|udtb903_clone |18161             |
+
+
+!2 Example to COUNT records and columns in a table
+|count query                                                               |
+|databaseName|tableName     |count Records?|
+|CIV|udtb903_clone |18161             |
+
+
+!2 Example to COUNT records and columns in a table
+|count query                                                               |
+|databaseName|tableName     |count Records?|
+|CIV|udtb903_clone |18161             |
+
+
+
+!2 Example to COUNT records and columns in a table
+|count query                                                               |
+|databaseName|tableName     |count Records?|
+|CIV|udtb903_clone |18161             |
+
+
+!2 Example to COUNT records and columns in a table
+|count query                                                               |
+|databaseName|tableName     |count Records?|
+|CIV|udtb903_clone |18161             |

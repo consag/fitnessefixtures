@@ -1,0 +1,24 @@
+---
+Suites: db2
+---
+!contents
+
+!define TEST_SYSTEM {slim} 
+!path ../fitnesse/java_workspace/fixtures
+!path ../fitnesse/ibm/db2jcc4.jar
+--!path ../fitnesse/hpnonstop/t4sqlmx.jar
+
+
+|import                    |
+|generic.fixtures.Global   |
+|generic.fixtures.DBFixture|
+
+!2 SIEBDQ
+|count query|db2_siebdq                                            |
+|databaseName|tableName|count Records?|get log filename?|
+|SIEBDQ      |XREF_VPI_BANK_FLTR |428         |                 |
+
+!2 SIEBDA
+|count query|db2_siebda                                            |
+|databaseName|tableName|count Records?|get log filename?|
+|SIEBDA      |XREF_VPI_BANK_FLTR |428         |                 |

@@ -1,0 +1,2 @@
+..FrontPage.ExamplesJac.TestJac.OnlyGenerate is a parameter in a job file that causes ..FrontPage.ExamplesJac.TestJac.FitNesse to only generate the job file, and not execute it.
+The default value is No, for backward compatibility reasons.
