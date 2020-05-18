@@ -1,5 +1,0 @@
----
-Suites: scheduler
-Test
----
-!include ..FrontPage.ExamplesJac.TestJac.TryOutDatabaseStuff.ExampleAnyValue

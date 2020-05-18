@@ -1,9 +1,0 @@
-**Database**
-!define database {SIEBDA}
-
-!3 Check NP
-|table:basic query                                                                                               |
-|database name|${database}                                                                                       |
-|sql statement|select recid, textcol, numcol  from FITNESSETEST_SPECCOLUMNS_AOT where recid =1 order by recid ASC|
-|nr_cols_ok   |recid                          |textcol                          |numcol                          |
-|3            |1                              |A_TEXT1                          |1                               |

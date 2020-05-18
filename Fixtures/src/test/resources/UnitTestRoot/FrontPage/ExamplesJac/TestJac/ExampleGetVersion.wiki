@@ -1,3 +1,0 @@
-|get single value|checkFixtureVersion                        |
-|database name   |query                         |get version?|
-|SDQ_Data        |SELECT 'really' nice FROM dual|            |

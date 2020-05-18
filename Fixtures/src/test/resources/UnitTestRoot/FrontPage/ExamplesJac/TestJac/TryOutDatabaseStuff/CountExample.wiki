@@ -1,9 +1,0 @@
----
-Files: no
----
-
-!2 Example to COUNT records and columns in a table
-|count query                                                                                   |
-|databaseName|tableName       |count Records?|count Columns?|count X Columns?|get log filename?|
-|DWHD_IDQ    |S_LST_OF_VAL_CPY|68701         |40            |0               |                 |
-

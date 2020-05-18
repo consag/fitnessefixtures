@@ -1,9 +1,0 @@
-!define clonetablename {FITNESSE_TEST_EVT_ACT}
-!define targetdatabase {TESTDA}
-
-!note Ignore Error On Drop was introduced 20180620.0
-
-|script              |drop table   |drptab                                                        |
-|ignore error on drop|Yes                                                                         |
-|ensure              |table        |${clonetablename}|does not exist in database|${targetdatabase}|
-|check               |error message|No errors                                                     |

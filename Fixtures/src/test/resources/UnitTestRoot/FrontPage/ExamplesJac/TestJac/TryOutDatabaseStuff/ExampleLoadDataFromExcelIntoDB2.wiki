@@ -1,9 +1,0 @@
----
-Help
-Suite
-Suites: DB2
-Test: no
----
-!1 Test suite to Load data into DB2, using Excel as input
-
-!contents -R2 -g -p -f -h

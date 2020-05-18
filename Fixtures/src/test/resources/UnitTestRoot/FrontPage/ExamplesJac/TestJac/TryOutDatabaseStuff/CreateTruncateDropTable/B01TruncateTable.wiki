@@ -1,9 +1,0 @@
----
-Suites: DDL
-Test
----
-!4 Truncate Table expects ${targetdatabase} to be defined in database.properties
-
-|Truncate table|tryoutTruncate|
-|database name|table name|truncate table?|
-|${targetdatabase}|${targettable}|OK|
