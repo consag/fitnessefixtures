@@ -1,9 +1,0 @@
----
-Test
----
-|script |execute script |TWSStartBatch.sh|TEST|
-|note |This will run the TWSStartBatch script |
-|set script location|base DWFR/Scripts |
-|add parameter |BES_BASISBETAALOVEREENKOMST_DD |
-|check |run script return code|0 |
-|check |get log filename | |

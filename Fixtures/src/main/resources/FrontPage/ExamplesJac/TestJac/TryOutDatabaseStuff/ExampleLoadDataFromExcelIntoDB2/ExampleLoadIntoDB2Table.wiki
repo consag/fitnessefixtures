@@ -12,5 +12,5 @@ Suites: DB2
 !define tablename {FITNESSETEST_RECHTSVORMCODE}
 
 |load data from excel|load_${tablename}                                                              |
-|database name       |table name  |input file              |worksheet name|result?|get error message?|
+|database name       |table name  |input file              |worksheet name|result?|get result message?|
 |${dbconnection}     |${tablename}|${location} ${excelFile}|${excelSheet} |OK     |                  |

@@ -7,11 +7,11 @@
 !define excelsheet {Sheet1}
 
 !|remove data using excel|${PAGE_NAME}                                                                                                      |
-|log level               |database name  |table name  |input file  |worksheet name|filter field name|result?|get error message?|get log filename?|
+|log level               |database name  |table name  |input file  |worksheet name|filter field name|result?|get result message?|get log filename?|
 |DEBUG                   |${dbconnection}|${tablename}|${excelfile}|${excelsheet} |recid            |OK     |                  |                 |
 
 !|get single value|check result ${PAGE_NAME}                                       |
-|database name    |query                            |get column?|get error message?|
+|database name    |query                            |get column?|get result message?|
 |${dbconnection}  |SELECT count(*) FROM ${tablename}|0         |                  |
 
 

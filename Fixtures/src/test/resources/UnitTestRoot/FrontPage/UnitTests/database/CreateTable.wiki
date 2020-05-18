@@ -1,0 +1,15 @@
+---
+Test Create Table
+---
+|script                 |create table  |unittest_crttab                  |
+|set database connection|oracleTestDB                        |
+|set table name         |UNIT_TEST_TABLE                           |
+|set database           |oracleTestDB                           |
+|add column             |COL1          |data type   |VARCHAR(50)|
+|add column             |COL2          |data type   |VARCHAR(50)|
+|ensure                 |create table  |UNIT_TEST_TABLE|is   |OK   |
+|check                  |error message |No errors encountered   |
+|show                   |table name for|UNIT_TEST_TABLE            |
+|ensure                 |table         |UNIT_TEST_TABLE|exists     |
+|check                  |error message |No errors encountered   |
+|show                   |get version                            |

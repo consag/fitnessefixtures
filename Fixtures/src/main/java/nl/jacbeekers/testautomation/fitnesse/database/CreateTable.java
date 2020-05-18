@@ -17,14 +17,11 @@ import java.util.*;
 
 import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
-import nl.jacbeekers.testautomation.fitnesse.supporting.Parameters;
 import nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages;
-
-import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.propFileErrors;
 
 public class CreateTable {
     private String className = "CreateTable";
-    private static String version ="20190704.1";
+    private static String version ="20200518.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
@@ -166,8 +163,8 @@ public class CreateTable {
         } else {
             logMessage = "databaseType >" + connectionProperties.getDatabaseType() + "< not yet supported";
             log(myName, Constants.ERROR, myArea, logMessage);
-            setError(Constants.ERROR,logMessage);
-            return getErrorCode();
+            setResult(Constants.ERROR,logMessage);
+            return getResult();
         }
     
     try {
@@ -194,13 +191,13 @@ public class CreateTable {
 
         connection.close();
         rc = Constants.OK;
-        setError(Constants.OK,Constants.NO_ERRORS);
+        setResult(Constants.OK,Constants.NO_ERRORS);
         
     } catch (SQLException e) {
         myArea = "Exception handling";
         logMessage = "SQLException at >" + myName + "<. Error =>" + e.toString() + "<.";
         log(myName, Constants.ERROR, myArea, logMessage);
-        setError(Constants.ERROR, logMessage);
+        setResult(Constants.ERROR, logMessage);
         rc = Constants.ERROR;
     }
     return rc;
@@ -259,7 +256,7 @@ public class CreateTable {
             else {
             logMessage = "databaseType >" + connectionProperties.getDatabaseType() + "< not yet supported";
             log(myName, "info", myArea, logMessage);
-            setError(Constants.ERROR,logMessage);
+            setResult(Constants.ERROR,logMessage);
             return false;
             }
         }
@@ -272,7 +269,7 @@ public class CreateTable {
 
         if (nrTablesFound.equals("1"))
             return true;
-        setError(Constants.OK,"Table not found, or multiple occurrences found. NrTablesFound =>" +nrTablesFound +"<.");
+        setResult(Constants.OK,"Table not found, or multiple occurrences found. NrTablesFound =>" +nrTablesFound +"<.");
         return false;
 
     }
@@ -316,6 +313,10 @@ public class CreateTable {
             log(myName, Constants.DEBUG, myArea,"username set to >" + connectionProperties.getDatabaseUsername() +"<.");
         } else {
             log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
+        }
+        if(!Constants.OK.equals(connectionProperties.getErrorCode())) {
+            log(myName, Constants.ERROR, myArea, connectionProperties.getErrorMessage());
+            setResult(connectionProperties.getErrorCode(), connectionProperties.getErrorMessage());
         }
 
     }
@@ -397,14 +398,14 @@ public class CreateTable {
         return logLevel;
     }
 
-    private void setError(String errorCode, String errorMessage) {
+    private void setResult(String errorCode, String errorMessage) {
         this.errorCode =errorCode;
         this.errorMessage = errorMessage;
     }
-    public String getErrorCode() {
+    public String getResult() {
         return errorCode;
     }
-    public String getErrorMessage() {
+    public String getResultMessage() {
         return errorMessage;
     }
 
@@ -458,7 +459,7 @@ public class CreateTable {
                 return true;
             }
             log(myName, Constants.ERROR, myArea, logMessage);
-            setError(Constants.ERROR,logMessage);
+            setResult(Constants.ERROR,logMessage);
             return false;
         }
         
@@ -504,19 +505,24 @@ public class CreateTable {
 
     private String convertArrayToString(List<String> arrayString) {
         String myName ="convertArrayToString";
-        String myLocation="concatenate columns";
+        String myArea="concatenate columns";
         String concatenatedColumns=" ";
-        int i=0;
-        while(i < arrayString.size()) {
-            if(i==0) {
-                concatenatedColumns = arrayString.get(i);
-            } else {
-                concatenatedColumns += ", " + arrayString.get(i);
+        if(arrayString != null) {
+            int i = 0;
+            while (i < arrayString.size()) {
+                if (i == 0) {
+                    concatenatedColumns = arrayString.get(i);
+                } else {
+                    concatenatedColumns += ", " + arrayString.get(i);
+                }
+                log(myName, Constants.VERBOSE, myArea, "Column >" + arrayString.get(i) + "<.");
+                log(myName, Constants.VERBOSE, myArea, "Column list so far >" + concatenatedColumns + "<.");
+                i++;
             }
-            log(myName, Constants.VERBOSE, myLocation, "Column >" + arrayString.get(i) +"<.");
-            log(myName, Constants.VERBOSE, myLocation, "Column list so far >" + concatenatedColumns +"<.");
-            i++;
+        } else {
+            log(myName, Constants.DEBUG, myArea, "provided array has no elemenets");
         }
+
         return concatenatedColumns;
     }
 
@@ -530,85 +536,95 @@ public class CreateTable {
             ,String expectedResult
     ) {
         String myName="creationOfTableInDatabaseSchemaAsCloneOfTableInDatabaseSchemaIs";
-        String myLocation="Start";
+        String myArea="Start";
         Connection connection = null;
         List<String> columnList =null;
         String rc =Constants.OK;
         String targetTableName;
         String targetObjectName;
 
-        log(myName, Constants.DEBUG, myLocation, "Database connection set to >" + tgtDatabase +"<.");
+        log(myName, Constants.DEBUG, myArea, "Database connection set to >" + tgtDatabase +"<.");
 
         setDatabaseName(tgtDatabase);
         readParameterFile();
 
         if(getErrorIndicator()) {
-            setError(ResultMessages.ERRCODE_PROPERTIES,"An error occurred while determining connection properties");
+            setResult(ResultMessages.ERRCODE_PROPERTIES,"An error occurred while determining connection properties");
             return false;
         }
 
         if(connectionProperties.getUseTablePrefix()) {
             targetTableName = connectionProperties.getTableOwnerTablePrefix() + tgtTable;
-            log(myName, Constants.DEBUG, myLocation, "useTablePrefix is >true<. Table name set to >" + targetTableName +"<.");
+            log(myName, Constants.DEBUG, myArea, "useTablePrefix is >true<. Table name set to >" + targetTableName +"<.");
         } else {
             targetTableName = tgtTable;
-            log(myName, Constants.DEBUG, myLocation, "useTablePrefix is >false<. Table name is >" + targetTableName +"<.");
+            log(myName, Constants.DEBUG, myArea, "useTablePrefix is >false<. Table name is >" + targetTableName +"<.");
         }
 
         if(!tgtSchema.isEmpty()) {
             targetObjectName = tgtSchema + Constants.DATABASE_OBJECT_DELIMITER + targetTableName;
-            log(myName, Constants.DEBUG, myLocation, "Provided schema is >" + tgtSchema +"<. Object name set to >" + targetObjectName +"<.");
+            log(myName, Constants.DEBUG, myArea, "Provided schema is >" + tgtSchema +"<. Object name set to >" + targetObjectName +"<.");
         } else {
             if(connectionProperties.getUseSchema()) {
                 targetObjectName = connectionProperties.getDatabaseSchema() + Constants.DATABASE_OBJECT_DELIMITER + targetTableName;
-                log(myName, Constants.DEBUG, myLocation, "No schema provided >" + tgtSchema
+                log(myName, Constants.DEBUG, myArea, "No schema provided >" + tgtSchema
                         +"<. Schema name " + connectionProperties.getDatabaseSchema() +" taken from properties. Object name set to >" + targetObjectName +"<.");
             } else {
                 targetObjectName = targetTableName;
-                log(myName, Constants.DEBUG, myLocation, "No schema provided >" + tgtSchema
+                log(myName, Constants.DEBUG, myArea, "No schema provided >" + tgtSchema
                         +"< and no schema in properties file. Object name set to >" + targetObjectName +"<.");
             }
         }
 
-        log(myName, Constants.INFO, myLocation, "Target object name is >" + targetObjectName +"<.");
+        log(myName, Constants.INFO, myArea, "Target object name is >" + targetObjectName +"<.");
 
         setDatabaseName(srcDatabase);
+
         readParameterFile();
+        if(!Constants.OK.equals(getResult())) {
+            log(myName, Constants.DEBUG, myArea, "An error occurred reading properties. See error above.");
+            return Constants.OK.equals(getResult());
+        }
+
 
         try {
-            myLocation="getConnection";
-            log(myName, Constants.DEBUG, myLocation, "Connecting to >" + connectionProperties.getDatabase()
+            myArea="getConnection";
+            log(myName, Constants.DEBUG, myArea, "Connecting to >" + connectionProperties.getDatabase()
                     +"< as user >" + connectionProperties.getDatabaseTableOwner() +"<.");
             connection = connectionProperties.getOwnerConnection();
 //            connection = DriverManager.getConnection(getDatabaseUrl(), getDatabaseTableOwner(), getDatabaseTableOwnerPassword());
             DatabaseMetaData databaseMetaData = null;
             try {
-                myLocation="getMetaData";
+                myArea="getMetaData";
                 databaseMetaData = connection.getMetaData();
                 columnList = getSourceTableDefinition(databaseMetaData, srcSchema.toUpperCase(), srcTable.toUpperCase());
-                if(columnList ==null) {
-                    setError(ResultMessages.ERRCODE_TABLENOTFOUND, "Column list is empty, probably because the table does not exist.");
-                    log(myName, Constants.ERROR, myLocation, getErrorMessage());
-                } else {
-                    log(myName, Constants.DEBUG, myLocation, "Table has >" + columnList.size() + "< columns.");
+                if(columnList.size() == 0) {
+                    columnList = null;
                 }
-                rc = createTable(tgtDatabase, targetObjectName, convertArrayToString(columnList));
-                if(!Constants.OK.equals(rc)) {
-                    setError(rc,"Error creating table >" + targetObjectName +"<. Error: " + getErrorMessage());
+                if(columnList ==null ) {
+                    setResult(ResultMessages.ERRCODE_TABLENOTFOUND, "Column list is empty, probably because the table >"
+                            + srcTable +"< does not exist in >" + srcSchema + "<.");
+                    log(myName, Constants.ERROR, myArea, getResultMessage());
+                } else {
+                    log(myName, Constants.DEBUG, myArea, "Table has >" + columnList.size() + "< columns.");
+                    rc = createTable(tgtDatabase, targetObjectName, convertArrayToString(columnList));
+                    if(!Constants.OK.equals(rc)) {
+                        setResult(rc,"Error creating table >" + targetObjectName +"<. Error: " + getResultMessage());
+                    }
                 }
             } catch (SQLException e) {
-                setError(ResultMessages.ERRCODE_DBMETADATA, "Error getting metadata. Exception=>"
+                setResult(ResultMessages.ERRCODE_DBMETADATA, "Error getting metadata. Exception=>"
                         + e.toString() +"<.");
             }
 
         } catch (SQLException e) {
-            setError(ResultMessages.ERRCODE_DBCONNECTION, "Error creating connection. Exception=>"
+            setResult(ResultMessages.ERRCODE_DBCONNECTION, "Error creating connection. Exception=>"
             + e.toString() +"<.");
         }
 
-        myLocation="Conclusion";
-        log(myName,Constants.INFO,myLocation,"Procedure completes with error code >" +getErrorCode() +"<.");
-        if(Constants.OK.equals(getErrorCode())) return true;
+        myArea="Conclusion";
+        log(myName,Constants.INFO,myArea,"Procedure completes with error code >" + getResult() +"<.");
+        if(Constants.OK.equals(getResult())) return true;
         else return false;
 
     }
@@ -688,7 +704,7 @@ public class CreateTable {
 
                     default:
                         log(myName, Constants.ERROR, myLocation,"Unsupported column type name >" +col.getTypeName() +"<.");
-                        setError(ResultMessages.ERRCODE_UNSUPPORTED_DATATYPE, Constants.UNSUPPORTED_DATATYPE
+                        setResult(ResultMessages.ERRCODE_UNSUPPORTED_DATATYPE, Constants.UNSUPPORTED_DATATYPE
                                 + Constants.LOG_SEPARATOR + col.getTypeName());
                         break;
                 }
@@ -697,7 +713,7 @@ public class CreateTable {
                 columnListAsString.add(colDefinitionString);
             }
         } catch (SQLException e) {
-            setError(ResultMessages.ERRCODE_DBMETADATA_COLUMNS,"Error retrieving column information. Exception=>"
+            setResult(ResultMessages.ERRCODE_DBMETADATA_COLUMNS,"Error retrieving column information. Exception=>"
             +e.toString() +"<.");
         }
         myLocation="Conclusion";
@@ -714,7 +730,7 @@ public class CreateTable {
             ,String databaseName
             ,String schemaName
     ) {
-        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setResult(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return Constants.NOT_IMPLEMENTED;
     }
 
@@ -725,7 +741,7 @@ public class CreateTable {
         log(myName, Constants.ERROR, myLocation, ResultMessages.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
                 + Constants.LOG_SEPARATOR + myName);
 
-        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setResult(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return doTable(myName);
     }
 
@@ -736,7 +752,7 @@ public class CreateTable {
         log(myName, Constants.ERROR, myLocation, ResultMessages.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
                 + Constants.LOG_SEPARATOR + myName);
 
-        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setResult(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return doTable(context, getLogLevel());
     }
 
@@ -750,7 +766,7 @@ public class CreateTable {
         log(myName, Constants.ERROR, myLocation, ResultMessages.ERRCODE_NOT_IMPLEMENTED + ": " + Constants.NOT_IMPLEMENTED
                 + Constants.LOG_SEPARATOR + myName);
 
-        setError(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        setResult(ResultMessages.ERRCODE_NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
         return Constants.NOT_IMPLEMENTED;
     }
 

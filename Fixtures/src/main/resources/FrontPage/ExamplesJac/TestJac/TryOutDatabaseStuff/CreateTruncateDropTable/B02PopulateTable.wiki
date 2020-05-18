@@ -13,6 +13,6 @@ location is a setting in fileoperation.properties
 !4 !-LoadDataFromExcel-! expects ${targetdatabase} to be defined in database.properties
 
 |load data from excel|load_${targettable}|
-|database name|table name|input file|worksheet name|result?|get error message?|
+|database name|table name|input file|worksheet name|result?|get result message?|
 |${targetdatabase}|${targettable}|${location} testdata/${excelfile}|${excelsheet}|OK||
 

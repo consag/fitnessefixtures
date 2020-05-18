@@ -10,7 +10,7 @@
 |modify column   |NUMCOL                                            |
 |set to value    |${myval}                                         |
 |ensure          |result                    |OK                    |
-|show            |get error message                                |
+|get result message                            |
 |show            |get number of records updated                    |
 
 |script: basic update                                              |
@@ -23,7 +23,7 @@
 |modify column   |MYCOL                                            |
 |set to value    |${myval}                                         |
 |ensure          |result                    |OK                    |
-|show            |get error message                                |
+|get result message                            |
 |show            |get number of records updated                    |
 
 !3 Trick
@@ -42,6 +42,6 @@ WHERE '1' IN ('1') AND (delivery_sqn=1234)
 |modify column   |MYCOL                                            |
 |set to value    |${myval}                                         |
 |ensure          |result                    |OK                    |
-|show            |get error message                                |
+|get result message                            |
 |show            |get number of records updated                    |
 

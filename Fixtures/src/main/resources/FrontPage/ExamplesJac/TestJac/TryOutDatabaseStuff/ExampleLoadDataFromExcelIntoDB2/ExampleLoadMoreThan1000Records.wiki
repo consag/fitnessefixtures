@@ -7,5 +7,5 @@ Note: This page is target of a link in [[Confluence][https://confluence.dev.rab
 !3 Load more than 1000 records from Excel
 !define tablename {FITNESSETEST_LARGEEXCEL}
 !| load data from excel | load_${tablename} |
-| application | commit size | log level | database name | table name | input file | worksheet name | result? | get error message? | get log filename? |
+| application | commit size | log level | database name | table name | input file | worksheet name | result? |get result message?| get log filename? |
 | Fixturetest | 2000 | DEBUG | ${dbconnection} | ${tablename} | ${location} ${excelFile} | ${excelSheet} | OK | | |

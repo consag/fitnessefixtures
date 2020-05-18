@@ -11,14 +11,11 @@ import java.text.*;
 
 import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Logging;
-import nl.jacbeekers.testautomation.fitnesse.supporting.Parameters;
 import nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages;
-
-import static nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages.propFileErrors;
 
 public class DropTable {
 	private String className = "DropTable";
-    private static String version ="20190704.0";
+    private static String version ="20200518.0";
 
     private String logFileName = Constants.NOT_INITIALIZED;
     private String context = Constants.DEFAULT;
@@ -30,7 +27,6 @@ public class DropTable {
 
     ConnectionProperties connectionProperties = new ConnectionProperties();
 
-    private String errorMessage = Constants.NO_ERRORS;
     private String query;
 
     private String databaseName =Constants.NOT_PROVIDED;
@@ -38,7 +34,8 @@ public class DropTable {
     private String tableName =Constants.NOT_PROVIDED;
     private String tableComment = Constants.TABLE_COMMENT;
 
-    private String errorCode =Constants.OK;
+    private String resultCode =Constants.OK;
+    private String resultMessage = Constants.NO_ERRORS;
     private boolean errorIndicator =false;
 
     private boolean ignoreErrorOnDrop =false;
@@ -140,7 +137,7 @@ public class DropTable {
             default:
                 logMessage="databaseType >" + connectionProperties.getDatabaseType() +"< not yet supported";
                 log(myName, Constants.ERROR, myArea, logMessage);
-                setErrorMessage(logMessage);
+                setResultMessage(logMessage);
                 return false;
                 //break;
         }
@@ -162,7 +159,7 @@ public class DropTable {
             } else {
                 logMessage="Table >" + tableName +"< does not exist";
                 log(myName, Constants.ERROR, myArea, logMessage);
-                errorMessage="Table >" + inTableName +"< does not exist.";
+                resultMessage ="Table >" + inTableName +"< does not exist.";
                 return false;
             }
         }
@@ -173,10 +170,10 @@ public class DropTable {
             commentFound = dbCol.getColumn();
         
             if (commentFound == null || commentFound.isEmpty() || commentFound.equals("0")){
-                errorMessage="A table comment could not be found. If the table exists, it will be dropped anyway.";
+                resultMessage ="A table comment could not be found. If the table exists, it will be dropped anyway.";
             } else {
                 if( ! commentFound.equals(tableComment) && ! getIgnoreError()) {
-                    errorMessage="A table comment matching the comment issued by the CreateTable fixture was not found. The table will NOT be dropped.";
+                    resultMessage ="A table comment matching the comment issued by the CreateTable fixture was not found. The table will NOT be dropped.";
                     return false;
                 }
             }
@@ -205,10 +202,10 @@ public class DropTable {
                 if((e.toString().contains("ORA-00942")
                         || /*DB2*/ e.toString().contains("SQLCODE=-204, SQLSTATE=42704"))
                         && ignoreErrorOnDrop) {
-                    setErrorMessage(Constants.NO_ERRORS);
+                    setResultMessage(Constants.NO_ERRORS);
                     rc=true;
                 } else {
-                    setErrorMessage(logMessage);
+                    setResultMessage(logMessage);
                  rc =false;
                 }
               }
@@ -216,8 +213,8 @@ public class DropTable {
          return rc;
     }
 
-    private void setErrorMessage(String errorMessage) {
-	    this.errorMessage = errorMessage;
+    private void setResultMessage(String resultMessage) {
+	    this.resultMessage = resultMessage;
     }
 
     public String tableNameFor (String inTableName) {
@@ -239,6 +236,11 @@ public class DropTable {
         
         myArea="check db type";
         readParameterFile();
+        if(!Constants.OK.equals(getResult())) {
+            log(myName, Constants.DEBUG, myArea, "An error occurred reading properties. See error above.");
+            return Constants.OK.equals(getResult());
+        }
+
         if(connectionProperties.getUseTablePrefix()) {
             tableName = connectionProperties.getTableOwnerTablePrefix() + inTableName;
         } else {
@@ -250,7 +252,7 @@ public class DropTable {
         } else {
             logMessage="databaseType >" + connectionProperties.getDatabaseType() +"< not yet supported";       
             log(myName, Constants.INFO, myArea, logMessage);  
-            errorMessage=logMessage;
+            resultMessage =logMessage;
             return false;
         }
         GetSingleValue dbCol= new GetSingleValue(className);
@@ -261,14 +263,14 @@ public class DropTable {
         if (nrTablesFound.equals("0") ) 
         return true;
 
-        errorMessage="Count on tables returned >" + nrTablesFound +"<.";
+        resultMessage ="Count on tables returned >" + nrTablesFound +"<.";
         return false;
     }
     
     
 
     public String errorMessage() {
-        return errorMessage;
+        return resultMessage;
     }
 
     private void log(String name, String level, String area, String logMessage) {
@@ -342,6 +344,12 @@ public class DropTable {
         } else {
             log(myName, Constants.ERROR, myArea, "Error retrieving parameter(s): " + connectionProperties.getErrorMessage());
         }
+        if(!Constants.OK.equals(connectionProperties.getErrorCode())) {
+            log(myName, Constants.ERROR, myArea, connectionProperties.getErrorMessage());
+            setResult(connectionProperties.getErrorCode());
+            setResultMessage(connectionProperties.getErrorMessage());
+            setErrorIndicator(true);
+        }
 
     }
 
@@ -382,8 +390,8 @@ public class DropTable {
     }
 
     private void setError(String errorCode, String errorMessage) {
-        this.errorCode =errorCode;
-        this.errorMessage = errorMessage;
+        this.resultCode =errorCode;
+        this.resultMessage = errorMessage;
     }
     public String getLogUrl() {
         return this.logUrl;
@@ -415,4 +423,15 @@ public class DropTable {
         this.logFileNameAlreadySet = true;
     }
 
+    public String getResult() {
+        return resultCode;
+    }
+
+    public void setResult(String resultCode) {
+        this.resultCode = resultCode;
+    }
+
+    public String getResultMessage() {
+        return resultMessage;
+    }
 }

@@ -10,7 +10,7 @@ Suites: db2, oracle
 |script                |create synonym|crtsyn                                                                      |
 |ignore error if exists|Yes                                                                                        |
 |ensure                |synonym       |${demotab}|exists in database|${dbconn2}|for object|${demotab}|in|${dbconn1}|
-|show                  |get error message                                                                          |
+|get result message                                                                                                |
 
 
 !lastmodified

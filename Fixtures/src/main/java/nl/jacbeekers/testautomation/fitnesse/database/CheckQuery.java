@@ -1052,17 +1052,17 @@ public class CheckQuery {
             tbl.setLogLevel(getLogLevel());
             myArea="Check table existence";
           tableExists=  tbl.tableExists(getCheckTable());
-          rc=tbl.getErrorCode();
+          rc=tbl.getResult();
           if(Constants.OK.equals(rc)) {
               if(! tableExists ) {
                   //table not found. create it
                   rc= tbl.createTable(getCheckTable(), Constants.CHECK_TABLE_COLUMNS_ORA);
               }
           } else {
-                log(myName, Constants.ERROR, myArea, "Check on existence of table >" + getCheckTable() + "< failed. Error =>" +tbl.getErrorMessage()+"<.");             
+                log(myName, Constants.ERROR, myArea, "Check on existence of table >" + getCheckTable() + "< failed. Error =>" +tbl.getResultMessage()+"<.");
             }
           if(!Constants.OK.equals(rc)) {
-            setError(tbl.getErrorCode(),tbl.getErrorMessage());
+            setError(tbl.getResult(),tbl.getResultMessage());
             return Constants.ERROR;
           }
 

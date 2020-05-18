@@ -58,7 +58,7 @@ In the examples below:
 !define tablename {FITNESSETEST_INCOMPLETEEXCEL_DB2}
 
 !|load data from excel|load_${tablename}|DEBUG                   |FixtureTest                              |
-|database name       |table name       |input file              |worksheet name|result?|get error message?|
+|database name       |table name       |input file              |worksheet name|result?|get result message?|
 |${dbconnection}     |${tablename}     |${location} ${excelFile}|${excelSheet} |OK     |                  |
 
 !3 Load incomplete Excel into IDAA as AOT
@@ -66,5 +66,5 @@ In the examples below:
 !define tablename {FITNESSETEST_INCOMPLETEEXCEL_AOT}
 
 !|load data from excel|load_${tablename}|DEBUG                   |FixtureTest                              |
-|database name       |table name       |input file              |worksheet name|result?|get error message?|
+|database name       |table name       |input file              |worksheet name|result?|get result message?|
 |${dbconnection}     |${tablename}     |${location} ${excelFile}|${excelSheet} |OK     |                  |

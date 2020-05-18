@@ -24,7 +24,7 @@ Test
 !2 Test Profile NP Basisgegevens SQL statement with 1 row only. Has subselect on same table.
  
 |basic query  |checkprofilenpbasisgeg_sql                                                                |
-|database name|sql file             |query execution?|rows returned?|get error message?|get log filename?|
+|database name|sql file             |query execution?|rows returned?|get result message?|get log filename?|
 |${sourceDB}  |files IDQ/${fileName}|OK              |1             |                  |                 |
 
 

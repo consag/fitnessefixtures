@@ -10,7 +10,7 @@
 |set ignore 0 records|Yes                          |
 |set delete filter   |RECID=1                          |
 |ensure              |result          |OK          |
-|show                |get error message            |
+|get result message                                |
 |show                |get number of records deleted|
 
 !3 Standard behaviour
@@ -21,7 +21,7 @@
 |set ignore 0 records|Yes                          |
 |set delete filter   |RECID IN (1,2,3)                          |
 |ensure              |result          |OK          |
-|show                |get error message            |
+|get result message                                |
 |show                |get number of records deleted|
 
 !3 Syntax fout
@@ -32,6 +32,6 @@
 |set ignore 0 records|Yes                          |
 |set delete filter   |COL_DOES_NOT_EXIST IN ('SAMPLE')                          |
 |ensure              |result          |ERROR          |
-|show                |get error message            |
+|get result message                                   |
 |show                |get number of records deleted|
 

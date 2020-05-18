@@ -1,0 +1,7 @@
+---
+Test Create Table
+---
+|script|create table  |unittest_create_table                                                                                             |
+|set log level|DEBUG|
+|ensure|creation of table| UNIT_TEST_TABLE | in database | oracleTestDB | schema| src_user | as clone of table | DUAL | in database | oracleTestDB |schema| src_user| is |OK|
+|check |error message |No errors                                                                                 |

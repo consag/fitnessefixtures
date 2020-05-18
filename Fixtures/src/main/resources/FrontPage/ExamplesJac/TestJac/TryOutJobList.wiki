@@ -1,5 +1,0 @@
-Did you know?
-..FrontPage.ExamplesJac.TestJac.OnlyGenerate=Yes only generates the job file, so you can pick it up and run it somewhere, eg an another fitnesse page
-Default value is ..FrontPage.ExamplesJac.TestJac.OnlyGenerate=No, so all existing pages will still generate AND execute the job file
-
-!contents -R2 -g -p -f -h

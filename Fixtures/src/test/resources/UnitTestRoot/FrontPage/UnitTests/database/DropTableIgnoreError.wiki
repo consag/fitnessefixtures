@@ -1,0 +1,7 @@
+---
+Test Drop Table
+---
+|script      |drop table    |unittest_drop_table                                             |
+|ignore error|Yes                                                               |
+|ensure      |table         |UNIT_TEST_TABLE|does not exist in database|oracleTestDB|
+|check       |error message |No errors                                          |

@@ -9,6 +9,6 @@ Test
 |set log level|DEBUG                                                                                                   |
 |ensure       |As of          |17-DEC-2017|run|${suitename}|start at|03:00|repeat every|1 day|until|24-DEC-2017 12:00|
 |show         |result                                                                                                  |
-|show         |get error message                                                                                       |
+|get result message                                                                                                  |
 |show         |get log filename                                                                                        |
 

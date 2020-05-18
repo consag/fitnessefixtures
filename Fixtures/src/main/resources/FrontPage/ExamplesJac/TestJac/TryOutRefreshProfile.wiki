@@ -13,7 +13,7 @@ Test
 !3 Run each listed profile
 
 |Profile          |${IDQMRSDatabaseConnection}|${IDQProjectName}              |VERBOSE                            |
-|Project Name     |Folder Name     |Profile Name                   |refresh Profile?|get error message?|
+|Project Name     |Folder Name     |Profile Name                   |refresh Profile?|get result message?|
 |${IDQProjectName}|${IDQFolderName}|Profile_DWHD_STI_CHK_NPS       |OK              |                  |
 #|${IDQProjectName}|${IDQFolderName}|Profile_DWHD_STI_CHK_TAXREPORTS|OK              |                  |
 
@@ -36,7 +36,7 @@ Running profiles in ${IDQFolderName}
 |check            |number of profiles      |10                      |
 |check            |refresh profiles in list|not on error     |OK    |
 |show             |result                                           |
-|show             |get error message                                |
+|get result message                                                 |
 
 !define IDQFolderName {DWHD_STI/STI_Tables}
 
@@ -52,4 +52,4 @@ Running profiles in ${IDQFolderName}
 |check            |number of profiles      |62                      |
 |check            |refresh profiles in list|not on error     |OK    |
 |show             |result                                           |
-|show             |get error message                                |
+|get result message                                                 |

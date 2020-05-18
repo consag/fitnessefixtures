@@ -1,14 +1,10 @@
 package nl.jacbeekers.testautomation.fitnesse.database;
 
+import nl.jacbeekers.testautomation.fitnesse.FitNesseTest;
 import nl.jacbeekers.testautomation.fitnesse.supporting.Constants;
 import nl.jacbeekers.testautomation.fitnesse.supporting.ResultMessages;
 import org.junit.jupiter.api.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -19,8 +15,6 @@ class BasicQueryTest {
     //Logging
     private Logger logger;
     private String method;
-    // FitNesse pages
-    private String fitnesseFrontPage="src/test/resources/UnitTestRoot/FrontPage";
     // Testing
     private String result = Constants.OK;
 
@@ -42,8 +36,9 @@ class BasicQueryTest {
     private String executeBasicQueryTest() {
         BasicQuery basicQuery = new BasicQuery();
         basicQuery.setLogLevel(Constants.DEBUG);
-        String testfilename = getFitnesseFrontPage() + "/UnitTests/ExamplesBasicFixtures/ExampleBasicQuery.wiki";
-        List<List<String>> inputTable = createTestTableNoContext(testfilename);
+        FitNesseTest fitNesseTest = new FitNesseTest("/UnitTests/ExamplesBasicFixtures/ExampleBasicQuery.wiki");
+        String testfilename = fitNesseTest.getPathTestPage();
+        List<List<String>> inputTable = fitNesseTest.createTestTable(testfilename);
         assumingThat(inputTable != null && inputTable.size() > 0
                 , () -> basicQuery.doTable(inputTable));
 
@@ -59,35 +54,6 @@ class BasicQueryTest {
         return basicQuery.getResult();
     }
 
-    private List<List<String>> createTestTableNoContext(String testfilename) {
-        List<List<String>> inputTable = new ArrayList<List<String>>();
-
-        File testFile = new File(testfilename);
-        if( testFile.exists()) {
-            try (BufferedReader fis = new BufferedReader(new FileReader(testfilename))) {
-
-                String line = null;
-                while ((line = fis.readLine()) != null) {
-                    ArrayList<String> currentList = new ArrayList<>();
-                    inputTable.add(currentList);
-                    if(line.indexOf('|') == 0) {
-                        line = line.substring(1);
-                    }
-                    String[] values = line.split("\\|");
-                    for (String value : values) {
-                        currentList.add(value.trim());
-                    }
-                }
-
-            } catch (IOException e) {
-                getLogger().severe("Exception occurred: " + e.toString());
-            }
-        }
-
-        inputTable.remove(0); // contains input for the constructor
-
-        return inputTable;
-    }
 
     /**
      * Getters and Setters
@@ -110,13 +76,6 @@ class BasicQueryTest {
         this.method = method;
     }
 
-    public String getFitnesseFrontPage() {
-        return fitnesseFrontPage;
-    }
-
-    public void setFitnesseFrontPage(String fitnesseFrontPage) {
-        this.fitnesseFrontPage = fitnesseFrontPage;
-    }
 
     public String getResult() {
         return result;
